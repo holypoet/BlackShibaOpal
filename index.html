@@ -189,9 +189,9 @@ const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
 let currentFilter = 'all';
 let currentProduct = null;
-let cachedProducts = []; // 新增：用於快取當下顯示的商品列表，供彈出視窗使用
+let cachedProducts = []; // 供彈出視窗使用
 
-// Supabase 設定 (已加入前台)
+// Supabase 設定 
 const SB_URL = 'https://obujbaevimyquefwgnxm.supabase.co';
 const SB_KEY = 'sb_publishable_jdHW-a9YVioP2VQh4Besuw_Z8J95PWi';
 const sbHeaders = {
@@ -218,7 +218,7 @@ async function createOrder(data){
   const r = await fetch(`${SB_URL}/rest/v1/orders`, {
     method: 'POST',
     headers: sbHeaders,
-    body: JSON.stringify(data)
+    body: JSON.stringify(data) // 同樣不用自己塞 ID
   });
   if(!r.ok) throw new Error('Order creation failed');
   return r.json();
@@ -251,7 +251,7 @@ async function render(){
   document.getElementById('productGrid').innerHTML='';
   const filter=currentFilter==='all'?'':'category=eq.'+encodeURIComponent(currentFilter);
   const list=await getProducts(filter)||[];
-  cachedProducts = list; // 儲存至全域變數供點擊商品卡片時對照
+  cachedProducts = list; 
   
   const grid=document.getElementById('productGrid');
   const title=document.getElementById('gridTitle');
@@ -363,12 +363,9 @@ async function submitOrder(){
   };
 
   try{
-    // 存入 Supabase
     await createOrder(order);
-    // 庫存即時扣減
     await decreaseStock(p.id, p.stock||1);
 
-    // Email 通知
     if(FORMSPREE_ID && FORMSPREE_ID !== 'YOUR_FORMSPREE_ID'){
       await fetch(`https://formspree.io/f/${FORMSPREE_ID}`,{
         method:'POST',
@@ -386,7 +383,6 @@ async function submitOrder(){
     }
     document.getElementById('submitBtn').style.display='none';
     document.getElementById('orderSuccess').classList.add('show');
-    // 更新前台商品狀態
     render();
   } catch(e){
     btn.disabled=false;btn.textContent='確認送出訂單';
