@@ -202,6 +202,7 @@ footer a:hover{color:var(--text)}
 const FORMSPREE_ID = 'YOUR_FORMSPREE_ID'; // 設定後替換這裡
 const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
+function nl2br(s){return s?s.replace(/\n/g,'<br>'):'';}
 let currentFilter = 'all';
 let currentProduct = null;
 let cachedProducts = []; 
@@ -340,7 +341,7 @@ function openModal(idx){
   const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const tagsHtml=tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
   const tab3=`
-    ${p.description?`<div class="modal-desc" style="margin-bottom:1rem">${(p.description||'').split('\n').join('<br>')}</div>`:''}
+    ${p.description?`<div class="modal-desc" style="margin-bottom:1rem">${nl2br(p.description)}</div>`:''}
     ${tagsHtml?`<div class="modal-tags">${tagsHtml}</div>`:''}
   `;
 
