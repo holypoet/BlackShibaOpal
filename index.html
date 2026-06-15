@@ -297,9 +297,7 @@ function openModal(idx){
   if(!p) return;
   currentProduct=p;
   
-  const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const isSold=p.status==='已售出';
-  const tagsHtml=tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
   // 多圖輪播
   const imgs=Array.isArray(p.images)&&p.images.length?p.images:(p.image?[{src:p.image}]:[]);
   const sliderHtml=imgs.length>0?`
@@ -354,14 +352,18 @@ function openModal(idx){
       <div class="modal-name">${p.name}</div>
       <div class="modal-price">NT$ ${Number(p.price).toLocaleString()}</div>
       
-      ${specsHtml}
-      
-      <div class="modal-desc">${(p.description||'').replace(/\n/g,'<br>')}</div>
-      ${tagsHtml?`<div class="modal-tags">${tagsHtml}</div>`:''}
-      
+      <div class="detail-tabs">
+        <button class="detail-tab active" onclick="switchTab(0,this)">📋 基本規格</button>
+        <button class="detail-tab" onclick="switchTab(1,this)">🔬 GAA 鑑定</button>
+        <button class="detail-tab" onclick="switchTab(2,this)">📖 商品說明</button>
+      </div>
+      <div class="detail-panel active" id="dtab0">${tab1}</div>
+      <div class="detail-panel" id="dtab1" style="margin-bottom:1rem">${tab2}</div>
+      <div class="detail-panel" id="dtab2">${tab3}</div>
+
       ${isSold
-        ?`<button class="modal-cta sold-out" disabled>此商品已售出</button>`
-        :`<button class="modal-cta" onclick="toggleOrderForm()">📦 我要購買</button>`
+        ?`<button class="modal-cta sold-out" disabled style="margin-top:1rem">此商品已售出</button>`
+        :`<button class="modal-cta" onclick="toggleOrderForm()" style="margin-top:1rem">📦 我要購買</button>`
       }
       <div class="order-form" id="orderForm">
         <h3>填寫訂購資料</h3>
