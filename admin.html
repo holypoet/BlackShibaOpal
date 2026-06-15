@@ -269,11 +269,28 @@ select option{background:var(--bg2)}
         <div class="form-row">
           <div class="form-group">
             <label>國家 Country</label>
-            <input type="text" id="f-country" placeholder="例：Australia / Brazil / Ethiopia">
+            <select id="f-country-select" onchange="handleCountrySelect(this)">
+              <option value="">選擇國家</option>
+              <option value="Australia">澳洲 Australia</option>
+              <option value="Mexico">墨西哥 Mexico</option>
+              <option value="Ethiopia">衣索比亞 Ethiopia</option>
+              <option value="Brazil">巴西 Brazil</option>
+              <option value="Honduras">宏都拉斯 Honduras</option>
+              <option value="Indonesia">印尼 Indonesia</option>
+              <option value="USA">美國 USA</option>
+              <option value="__other__">其他 Other（自行輸入）</option>
+            </select>
+            <input type="text" id="f-country" placeholder="輸入國家名稱" style="margin-top:6px;display:none">
           </div>
           <div class="form-group">
             <label>產地 Location（州／省／市／鄉／鎮）</label>
             <input type="text" id="f-origin" placeholder="例：Lightning Ridge, New South Wales">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>礦權地 Claim</label>
+            <input type="text" id="f-claim" placeholder="例：Pitorra Claim">
           </div>
           <div class="form-group">
             <label>庫存數量</label>
@@ -288,12 +305,6 @@ select option{background:var(--bg2)}
           <div class="form-group">
             <label>尺寸（mm）</label>
             <input type="text" id="f-size" placeholder="例：12.5 × 9.3 × 4.2 mm">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>礦權地 Claim</label>
-            <input type="text" id="f-claim" placeholder="例：Pitorra Claim">
           </div>
         </div>
         <div class="form-row full">
@@ -764,13 +775,15 @@ function clearOrders(){if(!confirm('確定清除所有已完成訂單？'))retur
 /* ---- PRODUCTS ---- */
 function clearForm(){
   ['f-name','f-price','f-desc','f-tags','f-img-urls','videoUrlInput','f-weight','f-size','f-country','f-claim','f-synthetic-info','f-imitation-info','f-treatment-detail'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['f-category','f-status','f-origin','f-photo-source','f-variety','f-natural-subtype','f-composite-type','f-absorbency','f-play-of-colour','f-body-tone','f-diaphaneity','f-treatment'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-category','f-status','f-country-select','f-origin','f-photo-source','f-variety','f-natural-subtype','f-composite-type','f-absorbency','f-play-of-colour','f-body-tone','f-diaphaneity','f-treatment'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f-status').value='販售中';
   document.getElementById('f-stock').value='';
   document.getElementById('editId').value='';
   document.getElementById('deleteBtn').style.display='none';
   document.getElementById('formTitle').textContent='新增商品';
   currentImages=[];currentVideos=[];
+  document.getElementById('f-country').style.display='none';
+  document.getElementById('f-country-select').value='';
   updateVarietyFields();
   renderImgGrid();renderVideoList();
 }
@@ -791,7 +804,7 @@ function saveProduct(){
     description:gv('f-desc').trim(),
     tags:gv('f-tags').trim(),
     // 商業規格
-    country:gv('f-country'),
+    country:(()=>{const sel=document.getElementById('f-country-select')?.value;if(sel==='__other__')return gv('f-country');return sel||gv('f-country');})(),
     origin:gv('f-origin'),
     claim:gv('f-claim'),
     stock:document.getElementById('f-stock')?.value||'',
@@ -832,7 +845,14 @@ function editProduct(id){
   document.getElementById('f-tags').value=p.tags||'';
   // 商業規格
   const sv=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
-  sv('f-country',p.country);sv('f-origin',p.origin);sv('f-claim',p.claim);sv('f-stock',p.stock);sv('f-weight',p.weight);sv('f-size',p.size);sv('f-photo-source',p.photoSource);
+  // 國家欄位還原
+  const cs=document.getElementById('f-country-select');
+  const ci=document.getElementById('f-country');
+  const knownVals=['Australia','Mexico','Ethiopia','Brazil','Honduras','Indonesia','USA'];
+  if(p.country && knownVals.includes(p.country)){cs.value=p.country;ci.style.display='none';ci.value='';}
+  else if(p.country){cs.value='__other__';ci.style.display='block';ci.value=p.country;}
+  else{cs.value='';ci.style.display='none';ci.value='';}
+  sv('f-origin',p.origin);sv('f-claim',p.claim);sv('f-stock',p.stock);sv('f-weight',p.weight);sv('f-size',p.size);sv('f-photo-source',p.photoSource);
   // GAA鑑定
   sv('f-variety',p.variety);sv('f-natural-subtype',p.naturalSubtype);sv('f-composite-type',p.compositeType);
   sv('f-synthetic-info',p.syntheticInfo);sv('f-imitation-info',p.imitationInfo);
@@ -877,6 +897,13 @@ function exportData(){const data=JSON.stringify(getProducts(),null,2);const blob
 function copyJson(){navigator.clipboard.writeText(JSON.stringify(getProducts(),null,2)).then(()=>toast('已複製 JSON'));}
 function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const arr=JSON.parse(e.target.result);if(!Array.isArray(arr))throw new Error();saveProducts(arr);toast(`已匯入 ${arr.length} 件商品 ✓`);}catch(err){toast('JSON 格式錯誤',true);}};reader.readAsText(file);}
 function clearAll(){if(!confirm('確定要清除所有商品？'))return;localStorage.removeItem(PKEY);toast('已清除');renderDashboard();}
+
+/* ---- COUNTRY SELECT ---- */
+function handleCountrySelect(sel){
+  const input=document.getElementById('f-country');
+  if(sel.value==='__other__'){input.style.display='block';input.focus();}
+  else{input.style.display='none';input.value='';}
+}
 
 /* ---- VARIETY & TREATMENT FIELDS ---- */
 function updateVarietyFields(){
