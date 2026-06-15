@@ -6,57 +6,27 @@
 <title>黑柴珠寶 · 後台管理</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#08080d;--bg2:#0e0d15;--bg3:#13121c;
-  --border:#1e1c2a;--text:#e0dbd0;--muted:#6a6470;
-  --accent:#9b85d8;--accent2:#5ecbd8;
-  --danger:#c0392b;--success:#27ae60;
-}
+:root{--bg:#08080d;--bg2:#0e0d15;--bg3:#13121c;--border:#1e1c2a;--text:#e0dbd0;--muted:#6a6470;--accent:#9b85d8;--danger:#c0392b}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-/* LOGIN */
-.login-wrap{
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;
-}
-.login-box{
-  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
-  padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center;
-}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-box{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center}
 .login-logo{font-size:13px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:.5rem}
 .login-title{font-size:20px;font-weight:300;color:#f0ebe0;margin-bottom:2rem}
-.login-box input{
-  width:100%;background:var(--bg3);border:1px solid var(--border);
-  color:var(--text);padding:10px 14px;font-size:15px;border-radius:4px;
-  font-family:inherit;text-align:center;letter-spacing:3px;margin-bottom:1rem;
-  transition:border .2s;
-}
+.login-box input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 14px;font-size:15px;border-radius:4px;font-family:inherit;text-align:center;letter-spacing:3px;margin-bottom:1rem;transition:border .2s}
 .login-box input:focus{outline:none;border-color:#5a5078}
-.login-btn{
-  width:100%;padding:10px;background:#3d2d6e;color:#c4b0f0;
-  border:1px solid #5a4090;border-radius:4px;font-size:14px;
-  cursor:pointer;font-family:inherit;letter-spacing:1px;transition:background .2s;
-}
+.login-btn{width:100%;padding:10px;background:#3d2d6e;color:#c4b0f0;border:1px solid #5a4090;border-radius:4px;font-size:14px;cursor:pointer;font-family:inherit;letter-spacing:1px;transition:background .2s}
 .login-btn:hover{background:#4d3d8e}
 .login-error{font-size:13px;color:#e07070;margin-top:.75rem;display:none}
-.login-attempts{font-size:12px;color:var(--muted);margin-top:.5rem}
 
-/* LAYOUT */
 .app{display:none;grid-template-columns:220px 1fr;min-height:100vh}
 .app.show{display:grid}
 @media(max-width:700px){.app{grid-template-columns:1fr}}
 
-/* SIDEBAR */
-.sidebar{
-  background:var(--bg2);border-right:1px solid var(--border);
-  padding:1.5rem 1rem;display:flex;flex-direction:column;gap:4px;
-}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column;gap:4px}
 .sidebar-logo{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding:.5rem .75rem;margin-bottom:1rem}
 .sidebar-logo span{color:var(--text);display:block;font-size:14px;letter-spacing:1px;margin-top:2px}
-.nav-item{
-  padding:.6rem .75rem;font-size:13px;color:var(--muted);
-  cursor:pointer;border-radius:4px;transition:all .2s;border:none;
-  background:transparent;text-align:left;width:100%;font-family:inherit;
-}
+.nav-item{padding:.6rem .75rem;font-size:13px;color:var(--muted);cursor:pointer;border-radius:4px;transition:all .2s;border:none;background:transparent;text-align:left;width:100%;font-family:inherit}
 .nav-item:hover{background:var(--bg3);color:var(--text)}
 .nav-item.active{background:var(--bg3);color:var(--accent);border-left:2px solid var(--accent);border-radius:0 4px 4px 0}
 .sidebar-sep{height:1px;background:var(--border);margin:.5rem 0}
@@ -66,25 +36,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .logout-btn:hover{background:#1a0808}
 @media(max-width:700px){.sidebar{flex-direction:row;overflow-x:auto;padding:.75rem;border-right:none;border-bottom:1px solid var(--border)}.logout-btn{margin-top:0}}
 
-/* MAIN */
 main{padding:2rem;overflow-y:auto}
-.page{display:none}
-.page.active{display:block}
+.page{display:none}.page.active{display:block}
 .page-title{font-size:18px;font-weight:400;margin-bottom:1.5rem;color:#f0ebe0}
 .page-sub{font-size:13px;color:var(--muted);margin-top:4px}
 
-/* STATS */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:2rem}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1rem}
 .stat-num{font-size:24px;color:#f0ebe0;display:block;margin-bottom:4px}
 .stat-label{font-size:11px;color:var(--muted);letter-spacing:1px}
 
-/* ORDERS */
 .order-list{display:flex;flex-direction:column;gap:8px}
-.order-card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:6px;
-  padding:1rem 1.25rem;
-}
+.order-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1rem 1.25rem}
 .order-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;flex-wrap:wrap;gap:8px}
 .order-id{font-size:12px;color:var(--muted);letter-spacing:1px}
 .order-time{font-size:12px;color:var(--muted)}
@@ -93,25 +56,17 @@ main{padding:2rem;overflow-y:auto}
 .order-contact{font-size:13px;color:var(--muted)}
 .order-note{font-size:13px;color:#a09890;margin-top:.5rem;font-style:italic}
 .order-status{display:flex;gap:6px;margin-top:.75rem;flex-wrap:wrap}
-.status-btn{
-  font-size:11px;padding:4px 12px;border-radius:3px;cursor:pointer;
-  background:transparent;border:1px solid var(--border);color:var(--muted);
-  font-family:inherit;transition:all .2s;letter-spacing:.5px;
-}
+.status-btn{font-size:11px;padding:4px 12px;border-radius:3px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:inherit;transition:all .2s;letter-spacing:.5px}
 .status-btn:hover{color:var(--text);background:var(--bg3)}
-.status-btn.active-status{border-color:#5a4090;color:var(--accent);background:#1e1a2e}
 .status-btn.paid{border-color:#2a4a2a;color:#80d080}
 .status-btn.shipped{border-color:#2a3a4a;color:#80c0d8}
 .status-btn.done{border-color:#3a2848;color:#b880d8}
-.badge-status{
-  font-size:10px;padding:3px 10px;border-radius:2px;letter-spacing:1px;border:1px solid;
-}
+.badge-status{font-size:10px;padding:3px 10px;border-radius:2px;letter-spacing:1px;border:1px solid}
 .badge-new{color:#e0a050;border-color:#4a3010}
 .badge-paid{color:#80d080;border-color:#2a4a2a}
 .badge-shipped{color:#80c0d8;border-color:#2a3a4a}
 .badge-done{color:#b880d8;border-color:#3a2848}
 
-/* FORM */
 .form-section{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1.5rem}
 .form-section-title{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:1.25rem}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
@@ -119,42 +74,58 @@ main{padding:2rem;overflow-y:auto}
 @media(max-width:500px){.form-row{grid-template-columns:1fr}}
 .form-group{display:flex;flex-direction:column;gap:6px}
 label{font-size:12px;color:var(--muted);letter-spacing:.5px}
-input,select,textarea{
-  background:var(--bg3);border:1px solid var(--border);
-  color:var(--text);padding:8px 12px;font-size:14px;
-  border-radius:4px;font-family:inherit;transition:border .2s;
-}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-size:14px;border-radius:4px;font-family:inherit;transition:border .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:#5a5078}
 textarea{resize:vertical;min-height:80px;line-height:1.6}
 select option{background:var(--bg2)}
 
-/* IMAGE */
-.img-upload-area{
-  border:2px dashed var(--border);border-radius:6px;
-  padding:2rem;text-align:center;cursor:pointer;transition:border .2s;position:relative;
-}
-.img-upload-area:hover{border-color:#5a5078}
-.img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:none;padding:0}
-.img-preview{max-width:100%;max-height:200px;display:none;margin:.75rem auto 0;border-radius:4px}
-.img-upload-hint{font-size:13px;color:var(--muted)}
-.img-upload-hint strong{display:block;font-size:24px;margin-bottom:.5rem}
+/* MEDIA SECTION */
+.media-section{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1.5rem}
+.media-tabs{display:flex;gap:8px;margin-bottom:1.25rem}
+.media-tab{font-size:12px;letter-spacing:1px;padding:6px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;border-radius:3px}
+.media-tab.active{border-color:#5a5078;color:var(--accent);background:#13101e}
 
-/* BUTTONS */
+/* IMAGES */
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:1rem}
+.img-thumb{position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;border:1px solid var(--border);background:var(--bg3)}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.img-thumb .img-actions{position:absolute;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;gap:6px}
+.img-thumb:hover .img-actions{display:flex}
+.img-action-btn{font-size:11px;padding:4px 8px;background:var(--bg2);border:1px solid var(--border);color:var(--text);cursor:pointer;border-radius:3px;font-family:inherit}
+.img-thumb.primary::after{content:'主圖';position:absolute;bottom:0;left:0;right:0;background:rgba(155,133,216,.8);font-size:10px;text-align:center;padding:2px;color:#fff}
+.img-upload-btn{
+  aspect-ratio:1;border:2px dashed var(--border);border-radius:4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:border .2s;background:var(--bg3);position:relative;
+  font-size:11px;color:var(--muted);gap:4px;
+}
+.img-upload-btn:hover{border-color:#5a5078}
+.img-upload-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-upload-btn span{font-size:20px}
+
+/* VIDEO */
+.video-input-wrap{display:flex;gap:8px;margin-bottom:.75rem}
+.video-input-wrap input{flex:1}
+.video-add-btn{padding:8px 14px;background:#3d2d6e;color:#c4b0f0;border:1px solid #5a4090;border-radius:4px;cursor:pointer;font-family:inherit;font-size:13px;white-space:nowrap;transition:background .2s}
+.video-add-btn:hover{background:#4d3d8e}
+.drive-btn{padding:8px 14px;background:transparent;color:#5ecbd8;border:1px solid #1e3a4a;border-radius:4px;cursor:pointer;font-family:inherit;font-size:13px;white-space:nowrap;transition:all .2s}
+.drive-btn:hover{background:#0e1e2a}
+.video-list{display:flex;flex-direction:column;gap:8px}
+.video-item{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:.75rem;display:flex;align-items:center;gap:10px}
+.video-icon{font-size:1.5rem;flex-shrink:0}
+.video-info{flex:1;min-width:0}
+.video-url{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.video-type{font-size:10px;color:var(--accent);letter-spacing:1px;margin-bottom:2px}
+.video-del{font-size:11px;padding:4px 10px;background:transparent;border:1px solid #4a2020;color:#e07070;cursor:pointer;border-radius:3px;font-family:inherit;flex-shrink:0}
+
 .btn-row{display:flex;gap:8px;flex-wrap:wrap}
 .btn{padding:9px 20px;font-size:13px;border-radius:4px;cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:all .2s;border:1px solid var(--border)}
-.btn-primary{background:#3d2d6e;color:#c4b0f0;border-color:#5a4090}
-.btn-primary:hover{background:#4d3d8e}
-.btn-danger{background:transparent;color:#e07070;border-color:#4a2020}
-.btn-danger:hover{background:#2a1010}
-.btn-ghost{background:transparent;color:var(--muted);border-color:var(--border)}
-.btn-ghost:hover{color:var(--text);background:var(--bg3)}
+.btn-primary{background:#3d2d6e;color:#c4b0f0;border-color:#5a4090}.btn-primary:hover{background:#4d3d8e}
+.btn-danger{background:transparent;color:#e07070;border-color:#4a2020}.btn-danger:hover{background:#2a1010}
+.btn-ghost{background:transparent;color:var(--muted);border-color:var(--border)}.btn-ghost:hover{color:var(--text);background:var(--bg3)}
 
-/* PRODUCT LIST */
 .product-list{display:flex;flex-direction:column;gap:8px}
-.product-row{
-  background:var(--bg2);border:1px solid var(--border);border-radius:6px;
-  display:flex;align-items:center;gap:12px;padding:.75rem 1rem;
-}
+.product-row{background:var(--bg2);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;gap:12px;padding:.75rem 1rem}
 .product-row-img{width:48px;height:48px;background:var(--bg3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden}
 .product-row-img img{width:100%;height:100%;object-fit:cover}
 .product-row-info{flex:1;min-width:0}
@@ -169,17 +140,23 @@ select option{background:var(--bg2)}
 .badge.hot{color:#9b85d8;border-color:#3a2848}
 .badge.sold{color:#d85a30;border-color:#3a2018}
 
-/* IMPORT */
 .import-area{border:2px dashed var(--border);border-radius:6px;padding:1.5rem;text-align:center;position:relative}
 .import-area input{position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:none;padding:0}
 .import-area p{font-size:13px;color:var(--muted)}
 .empty-list{text-align:center;padding:3rem;color:var(--muted)}
 .empty-list p{font-size:14px;line-height:1.8}
 
-/* TOAST */
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#1e2e1e;border:1px solid #2a4a2a;color:#80d080;padding:.75rem 1.25rem;font-size:13px;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:999}
 .toast.show{opacity:1}
 .toast.error{background:#2e1e1e;border-color:#4a2a2a;color:#d08080}
+
+/* DRIVE MODAL */
+.drive-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:300;padding:1rem}
+.drive-modal.show{display:flex}
+.drive-modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.5rem;max-width:500px;width:100%}
+.drive-modal-title{font-size:16px;color:#f0ebe0;margin-bottom:1rem;font-weight:300}
+.drive-modal-body{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:1.25rem}
+.drive-modal-actions{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -189,11 +166,9 @@ select option{background:var(--bg2)}
   <div class="login-box">
     <div class="login-logo">黑柴珠寶</div>
     <div class="login-title">後台管理登入</div>
-    <input type="password" id="pwInput" placeholder="輸入密碼" maxlength="20"
-      onkeydown="if(event.key==='Enter')doLogin()">
+    <input type="password" id="pwInput" placeholder="輸入密碼" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">登入</button>
-    <div class="login-error" id="loginError">密碼錯誤，請再試一次</div>
-    <div class="login-attempts" id="loginAttempts"></div>
+    <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
@@ -206,7 +181,7 @@ select option{background:var(--bg2)}
     <button class="nav-item" onclick="showPage('add',this)">➕ 新增商品</button>
     <button class="nav-item" onclick="showPage('list',this)">📦 商品列表</button>
     <div class="sidebar-sep"></div>
-    <button class="nav-item" onclick="showPage('export',this)">💾 匯出 / 備份</button>
+    <button class="nav-item" onclick="showPage('export',this)">💾 匯出備份</button>
     <div class="sidebar-sep"></div>
     <a class="sidebar-link" href="index.html" target="_blank">↗ 前台預覽</a>
     <button class="logout-btn" onclick="doLogout()">登出</button>
@@ -243,6 +218,7 @@ select option{background:var(--bg2)}
     <div class="page" id="page-add">
       <div class="page-title" id="formTitle">新增商品</div>
       <input type="hidden" id="editId" value="">
+
       <div class="form-section">
         <div class="form-section-title">基本資訊</div>
         <div class="form-row">
@@ -285,18 +261,50 @@ select option{background:var(--bg2)}
           </div>
         </div>
       </div>
-      <div class="form-section">
-        <div class="form-section-title">商品圖片</div>
-        <div class="img-upload-area">
-          <input type="file" accept="image/*" onchange="handleImgFile(this)">
-          <div class="img-upload-hint"><strong>📷</strong>點擊或拖曳上傳圖片<br><small style="color:var(--muted);font-size:11px">JPG / PNG · 建議正方形 · 2MB 以下</small></div>
-          <img id="imgPreview" class="img-preview">
+
+      <!-- MEDIA -->
+      <div class="media-section">
+        <div class="form-section-title">圖片與影片</div>
+        <div class="media-tabs">
+          <button class="media-tab active" onclick="switchMediaTab('images',this)">🖼 圖片</button>
+          <button class="media-tab" onclick="switchMediaTab('videos',this)">🎬 影片</button>
         </div>
-        <div style="margin-top:.75rem">
-          <label style="font-size:12px;color:var(--muted)">或貼上圖片網址</label>
-          <input type="text" id="f-image-url" placeholder="https://..." style="margin-top:6px" oninput="previewUrl(this.value)">
+
+        <!-- IMAGES TAB -->
+        <div id="tab-images">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">第一張為主圖。點圖片可設為主圖或刪除。</div>
+          <div class="img-grid" id="imgGrid">
+            <label class="img-upload-btn">
+              <input type="file" accept="image/*" multiple onchange="handleImgFiles(this)">
+              <span>＋</span>
+              <div style="font-size:10px">新增圖片</div>
+            </label>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:.5rem">
+            💡 圖片建議上傳到 <a href="https://imgbb.com" target="_blank" style="color:var(--accent)">imgbb.com</a> 後貼網址，避免換裝置圖片消失
+          </div>
+          <div style="margin-top:.75rem">
+            <label style="font-size:12px;color:var(--muted)">或貼上圖片網址（可多個，每行一個）</label>
+            <textarea id="f-img-urls" placeholder="https://i.ibb.co/xxx.jpg&#10;https://i.ibb.co/yyy.jpg" style="margin-top:6px;min-height:70px" oninput="syncUrlImages()"></textarea>
+          </div>
+        </div>
+
+        <!-- VIDEOS TAB -->
+        <div id="tab-videos" style="display:none">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">貼上影片網址，或從 Google Drive 選取</div>
+          <div class="video-input-wrap">
+            <input type="text" id="videoUrlInput" placeholder="YouTube / Google Drive / 其他影片網址">
+            <button class="video-add-btn" onclick="addVideoUrl()">新增</button>
+            <button class="drive-btn" onclick="openDrivePicker()">📁 Drive</button>
+          </div>
+          <div class="video-list" id="videoList"></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:.75rem;line-height:1.8">
+            💡 YouTube 支援 <code style="color:var(--accent)">youtube.com/watch?v=xxx</code><br>
+            💡 Drive 影片需設為「知道連結的人可以查看」
+          </div>
         </div>
       </div>
+
       <div class="btn-row">
         <button class="btn btn-primary" onclick="saveProduct()">儲存商品</button>
         <button class="btn btn-ghost" onclick="clearForm()">清除</button>
@@ -325,7 +333,7 @@ select option{background:var(--bg2)}
       <div class="page-title">匯出 / 備份</div>
       <div class="form-section">
         <div class="form-section-title">匯出商品資料</div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.7">將所有商品資料匯出為 JSON 檔案備份。</p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.7">將所有商品資料匯出為 JSON 備份。</p>
         <div class="btn-row">
           <button class="btn btn-primary" onclick="exportData()">下載 JSON 備份</button>
           <button class="btn btn-ghost" onclick="copyJson()">複製 JSON</button>
@@ -333,7 +341,7 @@ select option{background:var(--bg2)}
       </div>
       <div class="form-section">
         <div class="form-section-title">匯入商品資料</div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.7">上傳之前匯出的 JSON 檔案來還原。<strong style="color:#e07070">注意：會覆蓋現有資料</strong></p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">上傳 JSON 備份還原資料。<strong style="color:#e07070">注意：會覆蓋現有資料</strong></p>
         <div class="import-area">
           <input type="file" accept=".json" onchange="importData(this)">
           <p>點擊選擇 JSON 檔案</p>
@@ -347,245 +355,271 @@ select option{background:var(--bg2)}
   </main>
 </div>
 
+<!-- DRIVE HELP MODAL -->
+<div class="drive-modal" id="driveModal">
+  <div class="drive-modal-box">
+    <div class="drive-modal-title">📁 從 Google Drive 選取影片</div>
+    <div class="drive-modal-body" id="driveModalBody">連線中...</div>
+    <div class="drive-modal-actions" id="driveModalActions">
+      <button class="btn btn-ghost" onclick="closeDriveModal()">關閉</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
+<!-- Google APIs -->
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+
 <script>
-const PKEY = 'heichai_products';
-const OKEY = 'heichai_orders';
-const AKEY = 'heichai_auth';
-const PW_HASH = btoa('B@oPalC8');
-const MAX_ATTEMPTS = 5;
-const LOCK_MINUTES = 15;
-const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
+const PKEY='heichai_products', OKEY='heichai_orders', AKEY='heichai_auth';
+const PW_HASH=btoa('B@oPalC8');
+const MAX_ATTEMPTS=5, LOCK_MINUTES=15;
+const EMOJI={'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
+const GOOGLE_CLIENT_ID='73001971116-5rirhfs1p2qn5ojgieflo0el05chdefl.apps.googleusercontent.com';
+const GOOGLE_API_KEY='AIzaSyBeTF2DqTw19I67zzcz4amxXoi3KcmN4K8';
+const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.readonly';
+
+let currentImages=[], currentVideos=[], tokenClient=null, accessToken=null;
 
 /* ---- AUTH ---- */
-function getAttempts(){ try{ return JSON.parse(localStorage.getItem('heichai_attempts')||'{"count":0,"lockedUntil":0}'); }catch(e){ return {count:0,lockedUntil:0}; } }
-function saveAttempts(a){ localStorage.setItem('heichai_attempts', JSON.stringify(a)); }
+function getAttempts(){try{return JSON.parse(localStorage.getItem('heichai_attempts')||'{"count":0,"lockedUntil":0}');}catch(e){return{count:0,lockedUntil:0};}}
+function saveAttempts(a){localStorage.setItem('heichai_attempts',JSON.stringify(a));}
 
 function doLogin(){
-  const a = getAttempts();
-  if(a.lockedUntil > Date.now()){
-    const mins = Math.ceil((a.lockedUntil - Date.now())/60000);
-    document.getElementById('loginError').style.display='block';
-    document.getElementById('loginError').textContent=`帳號已鎖定，請 ${mins} 分鐘後再試`;
-    return;
-  }
-  const pw = document.getElementById('pwInput').value;
-  if(btoa(pw) === PW_HASH){
-    localStorage.setItem(AKEY, btoa(Date.now().toString()));
-    saveAttempts({count:0,lockedUntil:0});
-    showApp();
-  } else {
-    a.count++;
-    if(a.count >= MAX_ATTEMPTS){
-      a.lockedUntil = Date.now() + LOCK_MINUTES*60*1000;
-      a.count = 0;
-      document.getElementById('loginError').textContent=`錯誤次數過多，鎖定 ${LOCK_MINUTES} 分鐘`;
-    } else {
-      document.getElementById('loginError').textContent=`密碼錯誤（${a.count}/${MAX_ATTEMPTS} 次）`;
-    }
-    saveAttempts(a);
-    document.getElementById('loginError').style.display='block';
-    document.getElementById('pwInput').value='';
-  }
+  const a=getAttempts();
+  if(a.lockedUntil>Date.now()){const m=Math.ceil((a.lockedUntil-Date.now())/60000);showErr(`帳號鎖定中，請 ${m} 分鐘後再試`);return;}
+  const pw=document.getElementById('pwInput').value;
+  if(btoa(pw)===PW_HASH){localStorage.setItem(AKEY,btoa(Date.now().toString()));saveAttempts({count:0,lockedUntil:0});showApp();}
+  else{a.count++;if(a.count>=MAX_ATTEMPTS){a.lockedUntil=Date.now()+LOCK_MINUTES*60*1000;a.count=0;showErr(`錯誤次數過多，鎖定 ${LOCK_MINUTES} 分鐘`);}else{showErr(`密碼錯誤（${a.count}/${MAX_ATTEMPTS} 次）`);}saveAttempts(a);document.getElementById('pwInput').value='';}
 }
-
-function isLoggedIn(){
-  const t = localStorage.getItem(AKEY);
-  if(!t) return false;
-  const ts = parseInt(atob(t));
-  return (Date.now() - ts) < 8*60*60*1000; // 8小時 session
-}
-
-function showApp(){
-  document.getElementById('loginWrap').style.display='none';
-  document.getElementById('appWrap').classList.add('show');
-  renderDashboard();
-}
-
-function doLogout(){
-  localStorage.removeItem(AKEY);
-  location.reload();
-}
+function showErr(m){const e=document.getElementById('loginError');e.textContent=m;e.style.display='block';}
+function isLoggedIn(){const t=localStorage.getItem(AKEY);if(!t)return false;return(Date.now()-parseInt(atob(t)))<8*60*60*1000;}
+function showApp(){document.getElementById('loginWrap').style.display='none';document.getElementById('appWrap').classList.add('show');initGoogleAuth();renderDashboard();}
+function doLogout(){localStorage.removeItem(AKEY);location.reload();}
 
 /* ---- UTILS ---- */
-function getProducts(){ try{ return JSON.parse(localStorage.getItem(PKEY)||'[]'); }catch(e){ return []; } }
-function saveProducts(arr){ localStorage.setItem(PKEY, JSON.stringify(arr)); }
-function getOrders(){ try{ return JSON.parse(localStorage.getItem(OKEY)||'[]'); }catch(e){ return []; } }
-function saveOrders(arr){ localStorage.setItem(OKEY, JSON.stringify(arr)); }
+function getProducts(){try{return JSON.parse(localStorage.getItem(PKEY)||'[]');}catch(e){return[];}}
+function saveProducts(arr){localStorage.setItem(PKEY,JSON.stringify(arr));}
+function getOrders(){try{return JSON.parse(localStorage.getItem(OKEY)||'[]');}catch(e){return[];}}
+function saveOrders(arr){localStorage.setItem(OKEY,JSON.stringify(arr));}
+function showPage(name,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');if(btn)btn.classList.add('active');if(name==='dashboard')renderDashboard();if(name==='list')renderList();if(name==='orders')renderOrders();}
+function toast(msg,err=false){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show'+(err?' error':'');setTimeout(()=>el.classList.remove('show'),2800);}
 
-function showPage(name, btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  if(btn) btn.classList.add('active');
-  if(name==='dashboard') renderDashboard();
-  if(name==='list') renderList();
-  if(name==='orders') renderOrders();
+/* ---- MEDIA TABS ---- */
+function switchMediaTab(tab,btn){
+  document.querySelectorAll('.media-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-images').style.display=tab==='images'?'block':'none';
+  document.getElementById('tab-videos').style.display=tab==='videos'?'block':'none';
 }
 
-function toast(msg, err=false){
-  const el = document.getElementById('toast');
-  el.textContent=msg; el.className='toast show'+(err?' error':'');
-  setTimeout(()=>el.classList.remove('show'),2800);
+/* ---- IMAGES ---- */
+function handleImgFiles(input){
+  const files=Array.from(input.files);
+  files.forEach(file=>{
+    if(file.size>3*1024*1024){toast('圖片過大，請壓縮至 3MB 以下',true);return;}
+    const reader=new FileReader();
+    reader.onload=e=>{currentImages.push({src:e.target.result,type:'base64'});renderImgGrid();};
+    reader.readAsDataURL(file);
+  });
+  input.value='';
 }
+
+function syncUrlImages(){
+  const urls=document.getElementById('f-img-urls').value.split('\n').map(u=>u.trim()).filter(u=>u.startsWith('http'));
+  const urlImgs=currentImages.filter(i=>i.type==='url');
+  const b64Imgs=currentImages.filter(i=>i.type==='base64');
+  const newUrls=urls.map(u=>({src:u,type:'url'}));
+  currentImages=[...b64Imgs,...newUrls];
+  renderImgGrid();
+}
+
+function renderImgGrid(){
+  const grid=document.getElementById('imgGrid');
+  const thumbs=currentImages.map((img,i)=>`
+    <div class="img-thumb ${i===0?'primary':''}">
+      <img src="${img.src}" alt="">
+      <div class="img-actions">
+        ${i>0?`<button class="img-action-btn" onclick="setMainImg(${i})">主圖</button>`:''}
+        <button class="img-action-btn" onclick="removeImg(${i})" style="color:#e07070">刪除</button>
+      </div>
+    </div>`).join('');
+  grid.innerHTML=thumbs+`
+    <label class="img-upload-btn">
+      <input type="file" accept="image/*" multiple onchange="handleImgFiles(this)">
+      <span>＋</span>
+      <div style="font-size:10px">新增圖片</div>
+    </label>`;
+}
+
+function setMainImg(i){const img=currentImages.splice(i,1)[0];currentImages.unshift(img);renderImgGrid();}
+function removeImg(i){currentImages.splice(i,1);renderImgGrid();}
+
+/* ---- VIDEOS ---- */
+function addVideoUrl(){
+  const url=document.getElementById('videoUrlInput').value.trim();
+  if(!url){toast('請填入影片網址',true);return;}
+  addVideo(url);
+  document.getElementById('videoUrlInput').value='';
+}
+
+function addVideo(url){
+  let type='其他',icon='🎬';
+  if(url.includes('youtube.com')||url.includes('youtu.be')){type='YouTube';icon='▶️';}
+  else if(url.includes('drive.google.com')){type='Google Drive';icon='📁';}
+  currentVideos.push({url,type,icon});
+  renderVideoList();
+}
+
+function removeVideo(i){currentVideos.splice(i,1);renderVideoList();}
+
+function renderVideoList(){
+  const list=document.getElementById('videoList');
+  if(!currentVideos.length){list.innerHTML='<div style="font-size:13px;color:var(--muted);padding:.5rem 0">尚未新增影片</div>';return;}
+  list.innerHTML=currentVideos.map((v,i)=>`
+    <div class="video-item">
+      <div class="video-icon">${v.icon}</div>
+      <div class="video-info">
+        <div class="video-type">${v.type}</div>
+        <div class="video-url">${v.url}</div>
+      </div>
+      <button class="video-del" onclick="removeVideo(${i})">刪除</button>
+    </div>`).join('');
+}
+
+/* ---- GOOGLE DRIVE PICKER ---- */
+function initGoogleAuth(){
+  try{
+    tokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:GOOGLE_CLIENT_ID,
+      scope:DRIVE_SCOPE,
+      callback:(resp)=>{
+        if(resp.access_token){accessToken=resp.access_token;loadAndOpenPicker();}
+        else{toast('Google 授權失敗',true);closeDriveModal();}
+      }
+    });
+    gapi.load('picker',()=>{});
+  }catch(e){console.log('Google API 初始化失敗',e);}
+}
+
+function openDrivePicker(){
+  const body=document.getElementById('driveModalBody');
+  const actions=document.getElementById('driveModalActions');
+  document.getElementById('driveModal').classList.add('show');
+
+  if(accessToken){loadAndOpenPicker();return;}
+
+  body.innerHTML=`
+    <p>點下方按鈕用 Google 帳號授權，即可直接從 Drive 選取影片。</p>
+    <br>
+    <p style="color:#6a6470;font-size:12px">⚠️ 選取的影片需設為「知道連結的人可以查看」，前台才能播放。</p>`;
+  actions.innerHTML=`
+    <button class="btn btn-primary" onclick="requestDriveAccess()">🔑 Google 授權登入</button>
+    <button class="btn btn-ghost" onclick="closeDriveModal()">取消</button>`;
+}
+
+function requestDriveAccess(){
+  if(tokenClient)tokenClient.requestAccessToken({prompt:'consent'});
+  else toast('Google API 載入中，請稍後再試',true);
+}
+
+function loadAndOpenPicker(){
+  closeDriveModal();
+  gapi.load('picker',()=>{
+    const picker=new google.picker.PickerBuilder()
+      .addView(new google.picker.DocsView(google.picker.ViewId.DOCS_VIDEOS).setIncludeFolders(true))
+      .setOAuthToken(accessToken)
+      .setDeveloperKey(GOOGLE_API_KEY)
+      .setCallback(pickerCallback)
+      .setTitle('選取 Google Drive 影片')
+      .build();
+    picker.setVisible(true);
+  });
+}
+
+function pickerCallback(data){
+  if(data.action===google.picker.Action.PICKED){
+    const file=data.docs[0];
+    const driveUrl=`https://drive.google.com/file/d/${file.id}/preview`;
+    addVideo(driveUrl);
+    toast(`已新增影片：${file.name}`);
+  }
+}
+
+function closeDriveModal(){document.getElementById('driveModal').classList.remove('show');}
 
 /* ---- DASHBOARD ---- */
 function renderDashboard(){
-  const all = getProducts();
-  const orders = getOrders();
-  const stats=[
-    {num:all.length, label:'全部商品'},
-    {num:all.filter(p=>p.status!=='已售出').length, label:'販售中'},
-    {num:orders.filter(o=>o.status==='新訂單').length, label:'待處理訂單'},
-    {num:orders.filter(o=>o.status==='已付款').length, label:'已付款待出貨'}
-  ];
-  document.getElementById('statsRow').innerHTML=stats.map(s=>`
-    <div class="stat-card"><span class="stat-num">${s.num}</span><div class="stat-label">${s.label}</div></div>`).join('');
-
-  const recent = orders.slice(-5).reverse();
-  document.getElementById('recentOrders').innerHTML = recent.length
-    ? recent.map(o=>orderCardHtml(o)).join('')
-    : '<div class="empty-list"><p>還沒有訂單<br>顧客在前台下單後會出現在這裡</p></div>';
+  const all=getProducts(),orders=getOrders();
+  const stats=[{num:all.length,label:'全部商品'},{num:all.filter(p=>p.status!=='已售出').length,label:'販售中'},{num:orders.filter(o=>o.status==='新訂單').length,label:'待處理訂單'},{num:orders.filter(o=>o.status==='已付款').length,label:'已付款待出貨'}];
+  document.getElementById('statsRow').innerHTML=stats.map(s=>`<div class="stat-card"><span class="stat-num">${s.num}</span><div class="stat-label">${s.label}</div></div>`).join('');
+  const recent=orders.slice(-5).reverse();
+  document.getElementById('recentOrders').innerHTML=recent.length?recent.map(o=>orderCardHtml(o)).join(''):'<div class="empty-list"><p>還沒有訂單</p></div>';
 }
 
 /* ---- ORDERS ---- */
-const STATUS_LABELS = {'新訂單':'badge-new','已付款':'badge-paid','已出貨':'badge-shipped','已完成':'badge-done'};
-
+const STATUS_LABELS={'新訂單':'badge-new','已付款':'badge-paid','已出貨':'badge-shipped','已完成':'badge-done'};
 function orderCardHtml(o){
-  const badge = `<span class="badge-status ${STATUS_LABELS[o.status]||'badge-new'}">${o.status}</span>`;
-  const time = new Date(o.createdAt).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
-  return `
-    <div class="order-card" id="order-${o.id}">
-      <div class="order-header">
-        <div>
-          <div class="order-id">訂單 #${o.id.slice(-6).toUpperCase()} &nbsp; ${badge}</div>
-          <div class="order-time">${time}</div>
-        </div>
-      </div>
-      <div class="order-name">${o.buyerName} &nbsp;<span style="color:var(--muted);font-size:13px">${o.contact}</span></div>
-      <div class="order-product">商品：${o.productName} &nbsp; NT$${Number(o.price).toLocaleString()}</div>
-      ${o.address?`<div class="order-contact">收件地址：${o.address}</div>`:''}
-      ${o.note?`<div class="order-note">備註：${o.note}</div>`:''}
-      <div class="order-status">
-        <span style="font-size:12px;color:var(--muted);align-self:center">更新狀態：</span>
-        ${['已付款','已出貨','已完成'].map(s=>`
-          <button class="status-btn ${o.status===s?'active-status':''} ${s==='已付款'?'paid':s==='已出貨'?'shipped':'done'}"
-            onclick="updateOrderStatus('${o.id}','${s}')">${s}</button>`).join('')}
-        <button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}')">刪除</button>
-      </div>
-    </div>`;
+  const badge=`<span class="badge-status ${STATUS_LABELS[o.status]||'badge-new'}">${o.status}</span>`;
+  const time=new Date(o.createdAt).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  return `<div class="order-card">
+    <div class="order-header"><div><div class="order-id">訂單 #${o.id.slice(-6).toUpperCase()} &nbsp;${badge}</div><div class="order-time">${time}</div></div></div>
+    <div class="order-name">${o.buyerName} &nbsp;<span style="color:var(--muted);font-size:13px">${o.contact}</span></div>
+    <div class="order-product">商品：${o.productName} &nbsp;NT$${Number(o.price).toLocaleString()}</div>
+    ${o.address?`<div class="order-contact">地址：${o.address}</div>`:''}
+    ${o.note?`<div class="order-note">備註：${o.note}</div>`:''}
+    <div class="order-status">
+      <span style="font-size:12px;color:var(--muted);align-self:center">更新：</span>
+      ${['已付款','已出貨','已完成'].map(s=>`<button class="status-btn ${s==='已付款'?'paid':s==='已出貨'?'shipped':'done'} ${o.status===s?'active-status':''}" onclick="updateOrderStatus('${o.id}','${s}')">${s}</button>`).join('')}
+      <button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}')">刪除</button>
+    </div>
+  </div>`;
 }
-
-function renderOrders(){
-  const f = document.getElementById('orderFilter')?.value||'all';
-  let list = getOrders().slice().reverse();
-  if(f!=='all') list=list.filter(o=>o.status===f);
-  document.getElementById('orderList').innerHTML = list.length
-    ? list.map(o=>orderCardHtml(o)).join('')
-    : '<div class="empty-list"><p>沒有符合的訂單</p></div>';
-}
-
-function updateOrderStatus(id, status){
-  const orders = getOrders();
-  const o = orders.find(x=>x.id===id);
-  if(o){ o.status=status; saveOrders(orders); toast(`訂單狀態已更新為「${status}」`); renderOrders(); renderDashboard(); }
-}
-
-function deleteOrder(id){
-  if(!confirm('確定刪除這筆訂單？')) return;
-  saveOrders(getOrders().filter(o=>o.id!==id));
-  toast('訂單已刪除'); renderOrders(); renderDashboard();
-}
-
-function clearOrders(){
-  if(!confirm('確定清除所有「已完成」的訂單？')) return;
-  saveOrders(getOrders().filter(o=>o.status!=='已完成'));
-  toast('已清除完成訂單'); renderOrders();
-}
+function renderOrders(){const f=document.getElementById('orderFilter')?.value||'all';let list=getOrders().slice().reverse();if(f!=='all')list=list.filter(o=>o.status===f);document.getElementById('orderList').innerHTML=list.length?list.map(o=>orderCardHtml(o)).join(''):'<div class="empty-list"><p>沒有符合的訂單</p></div>';}
+function updateOrderStatus(id,status){const orders=getOrders();const o=orders.find(x=>x.id===id);if(o){o.status=status;saveOrders(orders);toast(`狀態已更新為「${status}」`);renderOrders();renderDashboard();}}
+function deleteOrder(id){if(!confirm('確定刪除？'))return;saveOrders(getOrders().filter(o=>o.id!==id));toast('訂單已刪除');renderOrders();renderDashboard();}
+function clearOrders(){if(!confirm('確定清除所有已完成訂單？'))return;saveOrders(getOrders().filter(o=>o.status!=='已完成'));toast('已清除完成訂單');renderOrders();}
 
 /* ---- PRODUCTS ---- */
-function renderList(){
-  const catF = document.getElementById('listFilter')?.value||'all';
-  const stF = document.getElementById('statusFilter')?.value||'all';
-  let list = getProducts();
-  if(catF!=='all') list=list.filter(p=>p.category===catF);
-  if(stF!=='all') list=list.filter(p=>p.status===stF);
-  document.getElementById('productList').innerHTML = list.length
-    ? list.map(p=>productRowHtml(p)).join('')
-    : '<div class="empty-list"><p>這個篩選條件沒有商品</p></div>';
-}
-
-function productRowHtml(p){
-  const img = p.image?`<img src="${p.image}" alt="${p.name}">`:`<span>${EMOJI[p.category]||'💎'}</span>`;
-  const badge = p.status==='熱門'?`<span class="badge hot">熱門</span>`:p.status==='已售出'?`<span class="badge sold">已售出</span>`:'';
-  return `
-    <div class="product-row">
-      <div class="product-row-img">${img}</div>
-      <div class="product-row-info">
-        <div class="product-row-name">${p.name}</div>
-        <div class="product-row-meta">${p.category||''} ${badge}</div>
-      </div>
-      <div class="product-row-price">NT$${Number(p.price).toLocaleString()}</div>
-      <div class="product-row-actions">
-        <button class="icon-btn" onclick="editProduct('${p.id}')">編輯</button>
-        <button class="icon-btn del" onclick="deleteById('${p.id}')">刪除</button>
-      </div>
-    </div>`;
-}
-
 function clearForm(){
-  ['f-name','f-price','f-desc','f-tags','f-image-url'].forEach(id=>document.getElementById(id).value='');
+  ['f-name','f-price','f-desc','f-tags','f-img-urls','videoUrlInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f-category').value='';
   document.getElementById('f-status').value='販售中';
   document.getElementById('editId').value='';
-  document.getElementById('imgPreview').style.display='none';
-  document.getElementById('imgPreview').src='';
   document.getElementById('deleteBtn').style.display='none';
   document.getElementById('formTitle').textContent='新增商品';
-}
-
-function handleImgFile(input){
-  const file=input.files[0]; if(!file) return;
-  if(file.size>3*1024*1024){ toast('圖片過大，請壓縮至 3MB 以下',true); return; }
-  const reader=new FileReader();
-  reader.onload=e=>{ const p=document.getElementById('imgPreview'); p.src=e.target.result; p.style.display='block'; document.getElementById('f-image-url').value=''; };
-  reader.readAsDataURL(file);
-}
-
-function previewUrl(url){
-  const p=document.getElementById('imgPreview');
-  if(url){ p.src=url; p.style.display='block'; } else { p.style.display='none'; }
-}
-
-function getImageData(){
-  const p=document.getElementById('imgPreview');
-  return p.style.display==='none'?'': p.src||document.getElementById('f-image-url').value||'';
+  currentImages=[];currentVideos=[];
+  renderImgGrid();renderVideoList();
 }
 
 function saveProduct(){
   const name=document.getElementById('f-name').value.trim();
   const cat=document.getElementById('f-category').value;
   const price=document.getElementById('f-price').value;
-  if(!name){ toast('請填入商品名稱',true); return; }
-  if(!cat){ toast('請選擇商品分類',true); return; }
-  if(!price){ toast('請填入售價',true); return; }
+  if(!name){toast('請填入商品名稱',true);return;}
+  if(!cat){toast('請選擇商品分類',true);return;}
+  if(!price){toast('請填入售價',true);return;}
   const all=getProducts();
   const editId=document.getElementById('editId').value;
   const product={
-    id: editId||Date.now().toString(), name, category:cat,
-    price:Number(price), status:document.getElementById('f-status').value,
+    id:editId||Date.now().toString(),name,category:cat,price:Number(price),
+    status:document.getElementById('f-status').value,
     description:document.getElementById('f-desc').value.trim(),
     tags:document.getElementById('f-tags').value.trim(),
-    image:getImageData(), updatedAt:new Date().toISOString()
+    images:currentImages,
+    videos:currentVideos,
+    image:currentImages[0]?.src||'',
+    updatedAt:new Date().toISOString()
   };
-  if(editId){ const idx=all.findIndex(p=>p.id===editId); if(idx>=0) all[idx]=product; else all.push(product); toast('商品已更新 ✓'); }
-  else { product.createdAt=product.updatedAt; all.push(product); toast('商品已新增 ✓'); }
-  saveProducts(all); clearForm();
+  if(editId){const idx=all.findIndex(p=>p.id===editId);if(idx>=0)all[idx]=product;else all.push(product);toast('商品已更新 ✓');}
+  else{product.createdAt=product.updatedAt;all.push(product);toast('商品已新增 ✓');}
+  saveProducts(all);clearForm();
 }
 
 function editProduct(id){
-  const p=getProducts().find(x=>x.id===id); if(!p) return;
+  const p=getProducts().find(x=>x.id===id);if(!p)return;
   showPage('add',document.querySelector('.nav-item:nth-child(4)'));
   document.getElementById('editId').value=p.id;
   document.getElementById('f-name').value=p.name||'';
@@ -594,47 +628,50 @@ function editProduct(id){
   document.getElementById('f-status').value=p.status||'販售中';
   document.getElementById('f-desc').value=p.description||'';
   document.getElementById('f-tags').value=p.tags||'';
-  if(p.image){ const prev=document.getElementById('imgPreview'); prev.src=p.image; prev.style.display='block'; }
+  currentImages=p.images||[];
+  currentVideos=p.videos||[];
+  if(!currentImages.length&&p.image)currentImages=[{src:p.image,type:'url'}];
+  const urlImgs=currentImages.filter(i=>i.type==='url').map(i=>i.src).join('\n');
+  document.getElementById('f-img-urls').value=urlImgs;
+  renderImgGrid();renderVideoList();
   document.getElementById('deleteBtn').style.display='inline-block';
   document.getElementById('formTitle').textContent='編輯商品';
   window.scrollTo(0,0);
 }
 
-function deleteProduct(){ const id=document.getElementById('editId').value; if(id) deleteById(id); }
+function deleteProduct(){const id=document.getElementById('editId').value;if(id)deleteById(id);}
+function deleteById(id){if(!confirm('確定要刪除？'))return;saveProducts(getProducts().filter(p=>p.id!==id));toast('商品已刪除');clearForm();renderList();}
 
-function deleteById(id){
-  if(!confirm('確定要刪除這個商品嗎？')) return;
-  saveProducts(getProducts().filter(p=>p.id!==id));
-  toast('商品已刪除'); clearForm(); renderList();
+function renderList(){
+  const catF=document.getElementById('listFilter')?.value||'all';
+  const stF=document.getElementById('statusFilter')?.value||'all';
+  let list=getProducts();
+  if(catF!=='all')list=list.filter(p=>p.category===catF);
+  if(stF!=='all')list=list.filter(p=>p.status===stF);
+  const firstImg=p=>(p.images&&p.images[0])?p.images[0].src:(p.image||'');
+  document.getElementById('productList').innerHTML=list.length?list.map(p=>{
+    const img=firstImg(p);
+    const badge=p.status==='熱門'?`<span class="badge hot">熱門</span>`:p.status==='已售出'?`<span class="badge sold">已售出</span>`:'';
+    return `<div class="product-row">
+      <div class="product-row-img">${img?`<img src="${img}" alt="">`:`<span>${EMOJI[p.category]||'💎'}</span>`}</div>
+      <div class="product-row-info"><div class="product-row-name">${p.name}</div><div class="product-row-meta">${p.category||''} ${badge} ${p.images?.length>1?`<span style="color:var(--accent)">·${p.images.length}張圖</span>`:''} ${p.videos?.length?`<span style="color:#5ecbd8">·${p.videos.length}部影片</span>`:''}</div></div>
+      <div class="product-row-price">NT$${Number(p.price).toLocaleString()}</div>
+      <div class="product-row-actions"><button class="icon-btn" onclick="editProduct('${p.id}')">編輯</button><button class="icon-btn del" onclick="deleteById('${p.id}')">刪除</button></div>
+    </div>`;
+  }).join(''):'<div class="empty-list"><p>這個篩選條件沒有商品</p></div>';
 }
 
-function exportData(){
-  const data=JSON.stringify(getProducts(),null,2);
-  const blob=new Blob([data],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download='heichai-products-'+new Date().toISOString().slice(0,10)+'.json';
-  a.click(); URL.revokeObjectURL(url); toast('已下載備份檔案');
-}
-
-function copyJson(){ navigator.clipboard.writeText(JSON.stringify(getProducts(),null,2)).then(()=>toast('已複製 JSON')); }
-
-function importData(input){
-  const file=input.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=e=>{ try{ const arr=JSON.parse(e.target.result); if(!Array.isArray(arr)) throw new Error(); saveProducts(arr); toast(`已匯入 ${arr.length} 件商品 ✓`); }catch(err){ toast('JSON 格式錯誤',true); } };
-  reader.readAsText(file);
-}
-
-function clearAll(){
-  if(!confirm('確定要清除所有商品？此動作無法復原！')) return;
-  localStorage.removeItem(PKEY); toast('已清除所有商品'); renderDashboard();
-}
+/* ---- EXPORT ---- */
+function exportData(){const data=JSON.stringify(getProducts(),null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='heichai-products-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);toast('已下載備份');}
+function copyJson(){navigator.clipboard.writeText(JSON.stringify(getProducts(),null,2)).then(()=>toast('已複製 JSON'));}
+function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const arr=JSON.parse(e.target.result);if(!Array.isArray(arr))throw new Error();saveProducts(arr);toast(`已匯入 ${arr.length} 件商品 ✓`);}catch(err){toast('JSON 格式錯誤',true);}};reader.readAsText(file);}
+function clearAll(){if(!confirm('確定要清除所有商品？'))return;localStorage.removeItem(PKEY);toast('已清除');renderDashboard();}
 
 /* ---- INIT ---- */
-document.addEventListener('DOMContentLoaded', ()=>{
-  if(isLoggedIn()) showApp();
-  document.getElementById('pwInput')?.focus();
+document.addEventListener('DOMContentLoaded',()=>{
+  if(isLoggedIn())showApp();
+  else document.getElementById('pwInput')?.focus();
+  renderImgGrid();renderVideoList();
 });
 </script>
 </body>
