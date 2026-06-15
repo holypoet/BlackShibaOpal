@@ -263,6 +263,184 @@ select option{background:var(--bg2)}
         </div>
       </div>
 
+      <!-- 商業規格 -->
+      <div class="form-section">
+        <div class="form-section-title">商業規格</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>國家 Country</label>
+            <input type="text" id="f-country" placeholder="例：Australia / Brazil / Ethiopia">
+          </div>
+          <div class="form-group">
+            <label>產地 Location（州／省／市／鄉／鎮）</label>
+            <input type="text" id="f-origin" placeholder="例：Lightning Ridge, New South Wales">
+          </div>
+          <div class="form-group">
+            <label>庫存數量</label>
+            <input type="number" id="f-stock" placeholder="例：1" min="0">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>重量（克拉 ct）</label>
+            <input type="text" id="f-weight" placeholder="例：3.25 ct">
+          </div>
+          <div class="form-group">
+            <label>尺寸（mm）</label>
+            <input type="text" id="f-size" placeholder="例：12.5 × 9.3 × 4.2 mm">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>礦權地 Claim</label>
+            <input type="text" id="f-claim" placeholder="例：Pitorra Claim">
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label>照片來源</label>
+            <select id="f-photo-source">
+              <option value="">選擇照片來源</option>
+              <option value="自行拍攝">自行拍攝</option>
+              <option value="礦場提供">礦場提供</option>
+              <option value="供應商提供">供應商提供</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAA 鑑定 -->
+      <div class="form-section">
+        <div class="form-section-title">GAA 鑑定資訊</div>
+
+        <!-- 種類 Variety -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>種類 Variety</label>
+            <select id="f-variety" onchange="updateVarietyFields()">
+              <option value="">選擇種類</option>
+              <option value="天然蛋白石 Natural Opal">天然蛋白石 Natural Opal</option>
+              <option value="拼合蛋白石 Composite">拼合蛋白石 Composite</option>
+              <option value="合成蛋白石 Synthetic">合成蛋白石 Synthetic</option>
+              <option value="仿製品 Imitation/Simulant">仿製品 Imitation/Simulant</option>
+            </select>
+          </div>
+          <div class="form-group" id="natural-subtype-wrap">
+            <label>天然細分類型</label>
+            <select id="f-natural-subtype">
+              <option value="">選擇細分類型</option>
+              <option value="純體蛋白石 Solid Opal">純體蛋白石 Solid Opal</option>
+              <option value="附著母岩 on host rock">附著母岩 on host rock</option>
+              <option value="包覆母岩 in host rock">包覆母岩 in host rock</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 拼合/合成/仿製 備註 -->
+        <div class="form-row full" id="composite-wrap" style="display:none">
+          <div class="form-group">
+            <label>拼合類型說明 Composite Type</label>
+            <select id="f-composite-type">
+              <option value="">選擇拼合類型</option>
+              <option value="雙層石 Doublet">雙層石 Doublet</option>
+              <option value="三層石 Triplet">三層石 Triplet</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row full" id="synthetic-wrap" style="display:none">
+          <div class="form-group">
+            <label>製造商 / 商品名稱 Manufacturer / Trade Name</label>
+            <input type="text" id="f-synthetic-info" placeholder="例：Gilson Opal / Aurora Opal">
+          </div>
+        </div>
+        <div class="form-row full" id="imitation-wrap" style="display:none">
+          <div class="form-group">
+            <label>仿製品材質說明 Materials / Composition</label>
+            <input type="text" id="f-imitation-info" placeholder="例：玻璃、Opalite">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- 吸水性 -->
+          <div class="form-group">
+            <label>吸水性 Absorbency</label>
+            <select id="f-absorbency">
+              <option value="">選擇吸水性</option>
+              <option value="不透水 Impermeable">不透水 Impermeable</option>
+              <option value="具吸水性 Hydrophane（水蛋白石）">具吸水性 Hydrophane（水蛋白石）</option>
+            </select>
+          </div>
+          <!-- 遊彩 -->
+          <div class="form-group">
+            <label>遊彩 Play of Colour</label>
+            <select id="f-play-of-colour">
+              <option value="">選擇遊彩類型</option>
+              <option value="貴蛋白石 Precious Opal（有遊彩）">貴蛋白石 Precious Opal（有遊彩）</option>
+              <option value="普通蛋白石 Common Opal（無遊彩）">普通蛋白石 Common Opal（無遊彩）</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- 體色 Body Tone -->
+          <div class="form-group">
+            <label>體色 Body Tone</label>
+            <select id="f-body-tone">
+              <option value="">選擇體色</option>
+              <optgroup label="黑色 Black（N1–N4）">
+                <option value="N1 黑色">N1 黑色</option>
+                <option value="N2 黑色">N2 黑色</option>
+                <option value="N3 黑色">N3 黑色</option>
+                <option value="N4 黑色">N4 黑色</option>
+              </optgroup>
+              <optgroup label="深色 Dark（N5–N6）">
+                <option value="N5 深色">N5 深色</option>
+                <option value="N6 深色">N6 深色</option>
+              </optgroup>
+              <optgroup label="淺色 Light（N7–N8）">
+                <option value="N7 淺色">N7 淺色</option>
+                <option value="N8 淺色">N8 淺色</option>
+              </optgroup>
+              <optgroup label="白色 White（N9）">
+                <option value="N9 白色">N9 白色</option>
+              </optgroup>
+            </select>
+          </div>
+          <!-- 透明度 -->
+          <div class="form-group">
+            <label>透明度 Diaphaneity</label>
+            <select id="f-diaphaneity">
+              <option value="">選擇透明度</option>
+              <option value="不透明 Opaque">不透明 Opaque</option>
+              <option value="半透明 Translucent">半透明 Translucent</option>
+              <option value="透明 Transparent">透明 Transparent</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 優化處理 -->
+        <div class="form-row full">
+          <div class="form-group">
+            <label>優化處理 Treatment</label>
+            <select id="f-treatment">
+              <option value="">選擇處理狀態</option>
+              <option value="未處理 No Treatment">未處理 No Treatment</option>
+              <option value="煙燻處理 Smoke Treatment">煙燻處理 Smoke Treatment</option>
+              <option value="糖處理 Sugar Treatment">糖處理 Sugar Treatment</option>
+              <option value="油浸／灌膠 Impregnation">油浸／灌膠 Impregnation</option>
+              <option value="染色 Dyeing">染色 Dyeing</option>
+              <option value="不明 Unknown">不明 Unknown</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row full" id="treatment-detail-wrap" style="display:none">
+          <div class="form-group">
+            <label>處理說明補充</label>
+            <input type="text" id="f-treatment-detail" placeholder="補充說明處理方式或程度">
+          </div>
+        </div>
+      </div>
+
       <!-- MEDIA -->
       <div class="media-section">
         <div class="form-section-title">圖片與影片</div>
@@ -585,13 +763,15 @@ function clearOrders(){if(!confirm('確定清除所有已完成訂單？'))retur
 
 /* ---- PRODUCTS ---- */
 function clearForm(){
-  ['f-name','f-price','f-desc','f-tags','f-img-urls','videoUrlInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('f-category').value='';
+  ['f-name','f-price','f-desc','f-tags','f-img-urls','videoUrlInput','f-weight','f-size','f-country','f-claim','f-synthetic-info','f-imitation-info','f-treatment-detail'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-category','f-status','f-origin','f-photo-source','f-variety','f-natural-subtype','f-composite-type','f-absorbency','f-play-of-colour','f-body-tone','f-diaphaneity','f-treatment'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f-status').value='販售中';
+  document.getElementById('f-stock').value='';
   document.getElementById('editId').value='';
   document.getElementById('deleteBtn').style.display='none';
   document.getElementById('formTitle').textContent='新增商品';
   currentImages=[];currentVideos=[];
+  updateVarietyFields();
   renderImgGrid();renderVideoList();
 }
 
@@ -604,11 +784,32 @@ function saveProduct(){
   if(!price){toast('請填入售價',true);return;}
   const all=getProducts();
   const editId=document.getElementById('editId').value;
+  const gv=id=>document.getElementById(id)?.value||'';
   const product={
     id:editId||Date.now().toString(),name,category:cat,price:Number(price),
-    status:document.getElementById('f-status').value,
-    description:document.getElementById('f-desc').value.trim(),
-    tags:document.getElementById('f-tags').value.trim(),
+    status:gv('f-status'),
+    description:gv('f-desc').trim(),
+    tags:gv('f-tags').trim(),
+    // 商業規格
+    country:gv('f-country'),
+    origin:gv('f-origin'),
+    claim:gv('f-claim'),
+    stock:document.getElementById('f-stock')?.value||'',
+    weight:gv('f-weight'),
+    size:gv('f-size'),
+    photoSource:gv('f-photo-source'),
+    // GAA鑑定
+    variety:gv('f-variety'),
+    naturalSubtype:gv('f-natural-subtype'),
+    compositeType:gv('f-composite-type'),
+    syntheticInfo:gv('f-synthetic-info'),
+    imitationInfo:gv('f-imitation-info'),
+    absorbency:gv('f-absorbency'),
+    playOfColour:gv('f-play-of-colour'),
+    bodyTone:gv('f-body-tone'),
+    diaphaneity:gv('f-diaphaneity'),
+    treatment:gv('f-treatment'),
+    treatmentDetail:gv('f-treatment-detail'),
     images:currentImages,
     videos:currentVideos,
     image:currentImages[0]?.src||'',
@@ -629,6 +830,15 @@ function editProduct(id){
   document.getElementById('f-status').value=p.status||'販售中';
   document.getElementById('f-desc').value=p.description||'';
   document.getElementById('f-tags').value=p.tags||'';
+  // 商業規格
+  const sv=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+  sv('f-country',p.country);sv('f-origin',p.origin);sv('f-claim',p.claim);sv('f-stock',p.stock);sv('f-weight',p.weight);sv('f-size',p.size);sv('f-photo-source',p.photoSource);
+  // GAA鑑定
+  sv('f-variety',p.variety);sv('f-natural-subtype',p.naturalSubtype);sv('f-composite-type',p.compositeType);
+  sv('f-synthetic-info',p.syntheticInfo);sv('f-imitation-info',p.imitationInfo);
+  sv('f-absorbency',p.absorbency);sv('f-play-of-colour',p.playOfColour);sv('f-body-tone',p.bodyTone);
+  sv('f-diaphaneity',p.diaphaneity);sv('f-treatment',p.treatment);sv('f-treatment-detail',p.treatmentDetail);
+  updateVarietyFields();
   currentImages=p.images||[];
   currentVideos=p.videos||[];
   if(!currentImages.length&&p.image)currentImages=[{src:p.image,type:'url'}];
@@ -667,6 +877,26 @@ function exportData(){const data=JSON.stringify(getProducts(),null,2);const blob
 function copyJson(){navigator.clipboard.writeText(JSON.stringify(getProducts(),null,2)).then(()=>toast('已複製 JSON'));}
 function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const arr=JSON.parse(e.target.result);if(!Array.isArray(arr))throw new Error();saveProducts(arr);toast(`已匯入 ${arr.length} 件商品 ✓`);}catch(err){toast('JSON 格式錯誤',true);}};reader.readAsText(file);}
 function clearAll(){if(!confirm('確定要清除所有商品？'))return;localStorage.removeItem(PKEY);toast('已清除');renderDashboard();}
+
+/* ---- VARIETY & TREATMENT FIELDS ---- */
+function updateVarietyFields(){
+  const v=document.getElementById('f-variety')?.value||'';
+  const isNatural=v.includes('Natural');
+  const isComposite=v.includes('Composite');
+  const isSynthetic=v.includes('Synthetic');
+  const isImitation=v.includes('Imitation');
+  document.getElementById('natural-subtype-wrap').style.display=isNatural?'flex':'none';
+  document.getElementById('composite-wrap').style.display=isComposite?'grid':'none';
+  document.getElementById('synthetic-wrap').style.display=isSynthetic?'grid':'none';
+  document.getElementById('imitation-wrap').style.display=isImitation?'grid':'none';
+}
+document.addEventListener('change',e=>{
+  if(e.target.id==='f-treatment'){
+    const v=e.target.value;
+    const needDetail=v&&!v.includes('未處理')&&!v.includes('不明');
+    document.getElementById('treatment-detail-wrap').style.display=needDetail?'grid':'none';
+  }
+});
 
 /* ---- INIT ---- */
 document.addEventListener('DOMContentLoaded',()=>{
