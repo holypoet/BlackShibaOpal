@@ -780,11 +780,11 @@ async function renderDashboard(){
 const STATUS_LABELS={'新訂單':'badge-new','已付款':'badge-paid','已出貨':'badge-shipped','已完成':'badge-done'};
 function orderCardHtml(o){
   const badge=`<span class="badge-status ${STATUS_LABELS[o.status]||'badge-new'}">${o.status}</span>`;
-  const time=new Date(o.createdAt).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  const time=new Date(o.created_at || o.createdAt).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
   return `<div class="order-card">
     <div class="order-header"><div><div class="order-id">訂單 #${(o.id||'').toString().slice(-6).toUpperCase()} &nbsp;${badge}</div><div class="order-time">${time}</div></div></div>
-    <div class="order-name">${o.buyerName} &nbsp;<span style="color:var(--muted);font-size:13px">${o.contact}</span></div>
-    <div class="order-product">商品：${o.productName} &nbsp;NT$${Number(o.price).toLocaleString()}</div>
+    <div class="order-name">${o.buyer_name || o.buyerName} &nbsp;<span style="color:var(--muted);font-size:13px">${o.contact}</span></div>
+    <div class="order-product">商品：${o.product_name || o.productName} &nbsp;NT$${Number(o.price).toLocaleString()}</div>
     ${o.address?`<div class="order-contact">地址：${o.address}</div>`:''}
     ${o.note?`<div class="order-note">備註：${o.note}</div>`:''}
     <div class="order-status">
@@ -846,7 +846,7 @@ function saveProduct(){
   const editId=document.getElementById('editId').value;
   const gv=id=>document.getElementById(id)?.value||'';
   
-  // 準備送給資料庫的資料（不自帶 ID，讓 Supabase 處理）
+  // 準備送給資料庫的資料（全數對齊 Supabase 的 snake_case 標準命名）
   const product={
     name, category:cat, price:Number(price),
     status:gv('f-status'),
@@ -858,18 +858,18 @@ function saveProduct(){
     stock:Number(document.getElementById('f-stock')?.value||0),
     weight:gv('f-weight'),
     size:gv('f-size'),
-    photoSource:gv('f-photo-source'),
+    photo_source:gv('f-photo-source'),
     variety:gv('f-variety'),
-    naturalSubtype:gv('f-natural-subtype'),
-    compositeType:gv('f-composite-type'),
-    syntheticInfo:gv('f-synthetic-info'),
-    imitationInfo:gv('f-imitation-info'),
+    natural_subtype:gv('f-natural-subtype'),
+    composite_type:gv('f-composite-type'),
+    synthetic_info:gv('f-synthetic-info'),
+    imitation_info:gv('f-imitation-info'),
     absorbency:gv('f-absorbency'),
-    playOfColour:gv('f-play-of-colour'),
-    bodyTone:gv('f-body-tone'),
+    play_of_colour:gv('f-play-of-colour'),
+    body_tone:gv('f-body-tone'),
     diaphaneity:gv('f-diaphaneity'),
     treatment:gv('f-treatment'),
-    treatmentDetail:gv('f-treatment-detail'),
+    treatment_detail:gv('f-treatment-detail'),
     images:currentImages,
     videos:currentVideos,
     image:currentImages[0]?.src||''
@@ -925,12 +925,21 @@ async function editProduct(id){
   if(p.country && knownVals.includes(p.country)){cs.value=p.country;ci.style.display='none';ci.value='';}
   else if(p.country){cs.value='__other__';ci.style.display='block';ci.value=p.country;}
   else{cs.value='';ci.style.display='none';ci.value='';}
-  sv('f-origin',p.origin);sv('f-claim',p.claim);sv('f-stock',p.stock);sv('f-weight',p.weight);sv('f-size',p.size);sv('f-photo-source',p.photoSource);
-  // GAA鑑定
-  sv('f-variety',p.variety);sv('f-natural-subtype',p.naturalSubtype);sv('f-composite-type',p.compositeType);
-  sv('f-synthetic-info',p.syntheticInfo);sv('f-imitation-info',p.imitationInfo);
-  sv('f-absorbency',p.absorbency);sv('f-play-of-colour',p.playOfColour);sv('f-body-tone',p.bodyTone);
-  sv('f-diaphaneity',p.diaphaneity);sv('f-treatment',p.treatment);sv('f-treatment-detail',p.treatmentDetail);
+  sv('f-origin',p.origin);sv('f-claim',p.claim);sv('f-stock',p.stock);sv('f-weight',p.weight);sv('f-size',p.size);
+  // GAA鑑定與其他蛇形命名對齊載入
+  sv('f-photo-source',p.photo_source);
+  sv('f-variety',p.variety);
+  sv('f-natural-subtype',p.natural_subtype);
+  sv('f-composite-type',p.composite_type);
+  sv('f-synthetic-info',p.synthetic_info);
+  sv('f-imitation-info',p.imitation_info);
+  sv('f-absorbency',p.absorbency);
+  sv('f-play-of-colour',p.play_of_colour);
+  sv('f-body-tone',p.body_tone);
+  sv('f-diaphaneity',p.diaphaneity);
+  sv('f-treatment',p.treatment);
+  sv('f-treatment-detail',p.treatment_detail);
+  
   updateVarietyFields();
   currentImages=p.images||[];
   currentVideos=p.videos||[];
