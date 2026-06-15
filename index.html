@@ -62,6 +62,7 @@ nav a:hover{color:var(--text)}
 .card-price{font-size:12px;color:var(--accent)}
 .card-status{position:absolute;top:6px;right:6px;font-size:9px;letter-spacing:1px;padding:2px 7px;background:var(--bg);border:1px solid var(--border);color:var(--muted)}
 .card-status.sold{color:#d85a30;border-color:#3a2018}
+.card-status.reserved{color:#e0c050;border-color:#4a4010}
 .card-status.hot{color:#9b85d8;border-color:#3a2848}
 
 /* MODAL */
@@ -300,7 +301,7 @@ async function render(){
     const imgHtml=p.image
       ?`<img src="${p.image}" alt="${p.name}" loading="lazy"><span class="placeholder" style="display:none">${EMOJI[p.category]||'💎'}</span>`
       :`<span class="placeholder">${EMOJI[p.category]||'💎'}</span>`;
-    const statusHtml=p.status==='已售出'?`<span class="card-status sold">已售出</span>`:p.status==='熱門'?`<span class="card-status hot">熱門</span>`:'';
+    const statusHtml=p.status==='已售出'?`<span class="card-status sold">已售出</span>`:p.status==='已預定'?`<span class="card-status reserved">已預定</span>`:p.status==='熱門'?`<span class="card-status hot">熱門</span>`:'';
     return `
       <div class="card" onclick="openModal(${i})">
         <div class="card-img">${imgHtml}${statusHtml}</div>
@@ -318,7 +319,7 @@ function openModal(idx){
   if(!p) return;
   currentProduct=p;
   
-  const isSold=p.status==='已售出';
+  const isSold=p.status==='已售出'||p.status==='已預定';
   // 多圖輪播
   const imgs=Array.isArray(p.images)&&p.images.length?p.images:(p.image?[{src:p.image}]:[]);
   const sliderHtml=imgs.length>0?`
@@ -387,7 +388,7 @@ function openModal(idx){
       <div class="detail-panel" id="dtab2">${tab3}</div>
 
       ${isSold
-        ?`<button class="modal-cta sold-out" disabled style="margin-top:1rem">此商品已售出</button>`
+        ?`<button class="modal-cta sold-out" disabled style="margin-top:1rem">${p.status==='已預定'?'此商品已被預定':'此商品已售出'}</button>`
         :`<button class="modal-cta" onclick="toggleOrderForm()" style="margin-top:1rem">📦 我要購買</button>`
       }
       <div class="order-form" id="orderForm">
