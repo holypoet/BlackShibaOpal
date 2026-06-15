@@ -563,13 +563,35 @@ select option{background:var(--bg2)}
 <script src="https://accounts.google.com/gsi/client"></script>
 
 <script>
-const PKEY='heichai_products', OKEY='heichai_orders', AKEY='heichai_auth';
+const AKEY='heichai_auth';
 const PW_HASH=btoa('B@oPalC8');
 const MAX_ATTEMPTS=5, LOCK_MINUTES=15;
 const EMOJI={'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
 const GOOGLE_CLIENT_ID='73001971116-5rirhfs1p2qn5ojgieflo0el05chdefl.apps.googleusercontent.com';
 const GOOGLE_API_KEY='AIzaSyBeTF2DqTw19I67zzcz4amxXoi3KcmN4K8';
 const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.readonly';
+
+// Supabase 設定
+const SB_URL='https://obujbaevimyquefwgnxm.supabase.co';
+const SB_KEY='sb_publishable_jdHW-a9YVioP2VQh4Besuw_Z8J95PWi';
+const sbHeaders={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+
+async function sbGet(table, params=''){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}?${params}`,{headers:sbHeaders});
+  return r.json();
+}
+async function sbPost(table, data){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}`,{method:'POST',headers:sbHeaders,body:JSON.stringify(data)});
+  return r.json();
+}
+async function sbPatch(table, id, data){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`,{method:'PATCH',headers:{...sbHeaders,'Prefer':'return=representation'},body:JSON.stringify(data)});
+  return r.json();
+}
+async function sbDelete(table, id){
+  const r=await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${id}`,{method:'DELETE',headers:sbHeaders});
+  return r.ok;
+}
 
 let currentImages=[], currentVideos=[], tokenClient=null, accessToken=null;
 
@@ -590,10 +612,17 @@ function showApp(){document.getElementById('loginWrap').style.display='none';doc
 function doLogout(){localStorage.removeItem(AKEY);location.reload();}
 
 /* ---- UTILS ---- */
-function getProducts(){try{return JSON.parse(localStorage.getItem(PKEY)||'[]');}catch(e){return[];}}
-function saveProducts(arr){localStorage.setItem(PKEY,JSON.stringify(arr));}
-function getOrders(){try{return JSON.parse(localStorage.getItem(OKEY)||'[]');}catch(e){return[];}}
-function saveOrders(arr){localStorage.setItem(OKEY,JSON.stringify(arr));}
+// 商品 CRUD
+async function getProducts(){return await sbGet('products','order=created_at.desc&select=*');}
+async function getProductById(id){const r=await sbGet('products',`id=eq.${id}&select=*`);return r[0]||null;}
+async function createProduct(data){return await sbPost('products',data);}
+async function updateProduct(id,data){return await sbPatch('products',id,data);}
+async function deleteProductById(id){return await sbDelete('products',id);}
+// 訂單 CRUD
+async function getOrders(filter=''){return await sbGet('orders',`order=created_at.desc${filter?'&'+filter:''}&select=*`);}
+async function createOrder(data){return await sbPost('orders',data);}
+async function updateOrder(id,data){return await sbPatch('orders',id,data);}
+async function deleteOrderById(id){return await sbDelete('orders',id);}
 function showPage(name,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');if(btn)btn.classList.add('active');if(name==='dashboard')renderDashboard();if(name==='list')renderList();if(name==='orders')renderOrders();}
 function toast(msg,err=false){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show'+(err?' error':'');setTimeout(()=>el.classList.remove('show'),2800);}
 
@@ -741,11 +770,23 @@ function pickerCallback(data){
 function closeDriveModal(){document.getElementById('driveModal').classList.remove('show');}
 
 /* ---- DASHBOARD ---- */
-function renderDashboard(){
-  const all=getProducts(),orders=getOrders();
-  const stats=[{num:all.length,label:'全部商品'},{num:all.filter(p=>p.status!=='已售出').length,label:'販售中'},{num:orders.filter(o=>o.status==='新訂單').length,label:'待處理訂單'},{num:orders.filter(o=>o.status==='已付款').length,label:'已付款待出貨'}];
+async function renderDashboard(){
+  document.getElementById('statsRow').innerHTML='<div style="color:var(--muted);font-size:13px">載入中...</div>';
+  const [all, orders, pendingOrders, paidOrders] = await Promise.all([
+    getProducts(),
+    getOrders('limit=5'),
+    getOrders('status=eq.新訂單&select=id'),
+    getOrders('status=eq.已付款&select=id')
+  ]);
+  const selling=(all||[]).filter(p=>p.status!=='已售出').length;
+  const stats=[
+    {num:(all||[]).length,label:'全部商品'},
+    {num:selling,label:'販售中'},
+    {num:(pendingOrders||[]).length,label:'待處理訂單'},
+    {num:(paidOrders||[]).length,label:'已付款待出貨'}
+  ];
   document.getElementById('statsRow').innerHTML=stats.map(s=>`<div class="stat-card"><span class="stat-num">${s.num}</span><div class="stat-label">${s.label}</div></div>`).join('');
-  const recent=orders.slice(-5).reverse();
+  const recent=orders||[];
   document.getElementById('recentOrders').innerHTML=recent.length?recent.map(o=>orderCardHtml(o)).join(''):'<div class="empty-list"><p>還沒有訂單</p></div>';
 }
 
@@ -767,10 +808,29 @@ function orderCardHtml(o){
     </div>
   </div>`;
 }
-function renderOrders(){const f=document.getElementById('orderFilter')?.value||'all';let list=getOrders().slice().reverse();if(f!=='all')list=list.filter(o=>o.status===f);document.getElementById('orderList').innerHTML=list.length?list.map(o=>orderCardHtml(o)).join(''):'<div class="empty-list"><p>沒有符合的訂單</p></div>';}
-function updateOrderStatus(id,status){const orders=getOrders();const o=orders.find(x=>x.id===id);if(o){o.status=status;saveOrders(orders);toast(`狀態已更新為「${status}」`);renderOrders();renderDashboard();}}
-function deleteOrder(id){if(!confirm('確定刪除？'))return;saveOrders(getOrders().filter(o=>o.id!==id));toast('訂單已刪除');renderOrders();renderDashboard();}
-function clearOrders(){if(!confirm('確定清除所有已完成訂單？'))return;saveOrders(getOrders().filter(o=>o.status!=='已完成'));toast('已清除完成訂單');renderOrders();}
+async function renderOrders(){
+  document.getElementById('orderList').innerHTML='<div style="color:var(--muted);font-size:13px;padding:1rem">載入中...</div>';
+  const f=document.getElementById('orderFilter')?.value||'all';
+  const filter=f!=='all'?`status=eq.${encodeURIComponent(f)}`:'';
+  const list=await getOrders(filter)||[];
+  document.getElementById('orderList').innerHTML=list.length?list.map(o=>orderCardHtml(o)).join(''):'<div class="empty-list"><p>沒有符合的訂單</p></div>';
+}
+async function updateOrderStatus(id,status){
+  await updateOrder(id,{status});
+  toast(`狀態已更新為「${status}」`);
+  renderOrders();renderDashboard();
+}
+async function deleteOrder(id){
+  if(!confirm('確定刪除？'))return;
+  await deleteOrderById(id);
+  toast('訂單已刪除');renderOrders();renderDashboard();
+}
+async function clearOrders(){
+  if(!confirm('確定清除所有已完成訂單？'))return;
+  const done=await getOrders('status=eq.已完成&select=id')||[];
+  await Promise.all(done.map(o=>deleteOrderById(o.id)));
+  toast('已清除完成訂單');renderOrders();
+}
 
 /* ---- PRODUCTS ---- */
 function clearForm(){
@@ -871,21 +931,27 @@ function editProduct(id){
 }
 
 function deleteProduct(){const id=document.getElementById('editId').value;if(id)deleteById(id);}
-function deleteById(id){if(!confirm('確定要刪除？'))return;saveProducts(getProducts().filter(p=>p.id!==id));toast('商品已刪除');clearForm();renderList();}
+async function deleteById(id){
+  if(!confirm('確定要刪除？'))return;
+  await deleteProductById(id);
+  toast('商品已刪除');clearForm();renderList();
+}
 
-function renderList(){
+async function renderList(){
+  document.getElementById('productList').innerHTML='<div style="color:var(--muted);font-size:13px;padding:1rem">載入中...</div>';
   const catF=document.getElementById('listFilter')?.value||'all';
   const stF=document.getElementById('statusFilter')?.value||'all';
-  let list=getProducts();
-  if(catF!=='all')list=list.filter(p=>p.category===catF);
-  if(stF!=='all')list=list.filter(p=>p.status===stF);
+  let params='order=created_at.desc&select=*';
+  if(catF!=='all') params+=`&category=eq.${encodeURIComponent(catF)}`;
+  if(stF!=='all') params+=`&status=eq.${encodeURIComponent(stF)}`;
+  const list=await sbGet('products',params)||[];
   const firstImg=p=>(p.images&&p.images[0])?p.images[0].src:(p.image||'');
   document.getElementById('productList').innerHTML=list.length?list.map(p=>{
     const img=firstImg(p);
     const badge=p.status==='熱門'?`<span class="badge hot">熱門</span>`:p.status==='已售出'?`<span class="badge sold">已售出</span>`:'';
     return `<div class="product-row">
       <div class="product-row-img">${img?`<img src="${img}" alt="">`:`<span>${EMOJI[p.category]||'💎'}</span>`}</div>
-      <div class="product-row-info"><div class="product-row-name">${p.name}</div><div class="product-row-meta">${p.category||''} ${badge} ${p.images?.length>1?`<span style="color:var(--accent)">·${p.images.length}張圖</span>`:''} ${p.videos?.length?`<span style="color:#5ecbd8">·${p.videos.length}部影片</span>`:''}</div></div>
+      <div class="product-row-info"><div class="product-row-name">${p.name}</div><div class="product-row-meta">${p.category||''} ${badge} ${Array.isArray(p.images)&&p.images.length>1?`<span style="color:var(--accent)">·${p.images.length}張圖</span>`:''} ${Array.isArray(p.videos)&&p.videos.length?`<span style="color:#5ecbd8">·${p.videos.length}部影片</span>`:''}</div></div>
       <div class="product-row-price">NT$${Number(p.price).toLocaleString()}</div>
       <div class="product-row-actions"><button class="icon-btn" onclick="editProduct('${p.id}')">編輯</button><button class="icon-btn del" onclick="deleteById('${p.id}')">刪除</button></div>
     </div>`;
@@ -893,10 +959,39 @@ function renderList(){
 }
 
 /* ---- EXPORT ---- */
-function exportData(){const data=JSON.stringify(getProducts(),null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='heichai-products-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);toast('已下載備份');}
-function copyJson(){navigator.clipboard.writeText(JSON.stringify(getProducts(),null,2)).then(()=>toast('已複製 JSON'));}
-function importData(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const arr=JSON.parse(e.target.result);if(!Array.isArray(arr))throw new Error();saveProducts(arr);toast(`已匯入 ${arr.length} 件商品 ✓`);}catch(err){toast('JSON 格式錯誤',true);}};reader.readAsText(file);}
-function clearAll(){if(!confirm('確定要清除所有商品？'))return;localStorage.removeItem(PKEY);toast('已清除');renderDashboard();}
+async function exportData(){
+  const list=await getProducts()||[];
+  const data=JSON.stringify(list,null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='heichai-products-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();URL.revokeObjectURL(url);toast('已下載備份');
+}
+async function copyJson(){
+  const list=await getProducts()||[];
+  navigator.clipboard.writeText(JSON.stringify(list,null,2)).then(()=>toast('已複製 JSON'));
+}
+async function importData(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    try{
+      const arr=JSON.parse(e.target.result);
+      if(!Array.isArray(arr))throw new Error();
+      for(const p of arr){ delete p.id; await createProduct(p); }
+      toast(`已匯入 ${arr.length} 件商品 ✓`);
+      renderList();
+    }catch(err){toast('JSON 格式錯誤',true);}
+  };
+  reader.readAsText(file);
+}
+async function clearAll(){
+  if(!confirm('確定要清除所有商品？此動作無法復原！'))return;
+  const list=await getProducts()||[];
+  await Promise.all(list.map(p=>deleteProductById(p.id)));
+  toast('已清除');renderDashboard();
+}
 
 /* ---- COUNTRY SELECT ---- */
 function handleCountrySelect(sel){

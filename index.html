@@ -14,7 +14,7 @@
   "name":"黑柴珠寶 BLACKSHIBAOPAL Jewelry",
   "description":"台灣天然蛋白石專門店，提供澳洲直採蛋白石原礦、裸石、半成品與成品珠寶。",
   "url":"https://holypoet.github.io/blackshibaopal",
-  "sameAs":["https://www.instagram.com/blackshibaopal"],
+  "sameAs":["https://www.instagram.com/heichai_jewelry"],
   "currenciesAccepted":"TWD",
   "paymentAccepted":"銀行匯款, LINE Pay",
   "keywords":"蛋白石,opal,天然蛋白石,澳洲蛋白石,裸石,原礦,珠寶,台灣"
@@ -145,7 +145,7 @@ footer a:hover{color:var(--text)}
   <div class="logo"><span>黑柴珠寶</span> · BLACKSHIBAOPAL Jewelry</div>
   <nav>
     <a href="#" class="hide-mobile">商品</a>
-    <a href="https://instagram.com/blackshibaopal" target="_blank" class="hide-mobile">Instagram</a>
+    <a href="https://instagram.com/heichai_jewelry" target="_blank" class="hide-mobile">Instagram</a>
   </nav>
 </header>
 
@@ -204,9 +204,11 @@ function setFilter(f, btn){
   render();
 }
 
-function render(){
-  const all=getProducts();
-  const list=currentFilter==='all'?all:all.filter(p=>p.category===currentFilter);
+async function render(){
+  document.getElementById('gridTitle').textContent='載入中...';
+  document.getElementById('productGrid').innerHTML='';
+  const filter=currentFilter==='all'?'':'category=eq.'+encodeURIComponent(currentFilter);
+  const list=await getProducts(filter)||[];
   const grid=document.getElementById('productGrid');
   const title=document.getElementById('gridTitle');
   const empty=document.getElementById('emptyMsg');
@@ -307,32 +309,29 @@ async function submitOrder(){
 
   const p=currentProduct;
   const order={
-    id: Date.now().toString(),
-    productName: p.name,
-    productId: p.id,
+    product_id: p.id,
+    product_name: p.name,
     price: p.price,
-    buyerName: name,
+    buyer_name: name,
     contact: contact,
     address: document.getElementById('o-address').value.trim(),
     note: document.getElementById('o-note').value.trim(),
-    status: '新訂單',
-    createdAt: new Date().toISOString()
+    status: '新訂單'
   };
 
-  // 存到 localStorage（後台可見）
-  const orders=getOrders();
-  orders.push(order);
-  saveOrders(orders);
+  try{
+    // 存入 Supabase
+    await createOrder(order);
+    // 庫存即時扣減
+    await decreaseStock(p.id, p.stock||1);
 
-  // 嘗試寄 Email 通知（需設定 Formspree）
-  if(FORMSPREE_ID && FORMSPREE_ID !== 'YOUR_FORMSPREE_ID'){
-    try{
+    // Email 通知
+    if(FORMSPREE_ID){
       await fetch(`https://formspree.io/f/${FORMSPREE_ID}`,{
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
         body:JSON.stringify({
           _subject: `【黑柴珠寶】新訂單 - ${p.name}`,
-          訂單編號: '#'+order.id.slice(-6).toUpperCase(),
           商品: `${p.name} (NT$${Number(p.price).toLocaleString()})`,
           買家姓名: name,
           聯絡方式: contact,
@@ -340,12 +339,16 @@ async function submitOrder(){
           備註: order.note||'（無）',
           下單時間: new Date().toLocaleString('zh-TW')
         })
-      });
-    }catch(e){ console.log('Email 通知失敗，但訂單已存入後台'); }
+      }).catch(()=>{});
+    }
+    document.getElementById('submitBtn').style.display='none';
+    document.getElementById('orderSuccess').classList.add('show');
+    // 更新前台商品狀態
+    render();
+  } catch(e){
+    btn.disabled=false;btn.textContent='確認送出訂單';
+    alert('送出失敗，請稍後再試');
   }
-
-  document.getElementById('submitBtn').style.display='none';
-  document.getElementById('orderSuccess').classList.add('show');
 }
 
 function closeModal(e){
@@ -356,7 +359,6 @@ function closeModal(e){
 }
 
 document.addEventListener('DOMContentLoaded', render);
-window.addEventListener('storage', render);
 </script>
 </body>
 </html>
