@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>黑柴珠寶 · 後台管理</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08080d;--bg2:#0e0d15;--bg3:#13121c;
+  --border:#1e1c2a;--text:#e0dbd0;--muted:#6a6470;
+  --accent:#9b85d8;--accent2:#5ecbd8;
+  --danger:#c0392b;--success:#27ae60;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+@media(max-width:700px){.app{grid-template-columns:1fr}}
+
+/* SIDEBAR */
+.sidebar{
+  background:var(--bg2);border-right:1px solid var(--border);
+  padding:1.5rem 1rem;display:flex;flex-direction:column;gap:4px;
+}
+.sidebar-logo{
+  font-size:12px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;padding:.5rem .75rem;margin-bottom:1rem;
+}
+.sidebar-logo span{color:var(--text);display:block;font-size:14px;letter-spacing:1px;margin-top:2px}
+.nav-item{
+  padding:.6rem .75rem;font-size:13px;color:var(--muted);
+  cursor:pointer;border-radius:4px;transition:all .2s;border:none;
+  background:transparent;text-align:left;width:100%;font-family:inherit;
+}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--accent);border-left:2px solid var(--accent);border-radius:0 4px 4px 0}
+.sidebar-sep{height:1px;background:var(--border);margin:.5rem 0}
+.sidebar-link{
+  padding:.6rem .75rem;font-size:12px;color:var(--muted);
+  text-decoration:none;display:block;transition:color .2s;
+}
+.sidebar-link:hover{color:var(--text)}
+@media(max-width:700px){.sidebar{flex-direction:row;overflow-x:auto;padding:.75rem;border-right:none;border-bottom:1px solid var(--border)}}
+
+/* MAIN */
+main{padding:2rem;overflow-y:auto}
+.page{display:none}
+.page.active{display:block}
+.page-title{font-size:18px;font-weight:400;margin-bottom:1.5rem;color:#f0ebe0}
+.page-sub{font-size:13px;color:var(--muted);margin-top:4px}
+
+/* STATS ROW */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:2rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1rem}
+.stat-num{font-size:24px;color:#f0ebe0;display:block;margin-bottom:4px}
+.stat-label{font-size:11px;color:var(--muted);letter-spacing:1px}
+
+/* FORM */
+.form-section{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1.5rem}
+.form-section-title{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:1.25rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-row.full{grid-template-columns:1fr}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.form-group{display:flex;flex-direction:column;gap:6px}
+label{font-size:12px;color:var(--muted);letter-spacing:.5px}
+input,select,textarea{
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);padding:8px 12px;font-size:14px;
+  border-radius:4px;font-family:inherit;transition:border .2s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#5a5078}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+select option{background:var(--bg2)}
+
+/* IMAGE UPLOAD */
+.img-upload-area{
+  border:2px dashed var(--border);border-radius:6px;
+  padding:2rem;text-align:center;cursor:pointer;
+  transition:border .2s;position:relative;
+}
+.img-upload-area:hover{border-color:#5a5078}
+.img-upload-area input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:none;padding:0;
+}
+.img-preview{max-width:100%;max-height:200px;display:none;margin:.75rem auto 0;border-radius:4px}
+.img-upload-hint{font-size:13px;color:var(--muted)}
+.img-upload-hint strong{display:block;font-size:24px;margin-bottom:.5rem}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  padding:9px 20px;font-size:13px;border-radius:4px;cursor:pointer;
+  font-family:inherit;letter-spacing:.5px;transition:all .2s;border:1px solid var(--border);
+}
+.btn-primary{background:#3d2d6e;color:#c4b0f0;border-color:#5a4090}
+.btn-primary:hover{background:#4d3d8e}
+.btn-danger{background:transparent;color:#e07070;border-color:#4a2020}
+.btn-danger:hover{background:#2a1010}
+.btn-ghost{background:transparent;color:var(--muted);border-color:var(--border)}
+.btn-ghost:hover{color:var(--text);background:var(--bg3)}
+
+/* PRODUCT LIST */
+.product-list{display:flex;flex-direction:column;gap:8px}
+.product-row{
+  background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  display:flex;align-items:center;gap:12px;padding:.75rem 1rem;
+}
+.product-row-img{
+  width:48px;height:48px;background:var(--bg3);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  flex-shrink:0;overflow:hidden;
+}
+.product-row-img img{width:100%;height:100%;object-fit:cover}
+.product-row-info{flex:1;min-width:0}
+.product-row-name{font-size:14px;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.product-row-meta{font-size:12px;color:var(--muted)}
+.product-row-price{font-size:14px;color:var(--accent);white-space:nowrap;margin-right:.5rem}
+.product-row-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{
+  padding:5px 10px;font-size:12px;border-radius:3px;cursor:pointer;
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-family:inherit;transition:all .2s;
+}
+.icon-btn:hover{color:var(--text);background:var(--bg3)}
+.icon-btn.del:hover{color:#e07070;border-color:#4a2020;background:#1a0808}
+
+/* STATUS BADGE */
+.badge{
+  font-size:10px;padding:2px 8px;border-radius:2px;letter-spacing:1px;
+  border:1px solid var(--border);color:var(--muted);
+}
+.badge.hot{color:#9b85d8;border-color:#3a2848}
+.badge.sold{color:#d85a30;border-color:#3a2018}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;
+  background:#1e2e1e;border:1px solid #2a4a2a;color:#80d080;
+  padding:.75rem 1.25rem;font-size:13px;border-radius:4px;
+  opacity:0;pointer-events:none;transition:opacity .3s;z-index:999;
+}
+.toast.show{opacity:1}
+.toast.error{background:#2e1e1e;border-color:#4a2a2a;color:#d08080}
+
+/* EXPORT/IMPORT */
+.import-area{border:2px dashed var(--border);border-radius:6px;padding:1.5rem;text-align:center;position:relative}
+.import-area input{position:absolute;inset:0;opacity:0;cursor:pointer;border:none;background:none;padding:0}
+.import-area p{font-size:13px;color:var(--muted)}
+
+/* EMPTY */
+.empty-list{text-align:center;padding:3rem;color:var(--muted)}
+.empty-list p{font-size:14px;line-height:1.8}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">黑柴珠寶<span>後台管理</span></div>
+    <button class="nav-item active" onclick="showPage('dashboard',this)">📊 總覽</button>
+    <button class="nav-item" onclick="showPage('add',this)">➕ 新增商品</button>
+    <button class="nav-item" onclick="showPage('list',this)">📦 商品列表</button>
+    <div class="sidebar-sep"></div>
+    <button class="nav-item" onclick="showPage('export',this)">💾 匯出 / 備份</button>
+    <div class="sidebar-sep"></div>
+    <a class="sidebar-link" href="index.html" target="_blank">↗ 前台預覽</a>
+  </aside>
+
+  <main>
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">總覽<div class="page-sub">黑柴珠寶商品管理後台</div></div>
+      <div class="stats" id="statsRow"></div>
+      <div class="form-section">
+        <div class="form-section-title">近期商品</div>
+        <div id="recentList"></div>
+      </div>
+    </div>
+
+    <!-- ADD PRODUCT -->
+    <div class="page" id="page-add">
+      <div class="page-title" id="formTitle">新增商品</div>
+      <input type="hidden" id="editId" value="">
+
+      <div class="form-section">
+        <div class="form-section-title">基本資訊</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>商品名稱 *</label>
+            <input type="text" id="f-name" placeholder="例：澳洲蛋白石裸石 #A01">
+          </div>
+          <div class="form-group">
+            <label>商品分類 *</label>
+            <select id="f-category">
+              <option value="">選擇分類</option>
+              <option>原礦</option>
+              <option>裸石</option>
+              <option>半成品</option>
+              <option>成品</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>售價（TWD）*</label>
+            <input type="number" id="f-price" placeholder="例：1200">
+          </div>
+          <div class="form-group">
+            <label>狀態</label>
+            <select id="f-status">
+              <option value="販售中">販售中</option>
+              <option value="熱門">熱門</option>
+              <option value="已售出">已售出</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label>商品描述</label>
+            <textarea id="f-desc" placeholder="描述蛋白石的火光顏色、產地、特色..."></textarea>
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label>標籤（用逗號分隔）</label>
+            <input type="text" id="f-tags" placeholder="例：澳洲產地, 天然無處理, 變彩強烈, 附實拍">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">商品圖片</div>
+        <div class="img-upload-area" id="uploadArea">
+          <input type="file" accept="image/*" id="f-image-file" onchange="handleImgFile(this)">
+          <div class="img-upload-hint">
+            <strong>📷</strong>
+            點擊或拖曳上傳圖片<br>
+            <small style="color:var(--muted);font-size:11px">JPG / PNG · 建議正方形 · 2MB 以下</small>
+          </div>
+          <img id="imgPreview" class="img-preview">
+        </div>
+        <div style="margin-top:.75rem">
+          <label style="font-size:12px;color:var(--muted)">或貼上圖片網址</label>
+          <input type="text" id="f-image-url" placeholder="https://..." style="margin-top:6px" oninput="previewUrl(this.value)">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveProduct()">儲存商品</button>
+        <button class="btn btn-ghost" onclick="clearForm()">清除</button>
+        <button class="btn btn-danger" id="deleteBtn" style="display:none" onclick="deleteProduct()">刪除商品</button>
+      </div>
+    </div>
+
+    <!-- PRODUCT LIST -->
+    <div class="page" id="page-list">
+      <div class="page-title">商品列表</div>
+      <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
+        <select id="listFilter" onchange="renderList()" style="font-size:13px;padding:6px 10px">
+          <option value="all">全部分類</option>
+          <option>原礦</option><option>裸石</option><option>半成品</option><option>成品</option>
+        </select>
+        <select id="statusFilter" onchange="renderList()" style="font-size:13px;padding:6px 10px">
+          <option value="all">全部狀態</option>
+          <option>販售中</option><option>熱門</option><option>已售出</option>
+        </select>
+      </div>
+      <div class="product-list" id="productList"></div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="page" id="page-export">
+      <div class="page-title">匯出 / 備份</div>
+
+      <div class="form-section">
+        <div class="form-section-title">匯出商品資料</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.7">
+          將所有商品資料匯出為 JSON 檔案，可備份或轉移到其他裝置。
+        </p>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="exportData()">下載 JSON 備份</button>
+          <button class="btn btn-ghost" onclick="copyJson()">複製 JSON</button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">匯入商品資料</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.7">
+          上傳之前匯出的 JSON 檔案來還原商品資料。<strong style="color:#e07070">注意：會覆蓋現有資料</strong>
+        </p>
+        <div class="import-area">
+          <input type="file" accept=".json" onchange="importData(this)">
+          <p>點擊選擇 JSON 檔案</p>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">清除所有資料</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">
+          刪除所有商品資料，此動作無法復原。
+        </p>
+        <button class="btn btn-danger" onclick="clearAll()">清除全部商品</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = 'heichai_products';
+const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
+
+function getProducts(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){ return []; } }
+function saveProducts(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+
+function showPage(name, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='dashboard') renderDashboard();
+  if(name==='list') renderList();
+}
+
+function toast(msg, err=false){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (err?' error':'');
+  setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+/* ---- DASHBOARD ---- */
+function renderDashboard(){
+  const all = getProducts();
+  const cats = ['原礦','裸石','半成品','成品'];
+  const stats = [
+    {num: all.length, label:'全部商品'},
+    {num: all.filter(p=>p.status!=='已售出').length, label:'販售中'},
+    {num: all.filter(p=>p.status==='已售出').length, label:'已售出'},
+    {num: [...new Set(all.map(p=>p.category))].length, label:'商品分類'}
+  ];
+  document.getElementById('statsRow').innerHTML = stats.map(s=>`
+    <div class="stat-card">
+      <span class="stat-num">${s.num}</span>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+
+  const recent = all.slice(-5).reverse();
+  document.getElementById('recentList').innerHTML = recent.length
+    ? recent.map(p=>productRowHtml(p,true)).join('')
+    : '<div class="empty-list"><p>還沒有商品<br>點「新增商品」開始上架</p></div>';
+}
+
+/* ---- LIST ---- */
+function renderList(){
+  const catF = document.getElementById('listFilter')?.value||'all';
+  const stF = document.getElementById('statusFilter')?.value||'all';
+  let list = getProducts();
+  if(catF!=='all') list=list.filter(p=>p.category===catF);
+  if(stF!=='all') list=list.filter(p=>p.status===stF);
+  document.getElementById('productList').innerHTML = list.length
+    ? list.map(p=>productRowHtml(p)).join('')
+    : '<div class="empty-list"><p>這個篩選條件沒有商品</p></div>';
+}
+
+function productRowHtml(p, compact=false){
+  const imgHtml = p.image
+    ? `<img src="${p.image}" alt="${p.name}">`
+    : `<span>${EMOJI[p.category]||'💎'}</span>`;
+  const badge = p.status==='熱門'?`<span class="badge hot">熱門</span>`:
+                p.status==='已售出'?`<span class="badge sold">已售出</span>`:'';
+  return `
+    <div class="product-row">
+      <div class="product-row-img">${imgHtml}</div>
+      <div class="product-row-info">
+        <div class="product-row-name">${p.name}</div>
+        <div class="product-row-meta">${p.category||''} ${badge}</div>
+      </div>
+      <div class="product-row-price">NT$${Number(p.price).toLocaleString()}</div>
+      ${!compact?`<div class="product-row-actions">
+        <button class="icon-btn" onclick="editProduct('${p.id}')">編輯</button>
+        <button class="icon-btn del" onclick="deleteById('${p.id}')">刪除</button>
+      </div>`:''}
+    </div>`;
+}
+
+/* ---- FORM ---- */
+function clearForm(){
+  ['f-name','f-price','f-desc','f-tags','f-image-url'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-category').value='';
+  document.getElementById('f-status').value='販售中';
+  document.getElementById('editId').value='';
+  document.getElementById('imgPreview').style.display='none';
+  document.getElementById('imgPreview').src='';
+  document.getElementById('deleteBtn').style.display='none';
+  document.getElementById('formTitle').textContent='新增商品';
+}
+
+function handleImgFile(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 3*1024*1024){ toast('圖片過大，請壓縮至 3MB 以下',true); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('imgPreview');
+    preview.src = e.target.result;
+    preview.style.display='block';
+    document.getElementById('f-image-url').value='';
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewUrl(url){
+  const preview = document.getElementById('imgPreview');
+  if(url){ preview.src=url; preview.style.display='block'; }
+  else{ preview.style.display='none'; }
+}
+
+function getImageData(){
+  const preview = document.getElementById('imgPreview');
+  if(preview.style.display==='none') return '';
+  return preview.src || document.getElementById('f-image-url').value || '';
+}
+
+function saveProduct(){
+  const name = document.getElementById('f-name').value.trim();
+  const cat  = document.getElementById('f-category').value;
+  const price= document.getElementById('f-price').value;
+  if(!name){ toast('請填入商品名稱',true); return; }
+  if(!cat){  toast('請選擇商品分類',true); return; }
+  if(!price){ toast('請填入售價',true); return; }
+
+  const all = getProducts();
+  const editId = document.getElementById('editId').value;
+  const product = {
+    id: editId || Date.now().toString(),
+    name,
+    category: cat,
+    price: Number(price),
+    status: document.getElementById('f-status').value,
+    description: document.getElementById('f-desc').value.trim(),
+    tags: document.getElementById('f-tags').value.trim(),
+    image: getImageData(),
+    updatedAt: new Date().toISOString()
+  };
+
+  if(editId){
+    const idx = all.findIndex(p=>p.id===editId);
+    if(idx>=0) all[idx]=product; else all.push(product);
+    toast('商品已更新 ✓');
+  } else {
+    product.createdAt = product.updatedAt;
+    all.push(product);
+    toast('商品已新增 ✓');
+  }
+
+  saveProducts(all);
+  clearForm();
+}
+
+function editProduct(id){
+  const p = getProducts().find(x=>x.id===id);
+  if(!p) return;
+  showPage('add', document.querySelector('.nav-item:nth-child(3)'));
+  document.getElementById('editId').value = p.id;
+  document.getElementById('f-name').value = p.name||'';
+  document.getElementById('f-category').value = p.category||'';
+  document.getElementById('f-price').value = p.price||'';
+  document.getElementById('f-status').value = p.status||'販售中';
+  document.getElementById('f-desc').value = p.description||'';
+  document.getElementById('f-tags').value = p.tags||'';
+  if(p.image){ const prev=document.getElementById('imgPreview'); prev.src=p.image; prev.style.display='block'; }
+  document.getElementById('deleteBtn').style.display='inline-block';
+  document.getElementById('formTitle').textContent='編輯商品';
+  window.scrollTo(0,0);
+}
+
+function deleteProduct(){
+  const id = document.getElementById('editId').value;
+  if(id) deleteById(id);
+}
+
+function deleteById(id){
+  if(!confirm('確定要刪除這個商品嗎？')) return;
+  const all = getProducts().filter(p=>p.id!==id);
+  saveProducts(all);
+  toast('商品已刪除');
+  clearForm();
+  renderList();
+}
+
+/* ---- EXPORT / IMPORT ---- */
+function exportData(){
+  const data = JSON.stringify(getProducts(), null, 2);
+  const blob = new Blob([data],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='heichai-products-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(url);
+  toast('已下載備份檔案');
+}
+
+function copyJson(){
+  navigator.clipboard.writeText(JSON.stringify(getProducts(),null,2))
+    .then(()=>toast('已複製 JSON'));
+}
+
+function importData(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const arr = JSON.parse(e.target.result);
+      if(!Array.isArray(arr)) throw new Error();
+      saveProducts(arr);
+      toast(`已匯入 ${arr.length} 件商品 ✓`);
+    } catch(err){
+      toast('JSON 格式錯誤，請確認檔案內容',true);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function clearAll(){
+  if(!confirm('確定要清除所有商品？這個動作無法復原！')) return;
+  localStorage.removeItem(KEY);
+  toast('已清除所有商品');
+  renderDashboard();
+}
+
+/* INIT */
+document.addEventListener('DOMContentLoaded', renderDashboard);
+</script>
+</body>
+</html>

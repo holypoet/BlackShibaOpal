@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>黑柴珠寶 Heichai Jewelry｜天然蛋白石專門店</title>
+<meta name="description" content="台灣天然蛋白石專門店。澳洲直採蛋白石原礦、裸石、半成品、成品珠寶。每顆獨一無二，變彩火光保證天然。">
+<meta property="og:title" content="黑柴珠寶 Heichai Jewelry｜天然蛋白石">
+<meta property="og:description" content="澳洲直採天然蛋白石，原礦、裸石、成品珠寶，台灣專門店。">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "JewelryStore",
+  "name": "黑柴珠寶 Heichai Jewelry",
+  "description": "台灣天然蛋白石專門店，提供澳洲直採蛋白石原礦、裸石、半成品與成品珠寶。",
+  "url": "https://heichai-jewelry.github.io",
+  "sameAs": ["https://www.instagram.com/heichai_jewelry"],
+  "currenciesAccepted": "TWD",
+  "paymentAccepted": "現金, 信用卡, LINE Pay, 匯款",
+  "keywords": "蛋白石,opal,天然蛋白石,澳洲蛋白石,裸石,原礦,珠寶,台灣"
+}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08080d;
+  --bg2:#0e0d15;
+  --bg3:#13121c;
+  --border:#1e1c2a;
+  --text:#e0dbd0;
+  --muted:#6a6470;
+  --accent1:#9b85d8;
+  --accent2:#5ecbd8;
+}
+body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* HEADER */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 2rem;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--bg);z-index:100;
+}
+.logo{font-size:13px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+.logo span{color:var(--text)}
+nav{display:flex;gap:1.5rem}
+nav a{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;transition:color .2s}
+nav a:hover{color:var(--text)}
+
+/* HERO */
+.hero{text-align:center;padding:4rem 1.5rem 3rem;border-bottom:1px solid var(--border)}
+.hero-eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:1.25rem}
+.hero-title{font-size:clamp(2.2rem,6vw,4rem);font-weight:300;line-height:1.1;margin-bottom:1rem;color:#f0ebe0}
+.opal-text{
+  display:inline-block;
+  background:linear-gradient(120deg,#b8a9e8,#7ec8d4,#a8d8a8,#d4b8e8,#8ec8e8,#b8a9e8);
+  background-size:400% 400%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:opalShift 6s ease infinite;
+}
+@keyframes opalShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.hero-sub{font-size:13px;letter-spacing:2px;color:var(--muted);margin-bottom:2rem}
+
+/* FILTER */
+.filter-bar{
+  display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+  padding:1.5rem 1rem;border-bottom:1px solid var(--border);
+}
+.filter-btn{
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  padding:6px 16px;border:1px solid var(--border);background:transparent;
+  color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.filter-btn:hover,.filter-btn.active{border-color:#5a5078;color:var(--accent1);background:#13101e}
+
+/* GRID */
+.grid-wrap{padding:2rem 1.5rem;max-width:900px;margin:0 auto}
+.grid-title{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:1.5rem;text-align:center}
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:1px;background:var(--border);
+}
+.card{
+  background:var(--bg2);padding:0;cursor:pointer;
+  transition:background .25s;position:relative;overflow:hidden;
+}
+.card:hover{background:var(--bg3)}
+.card-img{
+  width:100%;aspect-ratio:1;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:3rem;border-bottom:1px solid var(--border);
+  overflow:hidden;position:relative;
+}
+.card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.card-img .placeholder{font-size:3rem;z-index:1}
+.card-body{padding:1rem}
+.card-category{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.card-name{font-size:15px;color:#d4cfc4;margin-bottom:6px;font-weight:400;line-height:1.3}
+.card-price{font-size:13px;color:var(--accent1)}
+.card-status{
+  position:absolute;top:8px;right:8px;
+  font-size:10px;letter-spacing:1px;padding:3px 8px;
+  background:var(--bg);border:1px solid var(--border);color:var(--muted);
+}
+.card-status.sold{color:#d85a30;border-color:#3a2018}
+.card-status.hot{color:#9b85d8;border-color:#3a2848}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);
+  display:none;align-items:center;justify-content:center;
+  z-index:200;padding:1rem;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border);
+  max-width:560px;width:100%;max-height:90vh;overflow-y:auto;
+  position:relative;
+}
+.modal-close{
+  position:absolute;top:1rem;right:1rem;
+  background:transparent;border:none;color:var(--muted);
+  font-size:20px;cursor:pointer;line-height:1;
+}
+.modal-img{
+  width:100%;aspect-ratio:4/3;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:5rem;border-bottom:1px solid var(--border);overflow:hidden;
+}
+.modal-img img{width:100%;height:100%;object-fit:cover}
+.modal-body{padding:1.5rem}
+.modal-category{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.modal-name{font-size:22px;font-weight:300;margin-bottom:.5rem;color:#f0ebe0}
+.modal-price{font-size:18px;color:var(--accent1);margin-bottom:1rem}
+.modal-desc{font-size:14px;color:#8a8278;line-height:1.8;margin-bottom:1.25rem}
+.modal-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem}
+.modal-tag{font-size:10px;padding:3px 10px;border:1px solid var(--border);color:var(--muted);letter-spacing:1px}
+.modal-cta{
+  display:block;text-align:center;padding:12px;
+  border:1px solid #5a5078;color:var(--accent1);
+  font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;background:transparent;font-family:inherit;
+  width:100%;transition:background .2s;
+}
+.modal-cta:hover{background:#1e1a2e}
+
+/* EMPTY */
+.empty{text-align:center;padding:4rem 2rem;color:var(--muted)}
+.empty-icon{font-size:3rem;margin-bottom:1rem;display:block}
+.empty p{font-size:14px;line-height:1.8}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);padding:2rem;
+  text-align:center;font-size:11px;color:var(--muted);letter-spacing:1px;
+}
+footer a{color:var(--muted);transition:color .2s}
+footer a:hover{color:var(--text)}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  header{padding:1rem}
+  nav{display:none}
+  .hero{padding:3rem 1rem 2rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span>黑柴珠寶</span> · Heichai Jewelry</div>
+  <nav>
+    <a href="index.html">商品</a>
+    <a href="admin.html">後台管理</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-eyebrow">台灣 · 天然蛋白石專門店</div>
+  <h1 class="hero-title">每顆<span class="opal-text">蛋白石</span><br>都是獨一無二的宇宙</h1>
+  <p class="hero-sub">澳洲直採 · 原礦 · 裸石 · 成品</p>
+</section>
+
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">全部商品</button>
+  <button class="filter-btn" data-filter="原礦" onclick="setFilter('原礦',this)">原礦</button>
+  <button class="filter-btn" data-filter="裸石" onclick="setFilter('裸石',this)">裸石</button>
+  <button class="filter-btn" data-filter="半成品" onclick="setFilter('半成品',this)">半成品</button>
+  <button class="filter-btn" data-filter="成品" onclick="setFilter('成品',this)">成品</button>
+</div>
+
+<div class="grid-wrap">
+  <div class="grid-title" id="gridTitle">載入商品中...</div>
+  <div class="product-grid" id="productGrid"></div>
+</div>
+
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<footer>
+  <p>黑柴珠寶 Heichai Jewelry &nbsp;·&nbsp;
+    <a href="https://instagram.com/heichai_jewelry" target="_blank">Instagram</a>
+    &nbsp;·&nbsp; 私訊詢問報價與庫存
+  </p>
+</footer>
+
+<script>
+const STORAGE_KEY = 'heichai_products';
+let currentFilter = 'all';
+
+const EMOJI = { '原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨' };
+
+function getProducts(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }
+  catch(e){ return []; }
+}
+
+function setFilter(f, btn){
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function render(){
+  const all = getProducts();
+  const list = currentFilter==='all' ? all : all.filter(p=>p.category===currentFilter);
+  const grid = document.getElementById('productGrid');
+  const title = document.getElementById('gridTitle');
+
+  title.textContent = `共 ${list.length} 件商品`;
+
+  if(list.length===0){
+    grid.innerHTML='';
+    grid.insertAdjacentHTML('afterend',`
+      <div class="empty" id="emptyMsg">
+        <span class="empty-icon">💎</span>
+        <p>目前這個分類沒有商品<br>請到後台新增商品</p>
+      </div>`);
+    return;
+  }
+  document.getElementById('emptyMsg')?.remove();
+
+  grid.innerHTML = list.map((p,i)=>{
+    const imgHtml = p.image
+      ? `<img src="${p.image}" alt="${p.name}" loading="lazy"><span class="placeholder" style="display:none">${EMOJI[p.category]||'💎'}</span>`
+      : `<span class="placeholder">${EMOJI[p.category]||'💎'}</span>`;
+    const statusHtml = p.status==='已售出'
+      ? `<span class="card-status sold">已售出</span>`
+      : p.status==='熱門'
+      ? `<span class="card-status hot">熱門</span>`
+      : '';
+    return `
+      <div class="card" onclick="openModal(${i})">
+        <div class="card-img">${imgHtml}${statusHtml}</div>
+        <div class="card-body">
+          <div class="card-category">${p.category||''}</div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-price">NT$ ${Number(p.price).toLocaleString()}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openModal(idx){
+  const all = getProducts();
+  const list = currentFilter==='all' ? all : all.filter(p=>p.category===currentFilter);
+  const p = list[idx];
+  if(!p) return;
+
+  const tags = (p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+  const imgHtml = p.image
+    ? `<img src="${p.image}" alt="${p.name}">`
+    : `<span style="font-size:5rem">${EMOJI[p.category]||'💎'}</span>`;
+  const tagsHtml = tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
+  const igHandle = 'heichai_jewelry';
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-img">${imgHtml}</div>
+    <div class="modal-body">
+      <div class="modal-category">${p.category||''}</div>
+      <div class="modal-name">${p.name}</div>
+      <div class="modal-price">NT$ ${Number(p.price).toLocaleString()}</div>
+      <div class="modal-desc">${(p.description||'').replace(/\n/g,'<br>')}</div>
+      ${tagsHtml?`<div class="modal-tags">${tagsHtml}</div>`:''}
+      <a href="https://instagram.com/${igHandle}" target="_blank" class="modal-cta">
+        私訊 @${igHandle} 詢問購買
+      </a>
+    </div>`;
+
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(e){
+  if(!e || e.target===document.getElementById('modal')){
+    document.getElementById('modal').classList.remove('show');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', render);
+window.addEventListener('storage', render);
+</script>
+</body>
+</html>
