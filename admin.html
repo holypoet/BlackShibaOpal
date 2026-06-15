@@ -759,10 +759,10 @@ function closeDriveModal(){document.getElementById('driveModal').classList.remov
 async function renderDashboard(){
   document.getElementById('statsRow').innerHTML='<div style="color:var(--muted);font-size:13px">載入中...</div>';
   const [all, orders, pendingOrders, paidOrders] = await Promise.all([
-    getProducts(),
-    getOrders('limit=5'),
-    getOrders('status=eq.新訂單&select=id'),
-    getOrders('status=eq.已付款&select=id')
+  getProducts(),
+  getOrders('limit=5'),
+  getOrders(`status=eq.${encodeURIComponent('新訂單')}&select=id`),
+  getOrders(`status=eq.${encodeURIComponent('已付款')}&select=id`)
   ]);
   const selling=(all||[]).filter(p=>p.status!=='已售出').length;
   const stats=[
