@@ -767,7 +767,8 @@ async function renderDashboard(){
   getProducts(),
   getOrders('limit=5'),
   getOrders(`status=eq.${encodeURIComponent('新訂單')}&select=id`),
-  getOrders(`status=eq.${encodeURIComponent('已付款')}&select=id`)
+  getOrders(`status=eq.${encodeURIComponent('已付款')}&select=id`),
+  getOrders(`status=eq.${encodeURIComponent('已預定')}&select=id`)
   ]);
   const selling=(all||[]).filter(p=>p.status!=='已售出').length;
   const stats=[
@@ -796,9 +797,11 @@ function orderCardHtml(o){
     ${o.note?`<div class="order-note">備註：${o.note}</div>`:''}
     <div class="order-status">
       ${o.status==='已取消'?'<span style="font-size:12px;color:#888;font-style:italic">此訂單已取消</span>':'<span style="font-size:12px;color:var(--muted);align-self:center">更新：</span>'}
-      ${o.status!=='已取消'?['已預定','已付款','已出貨','已完成'].map(s=>`<button class="status-btn ${s==='已預定'?'reserved':s==='已付款'?'paid':s==='已出貨'?'shipped':'done'} ${o.status===s?'active-status':''}" onclick="updateOrderStatus('${o.id}','${s}')">${s}</button>`).join('')}
-      <button class="status-btn" style="color:#e0a050" onclick="cancelOrder('${o.id}','${o.product_id||o.productId}')">取消訂單</button>
-      <button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}')">刪除</button>`:''}
+      ${o.status!=='已取消' ? `
+        ${['已預定','已付款','已出貨','已完成'].map(s=>`<button class="status-btn ${s==='已預定'?'reserved':s==='已付款'?'paid':s==='已出貨'?'shipped':'done'} ${o.status===s?'active-status':''}" onclick="updateOrderStatus('${o.id}','${s}')">${s}</button>`).join('')}
+        <button class="status-btn" style="color:#e0a050" onclick="cancelOrder('${o.id}','${o.product_id||o.productId}')">取消訂單</button>
+        <button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}')">刪除</button>
+      ` : ''}
     </div>
   </div>`;
 }
@@ -1077,3 +1080,4 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 </body>
 </html>
+}
