@@ -315,7 +315,7 @@ select option{background:var(--bg2)}
       </div>
 
       <div class="form-section">
-        <div class="form-section-title">GAA 鑑定資訊</div>
+        <div class="form-section-title">GAA 描述資訊</div>
 
         <div class="form-row">
           <div class="form-group">
@@ -926,7 +926,7 @@ async function editProduct(id){
   else if(p.country){cs.value='__other__';ci.style.display='block';ci.value=p.country;}
   else{cs.value='';ci.style.display='none';ci.value='';}
   sv('f-origin',p.origin);sv('f-claim',p.claim);sv('f-stock',p.stock);sv('f-weight',p.weight);sv('f-size',p.size);
-  // GAA鑑定與其他蛇形命名對齊載入
+  // GAA描述與其他蛇形命名對齊載入
   sv('f-photo-source',p.photo_source);
   sv('f-variety',p.variety);
   sv('f-natural-subtype',p.natural_subtype);

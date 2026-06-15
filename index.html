@@ -54,7 +54,7 @@ nav a:hover{color:var(--text)}
 .card{background:var(--bg2);cursor:pointer;transition:background .25s;position:relative;overflow:hidden}
 .card:hover{background:var(--bg3)}
 .card-img{width:100%;aspect-ratio:3/4;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:2.5rem;border-bottom:1px solid var(--border);overflow:hidden;position:relative}
-.card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;image-rendering:auto}
 .card-img .placeholder{font-size:2.5rem;z-index:1}
 .card-body{padding:.75rem}
 .card-category{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:3px}
@@ -114,6 +114,12 @@ nav a:hover{color:var(--text)}
 .modal-cta:hover{background:#1e1a2e}
 .modal-cta.sold-out{border-color:var(--border);color:var(--muted);cursor:default}
 .modal-cta.sold-out:hover{background:transparent}
+
+/* VIDEO */
+.video-section{margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem}
+.video-section-title{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:.75rem}
+.video-embed{width:100%;aspect-ratio:16/9;border:1px solid var(--border);background:#000;margin-bottom:.75rem;border-radius:4px;overflow:hidden}
+.video-embed iframe{width:100%;height:100%;border:none}
 
 /* ORDER FORM */
 .order-form{margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;display:none}
@@ -199,10 +205,24 @@ footer a:hover{color:var(--text)}
 </footer>
 
 <script>
-const FORMSPREE_ID = 'YOUR_FORMSPREE_ID'; // 設定後替換這裡
+const FORMSPREE_ID = 'meewnjol';
 const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
 function nl2br(s){return s?s.replace(/\n/g,'<br>'):'';}
+function getVideoEmbed(url){
+  if(!url)return'';
+  // YouTube
+  let m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
+  if(m)return'<div class="video-embed"><iframe src="https://www.youtube.com/embed/'+m[1]+'" allowfullscreen loading="lazy"></iframe></div>';
+  // Google Drive
+  m=url.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
+  if(m)return'<div class="video-embed"><iframe src="https://drive.google.com/file/d/'+m[1]+'/preview" allowfullscreen loading="lazy"></iframe></div>';
+  // Drive preview URL
+  if(url.includes('drive.google.com')&&url.includes('/preview'))return'<div class="video-embed"><iframe src="'+url+'" allowfullscreen loading="lazy"></iframe></div>';
+  // 其他影片連結
+  return'<div style="margin-bottom:.75rem"><a href="'+url+'" target="_blank" style="color:var(--accent);font-size:13px">▶ 觀看影片</a></div>';
+}
+function thumb(url,w){if(!url)return'';if(url.includes('i.ibb.co'))return url;return url;}
 let currentFilter = 'all';
 let currentProduct = null;
 let cachedProducts = []; 
@@ -325,7 +345,7 @@ function openModal(idx){
     ${si('照片來源',p.photo_source)}
   </div>`;
 
-  // Tab 2: GAA 鑑定
+  // Tab 2: GAA 描述
   const varietyStr=[p.variety,p.natural_subtype||p.composite_type||p.synthetic_info||p.imitation_info].filter(Boolean).join(' · ');
   const treatmentStr=[p.treatment,p.treatment_detail].filter(Boolean).join(' · ');
   const tab2=`<div class="spec-grid">
@@ -337,12 +357,17 @@ function openModal(idx){
     ${si('優化處理 Treatment',treatmentStr||'天然無處理 No Treatment',true)}
   </div>`;
 
+  // 影片
+  const vids=Array.isArray(p.videos)?p.videos:[];
+  const videosHtml=vids.length?`<div class="video-section"><div class="video-section-title">🎬 商品影片</div>${vids.map(v=>getVideoEmbed(v.url||v)).join('')}</div>`:'';
+
   // Tab 3: 商品說明
   const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const tagsHtml=tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
   const tab3=`
     ${p.description?`<div class="modal-desc" style="margin-bottom:1rem">${nl2br(p.description)}</div>`:''}
     ${tagsHtml?`<div class="modal-tags">${tagsHtml}</div>`:''}
+    ${videosHtml}
   `;
 
   document.getElementById('modalContent').innerHTML=`
@@ -354,7 +379,7 @@ function openModal(idx){
       
       <div class="detail-tabs">
         <button class="detail-tab active" onclick="switchTab(0,this)">📋 基本規格</button>
-        <button class="detail-tab" onclick="switchTab(1,this)">🔬 GAA 鑑定</button>
+        <button class="detail-tab" onclick="switchTab(1,this)">🔬 GAA 描述</button>
         <button class="detail-tab" onclick="switchTab(2,this)">📖 商品說明</button>
       </div>
       <div class="detail-panel active" id="dtab0">${tab1}</div>
