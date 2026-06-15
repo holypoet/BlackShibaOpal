@@ -36,19 +36,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:1.2
 nav{display:flex;gap:1.5rem;align-items:center}
 nav a{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;transition:color .2s}
 nav a:hover{color:var(--text)}
-.cart-btn{
-  font-size:12px;letter-spacing:1px;padding:6px 14px;
-  border:1px solid var(--border);color:var(--muted);cursor:pointer;
-  background:transparent;font-family:inherit;transition:all .2s;position:relative;
-}
-.cart-btn:hover{color:var(--text);border-color:#5a5078}
-.cart-count{
-  position:absolute;top:-6px;right:-6px;
-  background:var(--accent);color:#1a1030;
-  font-size:10px;width:16px;height:16px;border-radius:50%;
-  display:none;align-items:center;justify-content:center;font-weight:bold;
-}
-.cart-count.show{display:flex}
 
 .hero{text-align:center;padding:4rem 1.5rem 3rem;border-bottom:1px solid var(--border)}
 .hero-eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:1.25rem}
@@ -81,13 +68,24 @@ nav a:hover{color:var(--text)}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200;padding:1rem}
 .modal-overlay.show{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border);max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
-.modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;z-index:1}
-.modal-img{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:5rem;border-bottom:1px solid var(--border);overflow:hidden}
-.modal-img img{width:100%;height:100%;object-fit:cover}
+.modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;z-index:10}
+
+/* 優化圖片高度與顯示方式 */
+.modal-img{width:100%;height:40vh;min-height:280px;max-height:400px;background:#050508;display:flex;align-items:center;justify-content:center;font-size:5rem;border-bottom:1px solid var(--border);overflow:hidden;position:relative}
+.modal-img img{width:100%;height:100%;object-fit:contain;padding:1rem}
+
 .modal-body{padding:1.5rem}
 .modal-category{font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
 .modal-name{font-size:22px;font-weight:300;margin-bottom:.5rem;color:#f0ebe0}
-.modal-price{font-size:18px;color:var(--accent);margin-bottom:1rem}
+.modal-price{font-size:18px;color:var(--accent);margin-bottom:1.25rem}
+
+/* 規格表 CSS */
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;background:#100e16;padding:1.25rem;border-radius:4px;border:1px solid var(--border)}
+.spec-item{display:flex;flex-direction:column;gap:4px}
+.spec-label{font-size:11px;color:var(--muted);letter-spacing:1px}
+.spec-value{font-size:13px;color:#d4cfc4;line-height:1.4}
+@media(max-width:480px){.spec-grid{grid-template-columns:1fr}}
+
 .modal-desc{font-size:14px;color:#8a8278;line-height:1.8;margin-bottom:1.25rem}
 .modal-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem}
 .modal-tag{font-size:10px;padding:3px 10px;border:1px solid var(--border);color:var(--muted);letter-spacing:1px}
@@ -108,7 +106,8 @@ nav a:hover{color:var(--text)}
 .form-group label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
 .form-group input,.form-group textarea{
   width:100%;background:var(--bg3);border:1px solid var(--border);
-  color:var(--text);padding:8px 12px;font-size:14px;border-radius:3px;font-family:inherit;transition:border .2s}
+  color:var(--text);padding:8px 12px;font-size:14px;border-radius:3px;font-family:inherit;transition:border .2s;
+}
 .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#5a5078}
 .form-group textarea{min-height:60px;resize:vertical;line-height:1.6}
 .submit-btn{
@@ -188,7 +187,7 @@ const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
 let currentFilter = 'all';
 let currentProduct = null;
-let cachedProducts = []; // 供彈出視窗使用
+let cachedProducts = []; 
 
 // Supabase 設定 
 const SB_URL = 'https://obujbaevimyquefwgnxm.supabase.co';
@@ -199,7 +198,6 @@ const sbHeaders = {
   'Prefer': 'return=representation'
 };
 
-// 從 Supabase 讀取商品
 async function getProducts(filter=''){
   try{
     const url = `${SB_URL}/rest/v1/products?order=created_at.desc&select=*${filter?'&'+filter:''}`;
@@ -212,18 +210,16 @@ async function getProducts(filter=''){
   }
 }
 
-// 新增前台送出訂單到 Supabase 的函式
 async function createOrder(data){
   const r = await fetch(`${SB_URL}/rest/v1/orders`, {
     method: 'POST',
     headers: sbHeaders,
-    body: JSON.stringify(data) // 同樣不用自己塞 ID
+    body: JSON.stringify(data) 
   });
   if(!r.ok) throw new Error('Order creation failed');
   return r.json();
 }
 
-// 新增前台即時扣減庫存到 Supabase 的函式
 async function decreaseStock(id, currentStock){
   const nextStock = Math.max(0, Number(currentStock) - 1);
   const r = await fetch(`${SB_URL}/rest/v1/products?id=eq.${id}`, {
@@ -283,10 +279,39 @@ function openModal(idx){
   const p=cachedProducts[idx]; 
   if(!p) return;
   currentProduct=p;
+  
   const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const imgHtml=p.image?`<img src="${p.image}" alt="${p.name}">`:`<span style="font-size:5rem">${EMOJI[p.category]||'💎'}</span>`;
   const isSold=p.status==='已售出';
   const tagsHtml=tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
+
+  // 動態組合規格表，只顯示有填寫的欄位
+  const specList = [
+    { label: '產地', value: [p.country, p.origin].filter(Boolean).join(' - ') },
+    { label: '重量', value: p.weight },
+    { label: '尺寸', value: p.size },
+    { label: '種類', value: [p.variety, p.natural_subtype, p.composite_type].filter(Boolean).join(' ') },
+    { label: '體色', value: p.body_tone },
+    { label: '遊彩', value: p.play_of_colour },
+    { label: '透明度', value: p.diaphaneity },
+    { label: '處理', value: [p.treatment, p.treatment_detail].filter(Boolean).join(' - ') }
+  ].filter(s => s.value && s.value.trim() !== '' && !s.value.includes('未處理') && !s.value.includes('無遊彩') && s.value !== ' - ');
+
+  // 永遠顯示基本規格，若無特殊處理則顯示天然無處理
+  if (p.treatment === '未處理 No Treatment') {
+    specList.push({ label: '優化處理', value: '天然無處理 No Treatment' });
+  }
+
+  const specsHtml = specList.length > 0 ? `
+    <div class="spec-grid">
+      ${specList.map(s => `
+        <div class="spec-item">
+          <span class="spec-label">${s.label}</span>
+          <span class="spec-value">${s.value}</span>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
 
   document.getElementById('modalContent').innerHTML=`
     <div class="modal-img">${imgHtml}</div>
@@ -294,8 +319,12 @@ function openModal(idx){
       <div class="modal-category">${p.category||''}</div>
       <div class="modal-name">${p.name}</div>
       <div class="modal-price">NT$ ${Number(p.price).toLocaleString()}</div>
+      
+      ${specsHtml}
+      
       <div class="modal-desc">${(p.description||'').replace(/\n/g,'<br>')}</div>
       ${tagsHtml?`<div class="modal-tags">${tagsHtml}</div>`:''}
+      
       ${isSold
         ?`<button class="modal-cta sold-out" disabled>此商品已售出</button>`
         :`<button class="modal-cta" onclick="toggleOrderForm()">📦 我要購買</button>`
