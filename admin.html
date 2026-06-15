@@ -797,7 +797,7 @@ function orderCardHtml(o){
     <div class="order-status">
       <span style="font-size:12px;color:var(--muted);align-self:center">更新：</span>
       ${['已預定','已付款','已出貨','已完成'].map(s=>`<button class="status-btn ${s==='已預定'?'reserved':s==='已付款'?'paid':s==='已出貨'?'shipped':'done'} ${o.status===s?'active-status':''}" onclick="updateOrderStatus('${o.id}','${s}')">${s}</button>`).join('')}
-      <button class="status-btn" style="color:#e0a050" onclick="cancelOrder('${o.id}','${o.product_id||o.productId}')">取消訂單</button>
+      <button class="status-btn" style="color:#e0a050" onclick="cancelOrder('${o.id}','${o.product_id||o.productId}','${(o.email||'').replace(/'/g,"\\'")}','${(o.buyer_name||o.buyerName||'').replace(/'/g,"\\'")}','${(o.product_name||o.productName||'').replace(/'/g,"\\'")}',${o.price||0})">取消訂單</button>
       <button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}')">刪除</button>
     </div>
   </div>`;
@@ -814,8 +814,8 @@ async function updateOrderStatus(id,status){
   toast(`狀態已更新為「${status}」`);
   renderOrders();renderDashboard();
 }
-async function cancelOrder(orderId, productId){
-  if(!confirm('確定取消此訂單？庫存會自動恢復。'))return;
+async function cancelOrder(orderId, productId, email, buyerName, productName, price){
+  if(!confirm('確定取消此訂單？庫存會自動恢復，並發送通知信給客戶。'))return;
   // 更新訂單狀態
   await updateOrder(orderId, {status:'已取消'});
   // 恢復庫存 +1
@@ -829,6 +829,29 @@ async function cancelOrder(orderId, productId){
     }catch(e){console.log('庫存恢復失敗',e);}
   }
   toast('訂單已取消，庫存已恢復');
+  // 發送取消通知信給客戶
+  if(email){
+    const subject=encodeURIComponent(`【黑柴珠寶】訂單取消通知 - ${productName}`);
+    const body=encodeURIComponent(
+`${buyerName} 您好，
+
+感謝您對黑柴珠寶的支持。
+
+很抱歉通知您，您所訂購的商品「${productName}」（NT$ ${Number(price).toLocaleString()}）因故需要取消此筆訂單。
+
+若您已完成付款，我們將盡速安排退款事宜，請回覆此信件提供您的退款帳戶資訊。
+
+若有任何疑問，歡迎隨時透過以下方式聯繫我們：
+📧 Email：blackshibawolf@gmail.com
+📷 Instagram：@blackshibaopal
+
+再次感謝您的諒解，期待未來為您服務。
+
+黑柴珠寶 BLACKSHIBAOPAL Jewelry`
+    );
+    window.open('mailto:'+email+'?subject='+subject+'&body='+body);
+    toast('已開啟郵件撰寫視窗');
+  }
   renderOrders();renderDashboard();
 }
 
