@@ -161,7 +161,6 @@ select option{background:var(--bg2)}
 </head>
 <body>
 
-<!-- LOGIN -->
 <div class="login-wrap" id="loginWrap">
   <div class="login-box">
     <div class="login-logo">黑柴珠寶</div>
@@ -172,7 +171,6 @@ select option{background:var(--bg2)}
   </div>
 </div>
 
-<!-- APP -->
 <div class="app" id="appWrap">
   <aside class="sidebar">
     <div class="sidebar-logo">黑柴珠寶 BLACKSHIBAOPAL<span>後台管理</span></div>
@@ -189,7 +187,6 @@ select option{background:var(--bg2)}
   </aside>
 
   <main>
-    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="page-title">總覽<div class="page-sub">黑柴珠寶商品管理後台</div></div>
       <div class="stats" id="statsRow"></div>
@@ -199,7 +196,6 @@ select option{background:var(--bg2)}
       </div>
     </div>
 
-    <!-- ORDERS -->
     <div class="page" id="page-orders">
       <div class="page-title">訂單管理</div>
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
@@ -215,7 +211,6 @@ select option{background:var(--bg2)}
       <div class="order-list" id="orderList"></div>
     </div>
 
-    <!-- ADD PRODUCT -->
     <div class="page" id="page-add">
       <div class="page-title" id="formTitle">新增商品</div>
       <input type="hidden" id="editId" value="">
@@ -263,7 +258,6 @@ select option{background:var(--bg2)}
         </div>
       </div>
 
-      <!-- 商業規格 -->
       <div class="form-section">
         <div class="form-section-title">商業規格</div>
         <div class="form-row">
@@ -320,11 +314,9 @@ select option{background:var(--bg2)}
         </div>
       </div>
 
-      <!-- GAA 鑑定 -->
       <div class="form-section">
         <div class="form-section-title">GAA 鑑定資訊</div>
 
-        <!-- 種類 Variety -->
         <div class="form-row">
           <div class="form-group">
             <label>種類 Variety</label>
@@ -347,7 +339,6 @@ select option{background:var(--bg2)}
           </div>
         </div>
 
-        <!-- 拼合/合成/仿製 備註 -->
         <div class="form-row full" id="composite-wrap" style="display:none">
           <div class="form-group">
             <label>拼合類型說明 Composite Type</label>
@@ -372,7 +363,6 @@ select option{background:var(--bg2)}
         </div>
 
         <div class="form-row">
-          <!-- 吸水性 -->
           <div class="form-group">
             <label>吸水性 Absorbency</label>
             <select id="f-absorbency">
@@ -381,7 +371,6 @@ select option{background:var(--bg2)}
               <option value="具吸水性 Hydrophane（水蛋白石）">具吸水性 Hydrophane（水蛋白石）</option>
             </select>
           </div>
-          <!-- 遊彩 -->
           <div class="form-group">
             <label>遊彩 Play of Colour</label>
             <select id="f-play-of-colour">
@@ -393,7 +382,6 @@ select option{background:var(--bg2)}
         </div>
 
         <div class="form-row">
-          <!-- 體色 Body Tone -->
           <div class="form-group">
             <label>體色 Body Tone</label>
             <select id="f-body-tone">
@@ -417,7 +405,6 @@ select option{background:var(--bg2)}
               </optgroup>
             </select>
           </div>
-          <!-- 透明度 -->
           <div class="form-group">
             <label>透明度 Diaphaneity</label>
             <select id="f-diaphaneity">
@@ -429,7 +416,6 @@ select option{background:var(--bg2)}
           </div>
         </div>
 
-        <!-- 優化處理 -->
         <div class="form-row full">
           <div class="form-group">
             <label>優化處理 Treatment</label>
@@ -452,7 +438,6 @@ select option{background:var(--bg2)}
         </div>
       </div>
 
-      <!-- MEDIA -->
       <div class="media-section">
         <div class="form-section-title">圖片與影片</div>
         <div class="media-tabs">
@@ -460,7 +445,6 @@ select option{background:var(--bg2)}
           <button class="media-tab" onclick="switchMediaTab('videos',this)">🎬 影片</button>
         </div>
 
-        <!-- IMAGES TAB -->
         <div id="tab-images">
           <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">第一張為主圖。點圖片可設為主圖或刪除。</div>
           <div class="img-grid" id="imgGrid">
@@ -479,7 +463,6 @@ select option{background:var(--bg2)}
           </div>
         </div>
 
-        <!-- VIDEOS TAB -->
         <div id="tab-videos" style="display:none">
           <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">貼上影片網址，或從 Google Drive 選取</div>
           <div class="video-input-wrap">
@@ -502,7 +485,6 @@ select option{background:var(--bg2)}
       </div>
     </div>
 
-    <!-- PRODUCT LIST -->
     <div class="page" id="page-list">
       <div class="page-title">商品列表</div>
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
@@ -518,7 +500,6 @@ select option{background:var(--bg2)}
       <div class="product-list" id="productList"></div>
     </div>
 
-    <!-- EXPORT -->
     <div class="page" id="page-export">
       <div class="page-title">匯出 / 備份</div>
       <div class="form-section">
@@ -545,7 +526,6 @@ select option{background:var(--bg2)}
   </main>
 </div>
 
-<!-- DRIVE HELP MODAL -->
 <div class="drive-modal" id="driveModal">
   <div class="drive-modal-box">
     <div class="drive-modal-title">📁 從 Google Drive 選取影片</div>
@@ -558,7 +538,6 @@ select option{background:var(--bg2)}
 
 <div class="toast" id="toast"></div>
 
-<!-- Google APIs -->
 <script src="https://apis.google.com/js/api.js"></script>
 <script src="https://accounts.google.com/gsi/client"></script>
 
@@ -571,10 +550,10 @@ const GOOGLE_CLIENT_ID='73001971116-5rirhfs1p2qn5ojgieflo0el05chdefl.apps.google
 const GOOGLE_API_KEY='AIzaSyBeTF2DqTw19I67zzcz4amxXoi3KcmN4K8';
 const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.readonly';
 
-// Supabase 設定
+// Supabase 設定 (已修正 Header)
 const SB_URL='https://obujbaevimyquefwgnxm.supabase.co';
 const SB_KEY='sb_publishable_jdHW-a9YVioP2VQh4Besuw_Z8J95PWi';
-const sbHeaders={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+const sbHeaders={'apikey':SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
 
 async function sbGet(table, params=''){
   const r=await fetch(`${SB_URL}/rest/v1/${table}?${params}`,{headers:sbHeaders});
@@ -855,7 +834,7 @@ function saveProduct(){
   if(!name){toast('請填入商品名稱',true);return;}
   if(!cat){toast('請選擇商品分類',true);return;}
   if(!price){toast('請填入售價',true);return;}
-  const all=getProducts();
+  const all=getProducts(); // 注意：後台為完整替換，此處為舊版同步邏輯殘留，但不影響實際更新
   const editId=document.getElementById('editId').value;
   const gv=id=>document.getElementById(id)?.value||'';
   const product={
@@ -886,15 +865,25 @@ function saveProduct(){
     images:currentImages,
     videos:currentVideos,
     image:currentImages[0]?.src||'',
-    updatedAt:new Date().toISOString()
   };
-  if(editId){const idx=all.findIndex(p=>p.id===editId);if(idx>=0)all[idx]=product;else all.push(product);toast('商品已更新 ✓');}
-  else{product.createdAt=product.updatedAt;all.push(product);toast('商品已新增 ✓');}
-  saveProducts(all);clearForm();
+  
+  // 修正後的非同步儲存
+  (async () => {
+    if(editId){
+      await updateProduct(editId, product);
+      toast('商品已更新 ✓');
+    }else{
+      await createProduct(product);
+      toast('商品已新增 ✓');
+    }
+    clearForm();
+    renderList();
+  })();
 }
 
-function editProduct(id){
-  const p=getProducts().find(x=>x.id===id);if(!p)return;
+async function editProduct(id){
+  const p = await getProductById(id);
+  if(!p) return;
   showPage('add',document.querySelector('.nav-item:nth-child(4)'));
   document.getElementById('editId').value=p.id;
   document.getElementById('f-name').value=p.name||'';

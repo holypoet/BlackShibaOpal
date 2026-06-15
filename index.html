@@ -169,7 +169,6 @@ footer a:hover{color:var(--text)}
   <div id="emptyMsg"></div>
 </div>
 
-<!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="modal" onclick="closeModal(event)">
   <div class="modal" id="modalBox">
     <button class="modal-close" onclick="closeModal()">✕</button>
@@ -185,17 +184,60 @@ footer a:hover{color:var(--text)}
 </footer>
 
 <script>
-const STORAGE_KEY = 'heichai_products';
-const ORDER_KEY = 'heichai_orders';
 const FORMSPREE_ID = 'YOUR_FORMSPREE_ID'; // 設定後替換這裡
 const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
 let currentFilter = 'all';
 let currentProduct = null;
+let cachedProducts = []; // 新增：用於快取當下顯示的商品列表，供彈出視窗使用
 
-function getProducts(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
-function getOrders(){ try{ return JSON.parse(localStorage.getItem(ORDER_KEY)||'[]'); }catch(e){ return []; } }
-function saveOrders(arr){ localStorage.setItem(ORDER_KEY, JSON.stringify(arr)); }
+// Supabase 設定 (已加入前台)
+const SB_URL = 'https://obujbaevimyquefwgnxm.supabase.co';
+const SB_KEY = 'sb_publishable_jdHW-a9YVioP2VQh4Besuw_Z8J95PWi';
+const sbHeaders = {
+  'apikey': SB_KEY,
+  'Content-Type': 'application/json',
+  'Prefer': 'return=representation'
+};
+
+// 從 Supabase 讀取商品
+async function getProducts(filter=''){
+  try{
+    const url = `${SB_URL}/rest/v1/products?order=created_at.desc&select=*${filter?'&'+filter:''}`;
+    const r = await fetch(url, { headers: sbHeaders });
+    if(!r.ok) throw new Error('Network error');
+    return await r.json();
+  }catch(e){
+    console.error('抓取商品失敗:', e);
+    return [];
+  }
+}
+
+// 新增前台送出訂單到 Supabase 的函式
+async function createOrder(data){
+  const r = await fetch(`${SB_URL}/rest/v1/orders`, {
+    method: 'POST',
+    headers: sbHeaders,
+    body: JSON.stringify(data)
+  });
+  if(!r.ok) throw new Error('Order creation failed');
+  return r.json();
+}
+
+// 新增前台即時扣減庫存到 Supabase 的函式
+async function decreaseStock(id, currentStock){
+  const nextStock = Math.max(0, Number(currentStock) - 1);
+  const r = await fetch(`${SB_URL}/rest/v1/products?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: sbHeaders,
+    body: JSON.stringify({
+      stock: nextStock,
+      status: nextStock === 0 ? '已售出' : '販售中'
+    })
+  });
+  if(!r.ok) throw new Error('Stock update failed');
+  return r.json();
+}
 
 function setFilter(f, btn){
   currentFilter=f;
@@ -209,6 +251,8 @@ async function render(){
   document.getElementById('productGrid').innerHTML='';
   const filter=currentFilter==='all'?'':'category=eq.'+encodeURIComponent(currentFilter);
   const list=await getProducts(filter)||[];
+  cachedProducts = list; // 儲存至全域變數供點擊商品卡片時對照
+  
   const grid=document.getElementById('productGrid');
   const title=document.getElementById('gridTitle');
   const empty=document.getElementById('emptyMsg');
@@ -237,9 +281,8 @@ async function render(){
 }
 
 function openModal(idx){
-  const all=getProducts();
-  const list=currentFilter==='all'?all:all.filter(p=>p.category===currentFilter);
-  const p=list[idx]; if(!p) return;
+  const p=cachedProducts[idx]; 
+  if(!p) return;
   currentProduct=p;
   const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const imgHtml=p.image?`<img src="${p.image}" alt="${p.name}">`:`<span style="font-size:5rem">${EMOJI[p.category]||'💎'}</span>`;
@@ -326,7 +369,7 @@ async function submitOrder(){
     await decreaseStock(p.id, p.stock||1);
 
     // Email 通知
-    if(FORMSPREE_ID){
+    if(FORMSPREE_ID && FORMSPREE_ID !== 'YOUR_FORMSPREE_ID'){
       await fetch(`https://formspree.io/f/${FORMSPREE_ID}`,{
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
