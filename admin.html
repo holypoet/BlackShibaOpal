@@ -58,6 +58,7 @@ main{padding:2rem;overflow-y:auto}
 .order-status{display:flex;gap:6px;margin-top:.75rem;flex-wrap:wrap}
 .status-btn{font-size:11px;padding:4px 12px;border-radius:3px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:inherit;transition:all .2s;letter-spacing:.5px}
 .status-btn:hover{color:var(--text);background:var(--bg3)}
+.status-btn.reserved{border-color:#4a4010;color:#e0c050}
 .status-btn.paid{border-color:#2a4a2a;color:#80d080}
 .status-btn.shipped{border-color:#2a3a4a;color:#80c0d8}
 .status-btn.done{border-color:#3a2848;color:#b880d8}
@@ -66,6 +67,8 @@ main{padding:2rem;overflow-y:auto}
 .badge-paid{color:#80d080;border-color:#2a4a2a}
 .badge-shipped{color:#80c0d8;border-color:#2a3a4a}
 .badge-done{color:#b880d8;border-color:#3a2848}
+.badge-reserved{color:#e0c050;border-color:#4a4010}
+.badge-cancel{color:#888;border-color:#333}
 
 .form-section{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1.5rem}
 .form-section-title{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:1.25rem}
@@ -202,9 +205,11 @@ select option{background:var(--bg2)}
         <select id="orderFilter" onchange="renderOrders()" style="font-size:13px;padding:6px 10px">
           <option value="all">全部狀態</option>
           <option value="新訂單">新訂單</option>
+          <option value="已預定">已預定</option>
           <option value="已付款">已付款</option>
           <option value="已出貨">已出貨</option>
           <option value="已完成">已完成</option>
+          <option value="已取消">已取消</option>
         </select>
         <button class="btn btn-danger" onclick="clearOrders()" style="font-size:12px;padding:6px 14px">清除已完成訂單</button>
       </div>
@@ -758,7 +763,7 @@ function closeDriveModal(){document.getElementById('driveModal').classList.remov
 /* ---- DASHBOARD ---- */
 async function renderDashboard(){
   document.getElementById('statsRow').innerHTML='<div style="color:var(--muted);font-size:13px">載入中...</div>';
-  const [all, orders, pendingOrders, paidOrders] = await Promise.all([
+  const [all, orders, pendingOrders, paidOrders, reservedOrders] = await Promise.all([
   getProducts(),
   getOrders('limit=5'),
   getOrders(`status=eq.${encodeURIComponent('新訂單')}&select=id`),
@@ -769,7 +774,8 @@ async function renderDashboard(){
     {num:(all||[]).length,label:'全部商品'},
     {num:selling,label:'販售中'},
     {num:(pendingOrders||[]).length,label:'待處理訂單'},
-    {num:(paidOrders||[]).length,label:'已付款待出貨'}
+    {num:(paidOrders||[]).length,label:'已付款待出貨'},
+    {num:(reservedOrders||[]).length,label:'已預定'}
   ];
   document.getElementById('statsRow').innerHTML=stats.map(s=>`<div class="stat-card"><span class="stat-num">${s.num}</span><div class="stat-label">${s.label}</div></div>`).join('');
   const recent=orders||[];
@@ -777,19 +783,21 @@ async function renderDashboard(){
 }
 
 /* ---- ORDERS ---- */
-const STATUS_LABELS={'新訂單':'badge-new','已付款':'badge-paid','已出貨':'badge-shipped','已完成':'badge-done'};
+const STATUS_LABELS={'新訂單':'badge-new','已預定':'badge-reserved','已付款':'badge-paid','已出貨':'badge-shipped','已完成':'badge-done','已取消':'badge-cancel'};
 function orderCardHtml(o){
   const badge=`<span class="badge-status ${STATUS_LABELS[o.status]||'badge-new'}">${o.status}</span>`;
   const time=new Date(o.created_at || o.createdAt).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
   return `<div class="order-card">
     <div class="order-header"><div><div class="order-id">訂單 #${(o.id||'').toString().slice(-6).toUpperCase()} &nbsp;${badge}</div><div class="order-time">${time}</div></div></div>
     <div class="order-name">${o.buyer_name || o.buyerName} &nbsp;<span style="color:var(--muted);font-size:13px">${o.contact}</span></div>
+    ${o.email?`<div class="order-contact">📧 ${o.email}</div>`:''}
     <div class="order-product">商品：${o.product_name || o.productName} &nbsp;NT$${Number(o.price).toLocaleString()}</div>
     ${o.address?`<div class="order-contact">地址：${o.address}</div>`:''}
     ${o.note?`<div class="order-note">備註：${o.note}</div>`:''}
     <div class="order-status">
       <span style="font-size:12px;color:var(--muted);align-self:center">更新：</span>
-      ${['已付款','已出貨','已完成'].map(s=>`<button class="status-btn ${s==='已付款'?'paid':s==='已出貨'?'shipped':'done'} ${o.status===s?'active-status':''}" onclick="updateOrderStatus('${o.id}','${s}')">${s}</button>`).join('')}
+      ${['已預定','已付款','已出貨','已完成'].map(s=>`<button class="status-btn ${s==='已預定'?'reserved':s==='已付款'?'paid':s==='已出貨'?'shipped':'done'} ${o.status===s?'active-status':''}" onclick="updateOrderStatus('${o.id}','${s}')">${s}</button>`).join('')}
+      <button class="status-btn" style="color:#e0a050" onclick="cancelOrder('${o.id}','${o.product_id||o.productId}')">取消訂單</button>
       <button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}')">刪除</button>
     </div>
   </div>`;
@@ -806,6 +814,24 @@ async function updateOrderStatus(id,status){
   toast(`狀態已更新為「${status}」`);
   renderOrders();renderDashboard();
 }
+async function cancelOrder(orderId, productId){
+  if(!confirm('確定取消此訂單？庫存會自動恢復。'))return;
+  // 更新訂單狀態
+  await updateOrder(orderId, {status:'已取消'});
+  // 恢復庫存 +1
+  if(productId){
+    try{
+      const p=await getProductById(productId);
+      if(p){
+        const newStock=(parseInt(p.stock)||0)+1;
+        await updateProduct(productId,{stock:newStock,status:newStock>0?'販售中':p.status});
+      }
+    }catch(e){console.log('庫存恢復失敗',e);}
+  }
+  toast('訂單已取消，庫存已恢復');
+  renderOrders();renderDashboard();
+}
+
 async function deleteOrder(id){
   if(!confirm('確定刪除？'))return;
   await deleteOrderById(id);
