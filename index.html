@@ -340,8 +340,7 @@ function openModal(idx){
   const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const tagsHtml=tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
   const tab3=`
-    ${p.description?`<div class="modal-desc" style="margin-bottom:1rem">${(p.description||'').replace(/
-/g,'<br>')}</div>`:''}
+    ${p.description?`<div class="modal-desc" style="margin-bottom:1rem">${(p.description||'').split('\n').join('<br>')}</div>`:''}
     ${tagsHtml?`<div class="modal-tags">${tagsHtml}</div>`:''}
   `;
 
