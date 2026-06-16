@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# 允許 AI 爬蟲
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+Sitemap: https://holypoet.github.io/BlackShibaOpal/sitemap.xml
