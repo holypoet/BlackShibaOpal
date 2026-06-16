@@ -31,8 +31,12 @@ body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-heig
 a{color:inherit;text-decoration:none}
 
 header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
-.logo{font-size:13px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-.logo span{color:var(--text)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border)}
+.logo-text{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;line-height:1.3}
+.logo-text span{color:var(--text);display:block;font-size:13px;letter-spacing:1px}
+.lang-btn{font-size:11px;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;border-radius:3px;transition:all .2s;letter-spacing:1px}
+.lang-btn:hover{color:var(--text);border-color:#5a5078}
 nav{display:flex;gap:1.5rem;align-items:center}
 nav a{font-size:12px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;transition:color .2s}
 nav a:hover{color:var(--text)}
@@ -180,28 +184,28 @@ footer a:hover{color:var(--text)}
 </header>
 
 <section class="hero">
-  <div class="hero-eyebrow">台灣 · 天然蛋白石專門店</div>
-  <h1 class="hero-title">每顆<span class="opal-text">蛋白石</span><br>都是獨一無二的宇宙</h1>
-  <p class="hero-sub">澳洲直採 · 原礦 · 裸石 · 成品</p>
+  <div class="hero-eyebrow" data-i18n="hero_eyebrow">台灣 · 天然蛋白石專門店</div>
+  <h1 class="hero-title" data-i18n-html="hero_title">每顆<span class="opal-text">蛋白石</span><br>都是獨一無二的宇宙</h1>
+  <p class="hero-sub" data-i18n="hero_sub">澳洲直採 · 原礦 · 裸石 · 成品</p>
 </section>
 
 <div class="filter-bar">
-  <button class="filter-btn active" onclick="setFilter('all',this)">全部商品</button>
-  <button class="filter-btn" onclick="setFilter('原礦',this)">原礦</button>
-  <button class="filter-btn" onclick="setFilter('裸石',this)">裸石</button>
-  <button class="filter-btn" onclick="setFilter('半成品',this)">半成品</button>
-  <button class="filter-btn" onclick="setFilter('成品',this)">成品</button>
+  <button class="filter-btn active" onclick="setFilter('all',this)" data-i18n="filter_all">全部商品</button>
+  <button class="filter-btn" onclick="setFilter('原礦',this)" data-i18n="filter_ore">原礦</button>
+  <button class="filter-btn" onclick="setFilter('裸石',this)" data-i18n="filter_loose">裸石</button>
+  <button class="filter-btn" onclick="setFilter('半成品',this)" data-i18n="filter_semi">半成品</button>
+  <button class="filter-btn" onclick="setFilter('成品',this)" data-i18n="filter_finished">成品</button>
 </div>
 
 <div class="tag-bar" id="tagBar">
-  <button class="tag-btn active" onclick="setTag('all',this)">全部</button>
-  <button class="tag-btn" onclick="setTag('instock',this)">🟢 有庫存</button>
-  <button class="tag-btn" onclick="setTag('hot',this)">🔥 熱門推薦</button>
-  <button class="tag-btn" onclick="setTag('new',this)">🆕 新上架</button>
+  <button class="tag-btn active" onclick="setTag('all',this)" data-i18n="tag_all">全部</button>
+  <button class="tag-btn" onclick="setTag('instock',this)" data-i18n="tag_instock">🟢 有庫存</button>
+  <button class="tag-btn" onclick="setTag('hot',this)" data-i18n="tag_hot">🔥 熱門推薦</button>
+  <button class="tag-btn" onclick="setTag('new',this)" data-i18n="tag_new">🆕 新上架</button>
   <select class="sort-select" id="sortSelect" onchange="render()">
-    <option value="newest">排序：最新</option>
-    <option value="price-low">價格：低→高</option>
-    <option value="price-high">價格：高→低</option>
+    <option value="newest" data-i18n="sort_newest">排序：最新</option>
+    <option value="price-low" data-i18n="sort_price_low">價格：低→高</option>
+    <option value="price-high" data-i18n="sort_price_high">價格：高→低</option>
   </select>
 </div>
 
@@ -219,9 +223,9 @@ footer a:hover{color:var(--text)}
 </div>
 
 <footer>
-  <p>黑柴珠寶 BLACKSHIBAOPAL Jewelry &nbsp;·&nbsp;
-    <a href="https://instagram.com/blackshibaopal" target="_blank">@blackshibaopal</a>
-    &nbsp;·&nbsp; 天然蛋白石 · 澳洲直採
+  <p>
+    <span data-i18n="footer">黑柴珠寶 BLACKSHIBAOPAL Jewelry · 天然蛋白石 · 澳洲直採</span>
+    &nbsp;·&nbsp; <a href="https://instagram.com/blackshibaopal" target="_blank">@blackshibaopal</a>
   </p>
 </footer>
 
@@ -244,6 +248,93 @@ function getVideoEmbed(url){
   return'<div style="margin-bottom:.75rem"><a href="'+url+'" target="_blank" style="color:var(--accent);font-size:13px">▶ 觀看影片</a></div>';
 }
 function thumb(url,w){if(!url)return'';if(url.includes('i.ibb.co'))return url;return url;}
+let currentLang = localStorage.getItem('lang') || 'zh';
+const i18n = {
+  zh: {
+    nav_products: '商品',
+    hero_eyebrow: '台灣 · 天然蛋白石專門店',
+    hero_title: '每顆<span class="opal-text">蛋白石</span><br>都是獨一無二的宇宙',
+    hero_sub: '澳洲直採 · 原礦 · 裸石 · 成品',
+    filter_all: '全部商品', filter_ore: '原礦', filter_loose: '裸石', filter_semi: '半成品', filter_finished: '成品',
+    tag_all: '全部', tag_instock: '🟢 有庫存', tag_hot: '🔥 熱門推薦', tag_new: '🆕 新上架',
+    sort_newest: '排序：最新', sort_price_low: '價格：低→高', sort_price_high: '價格：高→低',
+    product_count: '共 {n} 件商品', loading: '載入商品中...',
+    status_sold: '已售出', status_reserved: '已預定', status_hot: '熱門',
+    tab_spec: '📋 基本規格', tab_gaa: '🔬 GAA 描述', tab_desc: '📖 商品說明',
+    btn_buy: '📦 我要購買', btn_sold: '此商品已售出', btn_reserved: '此商品已被預定',
+    label_name: '姓名 *', label_contact: '聯絡方式 * （電話或 LINE ID）',
+    label_email: 'Email *', label_address: '收件地址', label_note: '備註',
+    ph_name: '收件人姓名', ph_contact: '0912-345-678 或 LINE ID',
+    ph_email: 'example@gmail.com（用於聯繫付款）', ph_address: '如需宅配請填寫，面交可不填',
+    ph_note: '特殊需求、想問的問題...',
+    payment_title: '付款方式說明',
+    payment_body: '${t('payment_body')}付款方式：銀行匯款 或 LINE Pay<br>確認付款後安排出貨或面交',
+    btn_submit: '確認送出訂單', btn_submitting: '送出中...',
+    order_success: '訂單已送出！<br>我們會在 24 小時內透過您提供的聯絡方式與您確認。<br><br>感謝您選購黑柴珠寶 🪨',
+    no_product: '目前這個分類沒有商品<br>請稍後再來或私訊詢問',
+    footer: '黑柴珠寶 BLACKSHIBAOPAL Jewelry · 天然蛋白石 · 澳洲直採',
+    spec_origin: '產地', spec_weight: '重量 CT', spec_size: '尺寸 MM', spec_stock: '庫存',
+    spec_variety: '種類 VARIETY', spec_absorbency: '吸水性 ABSORBENCY',
+    spec_play: '遊彩 PLAY OF COLOUR', spec_tone: '體色 BODY TONE',
+    spec_diaphaneity: '透明度 DIAPHANEITY', spec_treatment: '優化處理 TREATMENT',
+    spec_source: '資訊來源 SOURCE', video_title: '🎬 商品影片'
+  },
+  en: {
+    nav_products: 'Products',
+    hero_eyebrow: 'Taiwan · Natural Opal Specialist',
+    hero_title: 'Every <span class="opal-text">Opal</span><br>Is a Universe of Its Own',
+    hero_sub: 'Direct from Australia · Raw · Loose · Finished',
+    filter_all: 'All', filter_ore: 'Raw', filter_loose: 'Loose', filter_semi: 'Semi-finished', filter_finished: 'Finished',
+    tag_all: 'All', tag_instock: '🟢 In Stock', tag_hot: '🔥 Popular', tag_new: '🆕 New',
+    sort_newest: 'Sort: Newest', sort_price_low: 'Price: Low→High', sort_price_high: 'Price: High→Low',
+    product_count: '{n} Products', loading: 'Loading...',
+    status_sold: 'Sold', status_reserved: 'Reserved', status_hot: 'Hot',
+    tab_spec: '📋 Specs', tab_gaa: '🔬 GAA Info', tab_desc: '📖 Details',
+    btn_buy: '📦 Buy Now', btn_sold: 'This item is sold', btn_reserved: 'This item is reserved',
+    label_name: 'Name *', label_contact: 'Phone / LINE ID *',
+    label_email: 'Email *', label_address: 'Shipping Address', label_note: 'Note',
+    ph_name: 'Full name', ph_contact: 'Phone or LINE ID',
+    ph_email: 'example@gmail.com', ph_address: 'Leave blank for local pickup',
+    ph_note: 'Any special requests...',
+    payment_title: 'Payment Info',
+    payment_body: 'We will contact you within 24 hours to confirm.<br>Payment: Bank transfer or LINE Pay<br>Shipping after payment confirmed.',
+    btn_submit: 'Place Order', btn_submitting: 'Submitting...',
+    order_success: 'Order placed!<br>We will contact you within 24 hours.<br><br>Thank you for choosing BLACKSHIBAOPAL 🪨',
+    no_product: 'No products in this category.<br>Check back later or DM us.',
+    footer: 'BLACKSHIBAOPAL Jewelry · Natural Opal · Direct from Australia',
+    spec_origin: 'Origin', spec_weight: 'Weight (ct)', spec_size: 'Size (mm)', spec_stock: 'Stock',
+    spec_variety: 'Variety', spec_absorbency: 'Absorbency',
+    spec_play: 'Play of Colour', spec_tone: 'Body Tone',
+    spec_diaphaneity: 'Diaphaneity', spec_treatment: 'Treatment',
+    spec_source: 'Source', video_title: '🎬 Video'
+  }
+};
+
+function t(key,vars){
+  let s=i18n[currentLang]?.[key]||i18n.zh[key]||key;
+  if(vars)Object.keys(vars).forEach(k=>{s=s.replace('{'+k+'}',vars[k]);});
+  return s;
+}
+
+function toggleLang(){
+  currentLang=currentLang==='zh'?'en':'zh';
+  localStorage.setItem('lang',currentLang);
+  document.getElementById('langBtn').textContent=currentLang==='zh'?'EN':'中';
+  applyLang();
+  render();
+}
+
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.getAttribute('data-i18n');
+    if(el.tagName==='OPTION')el.textContent=t(key);
+    else el.textContent=t(key);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    el.innerHTML=t(el.getAttribute('data-i18n-html'));
+  });
+}
+
 let currentFilter = 'all';
 let currentTag = 'all';
 let currentProduct = null;
@@ -334,10 +425,10 @@ async function render(){
   const grid=document.getElementById('productGrid');
   const title=document.getElementById('gridTitle');
   const empty=document.getElementById('emptyMsg');
-  title.textContent=`共 ${list.length} 件商品`;
+  title.textContent=t('product_count',{n:list.length});
   if(list.length===0){
     grid.innerHTML='';
-    empty.innerHTML=`<div class="empty"><span class="empty-icon">💎</span><p>目前這個分類沒有商品<br>請稍後再來或私訊詢問</p></div>`;
+    empty.innerHTML=`<div class="empty"><span class="empty-icon">💎</span><p>${t('no_product')}</p></div>`;
     return;
   }
   empty.innerHTML='';
@@ -345,7 +436,7 @@ async function render(){
     const imgHtml=p.image
       ?`<img src="${p.image}" alt="${p.name}" loading="lazy"><span class="placeholder" style="display:none">${EMOJI[p.category]||'💎'}</span>`
       :`<span class="placeholder">${EMOJI[p.category]||'💎'}</span>`;
-    const statusHtml=p.status==='已售出'?`<span class="card-status sold">已售出</span>`:p.status==='已預定'?`<span class="card-status reserved">已預定</span>`:p.status==='熱門'?`<span class="card-status hot">熱門</span>`:'';
+    const statusHtml=p.status==='已售出'?`<span class="card-status sold">${t('status_sold')}</span>`:p.status==='已預定'?`<span class="card-status reserved">${t('status_reserved')}</span>`:p.status==='熱門'?`<span class="card-status hot">${t('status_hot')}</span>`:'';
     return `
       <div class="card" onclick="openModal(${i})">
         <div class="card-img">${imgHtml}${statusHtml}</div>
@@ -383,28 +474,28 @@ function openModal(idx){
   const si=(label,value,full=false)=>value?`<div class="spec-item${full?' full':''}"><span class="spec-label">${label}</span><span class="spec-value">${value}</span></div>`:'';
   const originStr=[p.country,p.origin,p.claim].filter(Boolean).join(' · ');
   const tab1=`<div class="spec-grid">
-    ${si('產地',originStr,true)}
-    ${si('重量 ct',p.weight)}
-    ${si('尺寸 mm',p.size)}
-    ${si('庫存',p.stock!=null?`${p.stock} 件`:'')}
+    ${si(t('spec_origin'),originStr,true)}
+    ${si(t('spec_weight'),p.weight)}
+    ${si(t('spec_size'),p.size)}
+    ${si(t('spec_stock'),p.stock!=null?`${p.stock} 件`:'')}
   </div>`;
 
   // Tab 2: GAA 描述
   const varietyStr=[p.variety,p.natural_subtype||p.composite_type||p.synthetic_info||p.imitation_info].filter(Boolean).join(' · ');
   const treatmentStr=[p.treatment,p.treatment_detail].filter(Boolean).join(' · ');
   const tab2=`<div class="spec-grid">
-    ${si('種類 Variety',varietyStr,true)}
-    ${si('吸水性 Absorbency',p.absorbency)}
-    ${si('遊彩 Play of Colour',p.play_of_colour)}
-    ${si('體色 Body Tone',p.body_tone)}
-    ${si('透明度 Diaphaneity',p.diaphaneity)}
-    ${si('優化處理 Treatment',treatmentStr||'天然無處理 No Treatment',true)}
-    ${si('資訊來源 Source',p.gaa_source,true)}
+    ${si(t('spec_variety'),varietyStr,true)}
+    ${si(t('spec_absorbency'),p.absorbency)}
+    ${si(t('spec_play'),p.play_of_colour)}
+    ${si(t('spec_tone'),p.body_tone)}
+    ${si(t('spec_diaphaneity'),p.diaphaneity)}
+    ${si(t('spec_treatment'),treatmentStr||'天然無處理 No Treatment',true)}
+    ${si(t('spec_source'),p.gaa_source,true)}
   </div>`;
 
   // 影片
   const vids=Array.isArray(p.videos)?p.videos:[];
-  const videosHtml=vids.length?`<div class="video-section"><div class="video-section-title">🎬 商品影片</div>${vids.map(v=>getVideoEmbed(v.url||v)).join('')}</div>`:'';
+  const videosHtml=vids.length?`<div class="video-section"><div class="video-section-title">${t("video_title")}</div>${vids.map(v=>getVideoEmbed(v.url||v)).join('')}</div>`:'';
 
   // Tab 3: 商品說明
   const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
@@ -423,51 +514,50 @@ function openModal(idx){
       <div class="modal-price">NT$ ${Number(p.price).toLocaleString()}</div>
       
       <div class="detail-tabs">
-        <button class="detail-tab active" onclick="switchTab(0,this)">📋 基本規格</button>
-        <button class="detail-tab" onclick="switchTab(1,this)">🔬 GAA 描述</button>
-        <button class="detail-tab" onclick="switchTab(2,this)">📖 商品說明</button>
+        <button class="detail-tab active" onclick="switchTab(0,this)">${t('tab_spec')}</button>
+        <button class="detail-tab" onclick="switchTab(1,this)">${t('tab_gaa')}</button>
+        <button class="detail-tab" onclick="switchTab(2,this)">${t('tab_desc')}</button>
       </div>
       <div class="detail-panel active" id="dtab0">${tab1}</div>
       <div class="detail-panel" id="dtab1" style="margin-bottom:1rem">${tab2}</div>
       <div class="detail-panel" id="dtab2">${tab3}</div>
 
       ${isSold
-        ?`<button class="modal-cta sold-out" disabled style="margin-top:1rem">${p.status==='已預定'?'此商品已被預定':'此商品已售出'}</button>`
-        :`<button class="modal-cta" onclick="toggleOrderForm()" style="margin-top:1rem">📦 我要購買</button>`
+        ?`<button class="modal-cta sold-out" disabled style="margin-top:1rem">${p.status==='已預定'?t('btn_reserved'):t('btn_sold')}</button>`
+        :`<button class="modal-cta" onclick="toggleOrderForm()" style="margin-top:1rem">${t('btn_buy')}</button>`
       }
       <div class="order-form" id="orderForm">
         <h3>填寫訂購資料</h3>
         <div class="form-group">
-          <label>姓名 *</label>
-          <input type="text" id="o-name" placeholder="收件人姓名">
+          <label>${t('label_name')}</label>
+          <input type="text" id="o-name" placeholder="${t('ph_name')}">
         </div>
         <div class="form-group">
-          <label>聯絡方式 * （電話或 LINE ID）</label>
-          <input type="text" id="o-contact" placeholder="0912-345-678 或 LINE ID">
+          <label>${t('label_contact')}</label>
+          <input type="text" id="o-contact" placeholder="${t('ph_contact')}">
         </div>
         <div class="form-group">
-          <label>Email *</label>
-          <input type="email" id="o-email" placeholder="example@gmail.com（用於聯繫付款）">
+          <label>${t('label_email')}</label>
+          <input type="email" id="o-email" placeholder="${t('ph_email')}">
         </div>
         <div class="form-group">
-          <label>收件地址</label>
-          <input type="text" id="o-address" placeholder="如需宅配請填寫，面交可不填">
+          <label>${t('label_address')}</label>
+          <input type="text" id="o-address" placeholder="${t('ph_address')}">
         </div>
         <div class="form-group">
-          <label>備註</label>
-          <textarea id="o-note" placeholder="特殊需求、想問的問題..."></textarea>
+          <label>${t('label_note')}</label>
+          <textarea id="o-note" placeholder="${t('ph_note')}"></textarea>
         </div>
         <div class="payment-info">
-          <strong>付款方式說明</strong>
-          下單後我們會在 24 小時內與您聯繫確認訂單<br>
-          付款方式：銀行匯款 或 LINE Pay<br>
-          確認付款後安排出貨或面交
+          <strong>${t('payment_title')}</strong>
+          ${t('payment_body')}
+
         </div>
         <br>
-        <button class="submit-btn" id="submitBtn" onclick="submitOrder()">確認送出訂單</button>
+        <button class="submit-btn" id="submitBtn" onclick="submitOrder()">${t("btn_submit")}</button>
         <div class="order-success" id="orderSuccess">
           <div class="order-success-icon">✅</div>
-          <p>訂單已送出！<br>我們會在 24 小時內透過您提供的聯絡方式與您確認。<br><br>感謝您選購黑柴珠寶 🪨</p>
+          <p>${t('order_success')}</p>
         </div>
       </div>
     </div>`;
@@ -559,7 +649,11 @@ function closeModal(e){
   }
 }
 
-document.addEventListener('DOMContentLoaded', render);
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('langBtn').textContent=currentLang==='zh'?'EN':'中';
+  applyLang();
+  render();
+});
 </script>
 </body>
 </html>
