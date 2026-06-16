@@ -265,8 +265,11 @@ const FORMSPREE_ID = 'meewnjol';
 const LINE_ID = '684yeqho'; // 你的 LINE ID
 const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
-function openLine(productName, price){
-  const msg=encodeURIComponent(`您好，我想詢問這個商品：${productName}（NT$${Number(price).toLocaleString()}）`);
+function openLine(productName, price, idx){
+  const productUrl=`${location.origin}${location.pathname}?p=${idx}`;
+  const msg=encodeURIComponent(`您好，我想詢問這個商品：
+${productName}（NT$${Number(price).toLocaleString()}）
+${productUrl}`);
   window.open(`https://line.me/R/ti/p/@${LINE_ID}?text=${msg}`,'_blank');
 }
 function shareProduct(name, idx){
