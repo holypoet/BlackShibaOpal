@@ -273,18 +273,16 @@ const LINE_ID = '684yeqho'; // 你的 LINE ID
 const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
 function addLineFriend(){
-  window.open('https://line.me/ti/p/%40'+LINE_ID,'_blank');
+  // 加好友：帶 @，用 %40 編碼
+  window.open('https://line.me/R/ti/p/%40'+LINE_ID,'_blank');
 }
 function openLine(encodedName, price){
   const productName=decodeURIComponent(encodedName);
   const idx=document.getElementById('modalContent').dataset.idx||0;
   const productUrl=location.origin+location.pathname+'?p='+idx;
-  // 複製訊息到剪貼簿，再開啟 LINE 帳號頁面
-  const msg='您好，我想詢問這個商品：'+productName+'（NT$'+Number(price).toLocaleString()+'） '+productUrl;
-  navigator.clipboard.writeText(msg).then(()=>{
-    alert('商品資訊已複製！\n請在 LINE 聊天室貼上後送出。');
-  }).catch(()=>{});
-  window.open('https://line.me/ti/p/~'+LINE_ID,'_blank');
+  const msg=encodeURIComponent('您好，我想詢問這個商品：'+productName+'（NT$'+Number(price).toLocaleString()+'） '+productUrl);
+  // 傳訊：oaMessage 格式，ID 不帶 @
+  window.open('https://line.me/R/oaMessage/'+LINE_ID+'/?'+msg,'_blank');
 }
 function shareProduct(name, idx){
   const url=`${location.origin}${location.pathname}?p=${idx}`;
