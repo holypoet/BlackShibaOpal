@@ -368,15 +368,6 @@ function t(key,vars){
 function toggleLang(){
   currentLang=currentLang==='zh'?'en':'zh';
   localStorage.setItem('lang',currentLang);
-  // URL 參數：?p=idx 直接開商品
-  const urlParams=new URLSearchParams(location.search);
-  const pIdx=urlParams.get('p');
-  if(pIdx!==null){
-    await render();
-    const idx=parseInt(pIdx);
-    if(!isNaN(idx)&&cachedProducts[idx])openModal(idx);
-    return;
-  }
   const lb=document.getElementById('langBtn');
   if(lb)lb.textContent=currentLang==='zh'?'EN':'中';
   applyLang();
