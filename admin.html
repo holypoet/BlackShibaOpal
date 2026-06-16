@@ -168,8 +168,9 @@ select option{background:var(--bg2)}
   <div class="login-box">
     <div class="login-logo">黑柴珠寶</div>
     <div class="login-title">後台管理登入</div>
-    <input type="password" id="pwInput" placeholder="輸入密碼" maxlength="20" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">登入</button>
+    <input type="email" id="emailInput" placeholder="Email" style="margin-bottom:.5rem;text-align:left;letter-spacing:0" onkeydown="if(event.key==='Enter')document.getElementById('pwInput').focus()">
+    <input type="password" id="pwInput" placeholder="密碼" maxlength="50" style="letter-spacing:2px" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">登入</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -558,9 +559,7 @@ select option{background:var(--bg2)}
 <script src="https://accounts.google.com/gsi/client"></script>
 
 <script>
-const AKEY='heichai_auth';
-const PW_HASH=btoa('B@oPalC8');
-const MAX_ATTEMPTS=5, LOCK_MINUTES=15;
+// Supabase Auth（無明碼密碼）
 const EMOJI={'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
 const GOOGLE_CLIENT_ID='73001971116-5rirhfs1p2qn5ojgieflo0el05chdefl.apps.googleusercontent.com';
 const GOOGLE_API_KEY='AIzaSyBeTF2DqTw19I67zzcz4amxXoi3KcmN4K8';
@@ -597,21 +596,81 @@ async function sbDelete(table, id){
 
 let currentImages=[], currentVideos=[], tokenClient=null, accessToken=null;
 
-/* ---- AUTH ---- */
-function getAttempts(){try{return JSON.parse(localStorage.getItem('heichai_attempts')||'{"count":0,"lockedUntil":0}');}catch(e){return{count:0,lockedUntil:0};}}
-function saveAttempts(a){localStorage.setItem('heichai_attempts',JSON.stringify(a));}
+/* ---- AUTH (Supabase) ---- */
+let authSession=null;
 
-function doLogin(){
-  const a=getAttempts();
-  if(a.lockedUntil>Date.now()){const m=Math.ceil((a.lockedUntil-Date.now())/60000);showErr(`帳號鎖定中，請 ${m} 分鐘後再試`);return;}
+async function doLogin(){
+  const email=document.getElementById('emailInput').value.trim();
   const pw=document.getElementById('pwInput').value;
-  if(btoa(pw)===PW_HASH){localStorage.setItem(AKEY,btoa(Date.now().toString()));saveAttempts({count:0,lockedUntil:0});showApp();}
-  else{a.count++;if(a.count>=MAX_ATTEMPTS){a.lockedUntil=Date.now()+LOCK_MINUTES*60*1000;a.count=0;showErr(`錯誤次數過多，鎖定 ${LOCK_MINUTES} 分鐘`);}else{showErr(`密碼錯誤（${a.count}/${MAX_ATTEMPTS} 次）`);}saveAttempts(a);document.getElementById('pwInput').value='';}
+  if(!email||!pw){showErr('請輸入 Email 和密碼');return;}
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='登入中...';
+  try{
+    const r=await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pw})
+    });
+    const data=await r.json();
+    if(data.access_token){
+      authSession=data;
+      localStorage.setItem('sb_session',JSON.stringify(data));
+      applyAuthHeaders(data.access_token);
+      showApp();
+    }else{
+      showErr(data.error_description||data.msg||'登入失敗，請確認帳號密碼');
+    }
+  }catch(e){showErr('連線失敗，請稍後再試');}
+  btn.disabled=false;btn.textContent='登入';
 }
+
+function applyAuthHeaders(token){
+  sbHeaders['Authorization']='Bearer '+token;
+}
+
 function showErr(m){const e=document.getElementById('loginError');e.textContent=m;e.style.display='block';}
-function isLoggedIn(){const t=localStorage.getItem(AKEY);if(!t)return false;return(Date.now()-parseInt(atob(t)))<8*60*60*1000;}
-function showApp(){document.getElementById('loginWrap').style.display='none';document.getElementById('appWrap').classList.add('show');initGoogleAuth();renderDashboard();}
-function doLogout(){localStorage.removeItem(AKEY);location.reload();}
+
+async function checkSession(){
+  try{
+    const stored=localStorage.getItem('sb_session');
+    if(!stored)return false;
+    const session=JSON.parse(stored);
+    // 用 refresh token 換新 token
+    const r=await fetch(`${SB_URL}/auth/v1/token?grant_type=refresh_token`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({refresh_token:session.refresh_token})
+    });
+    const data=await r.json();
+    if(data.access_token){
+      authSession=data;
+      localStorage.setItem('sb_session',JSON.stringify(data));
+      applyAuthHeaders(data.access_token);
+      return true;
+    }
+  }catch(e){}
+  localStorage.removeItem('sb_session');
+  return false;
+}
+
+function showApp(){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('appWrap').classList.add('show');
+  initGoogleAuth();
+  renderDashboard();
+}
+
+async function doLogout(){
+  try{
+    await fetch(`${SB_URL}/auth/v1/logout`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':sbHeaders['Authorization']}
+    });
+  }catch(e){}
+  localStorage.removeItem('sb_session');
+  authSession=null;
+  location.reload();
+}
 
 /* ---- UTILS ---- */
 // 商品 CRUD
@@ -1084,9 +1143,10 @@ document.addEventListener('change',e=>{
 });
 
 /* ---- INIT ---- */
-document.addEventListener('DOMContentLoaded',()=>{
-  if(isLoggedIn())showApp();
-  else document.getElementById('pwInput')?.focus();
+document.addEventListener('DOMContentLoaded',async()=>{
+  const loggedIn=await checkSession();
+  if(loggedIn)showApp();
+  else document.getElementById('emailInput')?.focus();
   renderImgGrid();renderVideoList();
 });
 </script>

@@ -280,18 +280,12 @@ async function createOrder(data){
   return r.json();
 }
 
-async function decreaseStock(id, currentStock){
-  const nextStock = Math.max(0, Number(currentStock) - 1);
-  const r = await fetch(`${SB_URL}/rest/v1/products?id=eq.${id}`, {
-    method: 'PATCH',
-    headers: sbHeaders,
-    body: JSON.stringify({
-      stock: nextStock,
-      status: nextStock === 0 ? '已預定' : '販售中'
-    })
+async function decreaseStock(id){
+  await fetch(`${SB_URL}/rest/v1/rpc/decrease_stock`,{
+    method:'POST',
+    headers:sbHeaders,
+    body:JSON.stringify({product_uuid:id})
   });
-  if(!r.ok) throw new Error('Stock update failed');
-  return r.json();
 }
 
 function setFilter(f, btn){
@@ -511,7 +505,7 @@ async function submitOrder(){
 
   try{
     await createOrder(order);
-    await decreaseStock(p.id, p.stock||1);
+    await decreaseStock(p.id);
 
     if(FORMSPREE_ID && FORMSPREE_ID !== 'YOUR_FORMSPREE_ID'){
       await fetch(`https://formspree.io/f/${FORMSPREE_ID}`,{
