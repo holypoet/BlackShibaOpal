@@ -280,9 +280,11 @@ function openLine(encodedName, price){
   const productName=decodeURIComponent(encodedName);
   const idx=document.getElementById('modalContent').dataset.idx||0;
   const productUrl=location.origin+location.pathname+'?p='+idx;
-  const msg=encodeURIComponent('您好，我想詢問這個商品：'+productName+'（NT$'+Number(price).toLocaleString()+'） '+productUrl);
-  // 傳訊：oaMessage 格式，ID 不帶 @
-  window.open('https://line.me/R/oaMessage/'+LINE_ID+'/?'+msg,'_blank');
+  const msg='您好，我想詢問這個商品：'+productName+'（NT$'+Number(price).toLocaleString()+'） '+productUrl;
+  // 複製商品資訊到剪貼簿
+  navigator.clipboard.writeText(msg).catch(()=>{});
+  // 開啟官方帳號頁面（用加好友成功的格式）
+  window.open('https://line.me/R/ti/p/%40'+LINE_ID,'_blank');
 }
 function shareProduct(name, idx){
   const url=`${location.origin}${location.pathname}?p=${idx}`;
