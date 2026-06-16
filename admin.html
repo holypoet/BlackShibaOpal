@@ -435,6 +435,17 @@ select option{background:var(--bg2)}
             </select>
           </div>
         </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label>資訊來源 Source</label>
+            <select id="f-gaa-source">
+              <option value="">選擇資訊來源</option>
+              <option value="證書">證書</option>
+              <option value="賣家觀察判斷">賣家觀察判斷</option>
+              <option value="上游業者告知">上游業者告知</option>
+            </select>
+          </div>
+        </div>
         <div class="form-row full" id="treatment-detail-wrap" style="display:none">
           <div class="form-group">
             <label>處理說明補充</label>
@@ -850,7 +861,7 @@ async function clearOrders(){
 /* ---- PRODUCTS ---- */
 function clearForm(){
   ['f-name','f-price','f-desc','f-tags','f-img-urls','videoUrlInput','f-weight','f-size','f-country','f-claim','f-synthetic-info','f-imitation-info','f-treatment-detail'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['f-category','f-status','f-country-select','f-origin','f-photo-source','f-variety','f-natural-subtype','f-composite-type','f-absorbency','f-play-of-colour','f-body-tone','f-diaphaneity','f-treatment'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-category','f-status','f-country-select','f-origin','f-photo-source','f-variety','f-natural-subtype','f-composite-type','f-absorbency','f-play-of-colour','f-body-tone','f-diaphaneity','f-treatment','f-gaa-source'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f-status').value='販售中';
   document.getElementById('f-stock').value='';
   document.getElementById('editId').value='';
@@ -899,6 +910,7 @@ function saveProduct(){
     diaphaneity:gv('f-diaphaneity'),
     treatment:gv('f-treatment'),
     treatment_detail:gv('f-treatment-detail'),
+    gaa_source:gv('f-gaa-source'),
     images:currentImages,
     videos:currentVideos,
     image:currentImages[0]?.src||''

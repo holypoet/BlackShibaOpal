@@ -393,7 +393,6 @@ function openModal(idx){
     ${si('重量 ct',p.weight)}
     ${si('尺寸 mm',p.size)}
     ${si('庫存',p.stock!=null?`${p.stock} 件`:'')}
-    ${si('照片來源',p.photo_source)}
   </div>`;
 
   // Tab 2: GAA 描述
@@ -406,6 +405,7 @@ function openModal(idx){
     ${si('體色 Body Tone',p.body_tone)}
     ${si('透明度 Diaphaneity',p.diaphaneity)}
     ${si('優化處理 Treatment',treatmentStr||'天然無處理 No Treatment',true)}
+    ${si('資訊來源 Source',p.gaa_source,true)}
   </div>`;
 
   // 影片
