@@ -176,10 +176,14 @@ footer a:hover{color:var(--text)}
 <body>
 
 <header>
-  <div class="logo"><span>黑柴珠寶</span> · BLACKSHIBAOPAL Jewelry</div>
+  <a class="logo" href="./">
+    <img src="logo.jpg" alt="黑柴珠寶" class="logo-img">
+    <div class="logo-text"><span>黑柴珠寶</span>BLACKSHIBAOPAL</div>
+  </a>
   <nav>
-    <a href="#" class="hide-mobile">商品</a>
+    <a href="#" class="hide-mobile" data-i18n="nav_products">商品</a>
     <a href="https://instagram.com/blackshibaopal" target="_blank" class="hide-mobile">Instagram</a>
+    <button class="lang-btn" onclick="toggleLang()" id="langBtn">EN</button>
   </nav>
 </header>
 
@@ -319,7 +323,8 @@ function t(key,vars){
 function toggleLang(){
   currentLang=currentLang==='zh'?'en':'zh';
   localStorage.setItem('lang',currentLang);
-  document.getElementById('langBtn').textContent=currentLang==='zh'?'EN':'中';
+  const lb=document.getElementById('langBtn');
+  if(lb)lb.textContent=currentLang==='zh'?'EN':'中';
   applyLang();
   render();
 }
@@ -650,7 +655,8 @@ function closeModal(e){
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('langBtn').textContent=currentLang==='zh'?'EN':'中';
+  const lb=document.getElementById('langBtn');
+  if(lb)lb.textContent=currentLang==='zh'?'EN':'中';
   applyLang();
   render();
 });
