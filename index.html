@@ -3,32 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>黑柴珠寶 BLACKSHIBAOPAL Jewelry｜天然蛋白石專門店</title>
-<meta name="description" content="台灣天然蛋白石專門店。澳洲直採蛋白石原礦、裸石、半成品、成品珠寶。每顆獨一無二，變彩火光保證天然。">
-<meta property="og:title" content="黑柴珠寶 BLACKSHIBAOPAL Jewelry｜天然蛋白石">
-<meta property="og:description" content="澳洲直採天然蛋白石，原礦、裸石、成品珠寶，台灣專門店。">
+<title>黑柴珠寶｜澳洲蛋白石、閃電嶺黑蛋白石、Boulder Opal裸石原礦專賣</title>
+<meta name="description" content="黑柴珠寶台灣天然蛋白石專門店，澳洲直採閃電嶺黑蛋白石、Boulder Opal礫石蛋白石原礦、裸石與手工珠寶成品。每顆遊彩獨一無二，提供GAA鑑定資訊保證天然。">
+<meta property="og:title" content="黑柴珠寶｜澳洲蛋白石、閃電嶺黑蛋白石專賣">
+<meta property="og:description" content="澳洲直採閃電嶺黑蛋白石、Boulder Opal原礦裸石與成品珠寶，台灣天然蛋白石專門店。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://holypoet.github.io/BlackShibaOpal/">
 <meta property="og:image" content="https://holypoet.github.io/BlackShibaOpal/logo.jpg">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="黑柴珠寶 BLACKSHIBAOPAL Jewelry｜天然蛋白石">
-<meta name="twitter:description" content="澳洲直採天然蛋白石，原礦、裸石、成品珠寶，台灣專門店。">
+<meta name="twitter:title" content="黑柴珠寶｜澳洲蛋白石、閃電嶺黑蛋白石專賣">
+<meta name="twitter:description" content="澳洲直採閃電嶺黑蛋白石、Boulder Opal原礦裸石與成品珠寶，台灣天然蛋白石專門店。">
 <meta name="twitter:image" content="https://holypoet.github.io/BlackShibaOpal/logo.jpg">
-<meta name="keywords" content="蛋白石,opal,天然蛋白石,澳洲蛋白石,黑蛋白石,裸石,原礦,珠寶,台灣,blackshibaopal">
+<meta name="keywords" content="蛋白石,opal,天然蛋白石,澳洲蛋白石,閃電嶺,Lightning Ridge,黑蛋白石,black opal,Boulder Opal,礫石蛋白石,裸石,原礦,蛋白石鑑定,GAA,珠寶,台灣,blackshibaopal">
 <link rel="canonical" href="https://holypoet.github.io/BlackShibaOpal/">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@type":"JewelryStore",
   "name":"黑柴珠寶 BLACKSHIBAOPAL Jewelry",
-  "description":"台灣天然蛋白石專門店，提供澳洲直採蛋白石原礦、裸石、半成品與成品珠寶。",
+  "description":"台灣天然蛋白石專門店，提供澳洲閃電嶺黑蛋白石、Boulder Opal礫石蛋白石原礦、裸石、半成品與成品珠寶，並附GAA鑑定資訊。",
   "url":"https://holypoet.github.io/blackshibaopal",
   "sameAs":["https://www.instagram.com/blackshibaopal"],
   "currenciesAccepted":"TWD",
   "paymentAccepted":"銀行匯款, LINE Pay",
-  "keywords":"蛋白石,opal,天然蛋白石,澳洲蛋白石,裸石,原礦,珠寶,台灣"
+  "keywords":"蛋白石,opal,天然蛋白石,澳洲蛋白石,閃電嶺黑蛋白石,Boulder Opal,礫石蛋白石,裸石,原礦,珠寶,台灣"
 }
 </script>
 <style>
@@ -315,6 +315,11 @@ function getVideoEmbed(url){
   // 其他影片連結
   return'<div style="margin-bottom:.75rem"><a href="'+url+'" target="_blank" style="color:var(--accent);font-size:13px">▶ 觀看影片</a></div>';
 }
+function seoAlt(p){
+  // 組合：商品名 + 產地 + 種類 + 體色/遊彩特徵，給 Google 圖片更多上下文
+  const parts=[p.name,p.country,p.origin,p.variety,p.body_tone,p.play_of_colour].filter(Boolean);
+  return parts.join(' ')+' - 黑柴珠寶天然蛋白石';
+}
 function thumb(url,w){if(!url)return'';if(url.includes('i.ibb.co'))return url;return url;}
 let currentLang = localStorage.getItem('lang') || 'zh';
 const i18n = {
@@ -512,7 +517,7 @@ async function render(){
   empty.innerHTML='';
   grid.innerHTML=list.map((p,i)=>{
     const imgHtml=p.image
-      ?`<img src="${p.image}" alt="${p.name}" loading="lazy"><span class="placeholder" style="display:none">${EMOJI[p.category]||'💎'}</span>`
+      ?`<img src="${p.image}" alt="${seoAlt(p)}" loading="lazy"><span class="placeholder" style="display:none">${EMOJI[p.category]||'💎'}</span>`
       :`<span class="placeholder">${EMOJI[p.category]||'💎'}</span>`;
     const statusHtml=p.status==='已售出'?`<span class="card-status sold">${t('status_sold')}</span>`:p.status==='已預定'?`<span class="card-status reserved">${t('status_reserved')}</span>`:p.status==='熱門'?`<span class="card-status hot">${t('status_hot')}</span>`:'';
     return `
@@ -544,7 +549,7 @@ function openModal(idx){
   const totalSlides=allSlides.length;
   const slidesHtml=allSlides.map((s,i)=>{
     if(s.type==='image'){
-      return `<div class="img-slide"><img src="${s.src}" alt="${p.name}" loading="lazy"></div>`;
+      return `<div class="img-slide"><img src="${s.src}" alt="${seoAlt(p)}" loading="lazy"></div>`;
     } else {
       // 解析影片 embed URL
       let embedUrl=s.url;
