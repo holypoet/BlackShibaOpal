@@ -101,9 +101,10 @@ nav a:hover{color:var(--text)}
 .detail-panel{display:none}.detail-panel.active{display:block}
 
 /* 圖片輪播 */
-.img-slider{width:100%;background:#050508;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
-.img-slider-track{display:flex;transition:transform .35s ease}
-.img-slide{min-width:100%;height:50vw;max-height:420px;min-height:260px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.img-slider{width:100%;background:#050508;border-bottom:1px solid var(--border);position:relative;overflow:hidden;touch-action:pan-y}
+.img-slider-track{display:flex;transition:transform .35s ease;touch-action:pan-y}
+.img-slider-track.dragging{transition:none}
+.img-slide{min-width:100%;height:50vw;max-height:420px;min-height:260px;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:pan-y}
 .img-slide img{width:100%;height:100%;object-fit:contain;padding:1rem}
 .img-slide.video-slide{background:#000;padding:0}
 .img-slide.video-slide iframe{width:100%;height:100%;border:none}
@@ -206,7 +207,17 @@ footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-si
 footer a{color:var(--muted);transition:color .2s}
 footer a:hover{color:var(--text)}
 
-@media(max-width:600px){header{padding:1rem}nav .hide-mobile{display:none}.hero{padding:3rem 1rem 2rem}}
+@media(max-width:600px){
+  header{padding:1rem}
+  nav .hide-mobile{display:none}
+  .hero{padding:3rem 1rem 2rem}
+  .modal{max-height:100vh;height:100%;border:none}
+  .modal-overlay{padding:0}
+  .img-slide{height:60vw;max-height:60vh}
+  .slider-btn{width:40px;height:40px;font-size:20px}
+  .slider-btn.prev{left:6px}
+  .slider-btn.next{right:6px}
+}
 </style>
 <link rel="sitemap" type="application/xml" href="/BlackShibaOpal/sitemap.xml">
 </head>
@@ -688,6 +699,7 @@ function openModal(idx){
   sliderIdx=0;
   document.getElementById('modalContent').dataset.idx=idx;
   document.getElementById('modal').classList.add('show');
+  initSliderTouch();
 }
 
 function toggleOrderForm(){
@@ -754,17 +766,54 @@ function switchTab(idx, btn){
   });
 }
 let sliderIdx=0;
-function slideImg(dir){
+function updateSlidePosition(animate=true){
   const track=document.getElementById('sliderTrack');
   const dots=document.querySelectorAll('.slider-dot');
   if(!track)return;
-  const total=track.children.length;
-  sliderIdx=(sliderIdx+dir+total)%total;
+  track.style.transition=animate?'transform .35s ease':'none';
   track.style.transform=`translateX(-${sliderIdx*100}%)`;
   dots.forEach((d,i)=>d.classList.toggle('active',i===sliderIdx));
 }
+function slideImg(dir){
+  const track=document.getElementById('sliderTrack');
+  if(!track)return;
+  const total=track.children.length;
+  sliderIdx=Math.max(0,Math.min(total-1,sliderIdx+dir));
+  updateSlidePosition();
+}
 function goSlide(i){
-  sliderIdx=i-1;slideImg(1);
+  sliderIdx=i;
+  updateSlidePosition();
+}
+
+// 觸控滑動支援
+let touchStartX=0,touchDeltaX=0,isDragging=false;
+function initSliderTouch(){
+  const track=document.getElementById('sliderTrack');
+  if(!track)return;
+  track.addEventListener('touchstart',e=>{
+    touchStartX=e.touches[0].clientX;
+    touchDeltaX=0;
+    isDragging=true;
+    track.classList.add('dragging');
+  },{passive:true});
+  track.addEventListener('touchmove',e=>{
+    if(!isDragging)return;
+    touchDeltaX=e.touches[0].clientX-touchStartX;
+    const total=track.children.length;
+    const basePercent=-sliderIdx*100;
+    const dragPercent=(touchDeltaX/track.offsetWidth)*100;
+    track.style.transform=`translateX(${basePercent+dragPercent}%)`;
+  },{passive:true});
+  track.addEventListener('touchend',()=>{
+    if(!isDragging)return;
+    isDragging=false;
+    track.classList.remove('dragging');
+    const threshold=track.offsetWidth*0.15;
+    if(touchDeltaX<-threshold) slideImg(1);
+    else if(touchDeltaX>threshold) slideImg(-1);
+    else updateSlidePosition();
+  });
 }
 
 function closeModal(e){
