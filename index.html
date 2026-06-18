@@ -106,16 +106,17 @@ nav a:hover{color:var(--text)}
 .img-slide{flex:0 0 100%;width:100%;max-width:100%;height:50vw;max-height:420px;min-height:260px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;touch-action:pan-y}
 .img-slide img{width:100%;height:100%;object-fit:contain;padding:1rem;box-sizing:border-box;pointer-events:none}
 .img-slide.video-slide{background:#000;padding:0;cursor:pointer;position:relative}
-.slide-label{position:absolute;top:8px;left:8px;font-size:10px;letter-spacing:1px;padding:2px 8px;background:rgba(0,0,0,.6);color:#fff;border-radius:2px}
+.img-slide.video-slide img{width:100%;height:100%;object-fit:cover;padding:0;position:absolute;top:0;left:0}
+.slide-label{position:absolute;top:8px;left:8px;font-size:10px;letter-spacing:1px;padding:2px 8px;background:rgba(0,0,0,.6);color:#fff;border-radius:2px;z-index:1}
 .img-slide .ph{font-size:5rem}
 
 /* 輪播影片縮圖提示：點擊跳轉到商品說明分頁播放 */
 .video-thumb-overlay{
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  width:100%;height:100%;color:#fff;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);
+  width:100%;height:100%;color:#fff;background:rgba(0,0,0,.35);position:relative;z-index:1;
 }
-.video-thumb-overlay svg{width:48px;height:48px;opacity:.85}
-.video-thumb-overlay span{font-size:12px;letter-spacing:1px;color:rgba(255,255,255,.75)}
+.video-thumb-overlay svg{width:48px;height:48px;opacity:.95;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}
+.video-thumb-overlay span{font-size:12px;letter-spacing:1px;color:rgba(255,255,255,.9);text-shadow:0 1px 3px rgba(0,0,0,.6)}
 .slider-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);border:none;color:#fff;font-size:18px;width:36px;height:36px;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:2;transition:background .2s}
 .slider-btn:hover{background:rgba(0,0,0,.8)}
 .slider-btn.prev{left:8px}
@@ -175,7 +176,22 @@ nav a:hover{color:var(--text)}
 .video-section{margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem}
 .video-section-title{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:.75rem}
 .video-embed{position:relative;width:100%;height:0;padding-top:56.25%;border:1px solid var(--border);background:#000;margin-bottom:.75rem;border-radius:4px;overflow:hidden}
-.video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.video-card{
+  position:relative;display:block;width:100%;aspect-ratio:16/4.5;
+  border:1px solid var(--border);background:#000;margin-bottom:.75rem;
+  border-radius:4px;overflow:hidden;text-decoration:none;
+}
+.video-card img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.video-card-play{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+}
+.video-card-play svg{width:24px;height:24px}
+.video-card-hint{
+  position:absolute;bottom:8px;right:10px;font-size:11px;color:#fff;
+  background:rgba(0,0,0,.55);padding:3px 9px;border-radius:3px;letter-spacing:.5px;
+}
 
 /* ORDER FORM */
 .order-form{margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;display:none}
@@ -322,14 +338,33 @@ function shareToLine(name, idx){
 function nl2br(s){return s?s.replace(/\n/g,'<br>'):'';}
 function getVideoEmbed(url){
   if(!url)return'';
-  // YouTube
+  // YouTube：縮圖可直接用官方縮圖圖片 API
   let m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
-  if(m)return'<div class="video-embed"><iframe src="https://www.youtube.com/embed/'+m[1]+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen webkitallowfullscreen mozallowfullscreen loading="lazy"></iframe></div>';
+  if(m){
+    const vid=m[1];
+    const watchUrl='https://www.youtube.com/watch?v='+vid;
+    return `<a class="video-card" href="${watchUrl}" target="_blank" rel="noopener">
+      <img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="商品影片" loading="lazy">
+      <span class="video-card-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+      <span class="video-card-hint">於 YouTube 開啟播放 ↗</span>
+    </a>`;
+  }
   // Google Drive
   m=url.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
-  if(m)return'<div class="video-embed"><iframe src="https://drive.google.com/file/d/'+m[1]+'/preview" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen webkitallowfullscreen mozallowfullscreen loading="lazy"></iframe></div>';
-  // Drive preview URL
-  if(url.includes('drive.google.com')&&url.includes('/preview'))return'<div class="video-embed"><iframe src="'+url+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen webkitallowfullscreen mozallowfullscreen loading="lazy"></iframe></div>';
+  let driveId=m?m[1]:null;
+  if(!driveId&&url.includes('drive.google.com')){
+    const did=url.match(/\/d\/([\w-]+)/);
+    if(did)driveId=did[1];
+  }
+  if(driveId){
+    const viewUrl='https://drive.google.com/file/d/'+driveId+'/view';
+    const thumbUrl='https://drive.google.com/thumbnail?id='+driveId+'&sz=w800';
+    return `<a class="video-card" href="${viewUrl}" target="_blank" rel="noopener">
+      <img src="${thumbUrl}" alt="商品影片" loading="lazy" onerror="this.style.display='none'">
+      <span class="video-card-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+      <span class="video-card-hint">於新分頁開啟播放 ↗</span>
+    </a>`;
+  }
   // 其他影片連結
   return'<div style="margin-bottom:.75rem"><a href="'+url+'" target="_blank" style="color:var(--accent);font-size:13px">▶ 觀看影片</a></div>';
 }
@@ -571,18 +606,17 @@ function openModal(idx){
     if(s.type==='image'){
       return `<div class="img-slide"><img src="${s.src}" alt="${seoAlt(p)}" loading="lazy" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span class=\\'ph\\'>${EMOJI[p.category]||'💎'}</span>')"></div>`;
     } else {
-      // 解析影片 embed URL
-      let embedUrl=s.url;
-      const ytm=s.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)?([\w-]{11})$/);
-      if(s.url.includes('youtube.com')||s.url.includes('youtu.be')){
-        const vid=s.url.match(/(?:v=|youtu\.be\/|embed\/)([\w-]+)/);
-        if(vid)embedUrl='https://www.youtube.com/embed/'+vid[1]+'?rel=0';
-      } else if(s.url.includes('drive.google.com')){
-        const did=s.url.match(/\/d\/([\w-]+)/);
-        if(did)embedUrl='https://drive.google.com/file/d/'+did[1]+'/preview';
+      // 解析影片縮圖網址
+      let thumbUrl='';
+      const ytVid=s.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
+      const driveVid=s.url.match(/\/d\/([\w-]+)/);
+      if(ytVid){
+        thumbUrl='https://img.youtube.com/vi/'+ytVid[1]+'/hqdefault.jpg';
+      } else if(s.url.includes('drive.google.com')&&driveVid){
+        thumbUrl='https://drive.google.com/thumbnail?id='+driveVid[1]+'&sz=w800';
       }
       // 輪播只顯示縮圖提示，實際播放交給商品說明分頁（避開 transform 造成的 iOS 全螢幕異常）
-      return `<div class="img-slide video-slide" onclick="goToVideoTab()"><span class="slide-label">▶ 影片</span><div class="video-thumb-overlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>點擊觀看影片</span></div></div>`;
+      return `<div class="img-slide video-slide" onclick="goToVideoTab()"><span class="slide-label">▶ 影片</span>${thumbUrl?`<img src="${thumbUrl}" alt="商品影片縮圖" loading="lazy" onerror="this.style.display='none'">`:''}<div class="video-thumb-overlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>點擊觀看影片</span></div></div>`;
     }
   }).join('');
   const dotsHtml=allSlides.map((_,i)=>`<div class="slider-dot ${i===0?'active':''}" onclick="goSlide(${i})"></div>`).join('');
