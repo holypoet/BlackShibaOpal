@@ -102,10 +102,9 @@ nav a:hover{color:var(--text)}
 
 /* 圖片輪播 */
 .img-slider{width:100%;background:#050508;border-bottom:1px solid var(--border);position:relative;overflow:hidden;touch-action:pan-y}
-.img-slider-track{display:flex;transition:transform .35s ease;touch-action:pan-y}
-.img-slider-track.dragging{transition:none}
-.img-slide{min-width:100%;height:50vw;max-height:420px;min-height:260px;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:pan-y}
-.img-slide img{width:100%;height:100%;object-fit:contain;padding:1rem}
+.img-slider-track{display:flex;transition:transform .35s ease;width:100%;touch-action:pan-y}
+.img-slide{flex:0 0 100%;width:100%;max-width:100%;height:50vw;max-height:420px;min-height:260px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;touch-action:pan-y}
+.img-slide img{width:100%;height:100%;object-fit:contain;padding:1rem;box-sizing:border-box;pointer-events:none}
 .img-slide.video-slide{background:#000;padding:0}
 .img-slide.video-slide iframe{width:100%;height:100%;border:none}
 .slide-label{position:absolute;top:8px;left:8px;font-size:10px;letter-spacing:1px;padding:2px 8px;background:rgba(0,0,0,.6);color:#fff;border-radius:2px}
@@ -563,7 +562,7 @@ function openModal(idx){
   const totalSlides=allSlides.length;
   const slidesHtml=allSlides.map((s,i)=>{
     if(s.type==='image'){
-      return `<div class="img-slide"><img src="${s.src}" alt="${seoAlt(p)}" loading="lazy"></div>`;
+      return `<div class="img-slide"><img src="${s.src}" alt="${seoAlt(p)}" loading="lazy" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span class=\\'ph\\'>${EMOJI[p.category]||'💎'}</span>')"></div>`;
     } else {
       // 解析影片 embed URL
       let embedUrl=s.url;
@@ -786,7 +785,6 @@ function goSlide(i){
   updateSlidePosition();
 }
 
-// 觸控滑動支援
 let touchStartX=0,touchDeltaX=0,isDragging=false;
 function initSliderTouch(){
   const track=document.getElementById('sliderTrack');
@@ -800,7 +798,6 @@ function initSliderTouch(){
   track.addEventListener('touchmove',e=>{
     if(!isDragging)return;
     touchDeltaX=e.touches[0].clientX-touchStartX;
-    const total=track.children.length;
     const basePercent=-sliderIdx*100;
     const dragPercent=(touchDeltaX/track.offsetWidth)*100;
     track.style.transform=`translateX(${basePercent+dragPercent}%)`;
