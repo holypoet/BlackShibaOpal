@@ -107,10 +107,35 @@ nav a:hover{color:var(--text)}
 .img-slide img{width:100%;height:100%;object-fit:contain;padding:1rem;box-sizing:border-box;pointer-events:none}
 .img-slide.video-slide{background:#000;padding:0}
 .img-slide.video-slide iframe{width:100%;height:100%;border:none}
-.img-slider-track.fs-active{transform:none !important;transition:none !important}
-.img-slider.fs-active{overflow:visible !important}
 .slide-label{position:absolute;top:8px;left:8px;font-size:10px;letter-spacing:1px;padding:2px 8px;background:rgba(0,0,0,.6);color:#fff;border-radius:2px}
 .img-slide .ph{font-size:5rem}
+
+/* 影片放大檢視（取代失效的 iOS Drive 全螢幕） */
+.video-expand-btn{
+  position:absolute;bottom:8px;right:8px;z-index:3;
+  background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:4px;
+  width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .2s;
+}
+.video-expand-btn:hover{background:rgba(0,0,0,.85)}
+.video-expand-btn svg{width:16px;height:16px}
+.video-fs-overlay{
+  position:fixed;inset:0;background:#000;z-index:9999;
+  display:none;align-items:center;justify-content:center;
+}
+.video-fs-overlay.show{display:flex}
+.video-fs-overlay .video-fs-frame{width:100%;height:100%}
+.video-fs-overlay iframe{width:100%;height:100%;border:none}
+.video-fs-close{
+  position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;z-index:10000;
+  background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:50%;
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:20px;line-height:1;
+}
+.video-fs-close:hover{background:rgba(255,255,255,.25)}
+@media(orientation:landscape){
+  .video-fs-overlay .video-fs-frame{height:100vh}
+}
 .slider-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);border:none;color:#fff;font-size:18px;width:36px;height:36px;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:2;transition:background .2s}
 .slider-btn:hover{background:rgba(0,0,0,.8)}
 .slider-btn.prev{left:8px}
@@ -274,6 +299,11 @@ footer a:hover{color:var(--text)}
     <button class="modal-close" onclick="closeModal()">✕</button>
     <div id="modalContent" data-idx=""></div>
   </div>
+</div>
+
+<div class="video-fs-overlay" id="videoFsOverlay">
+  <button class="video-fs-close" type="button" aria-label="關閉" onclick="closeVideoFullscreen()">✕</button>
+  <div class="video-fs-frame" id="videoFsFrame"></div>
 </div>
 
 <footer>
@@ -576,7 +606,7 @@ function openModal(idx){
         const did=s.url.match(/\/d\/([\w-]+)/);
         if(did)embedUrl='https://drive.google.com/file/d/'+did[1]+'/preview';
       }
-      return `<div class="img-slide video-slide"><span class="slide-label">▶ 影片</span><iframe src="${embedUrl}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen webkitallowfullscreen mozallowfullscreen loading="lazy"></iframe></div>`;
+      return `<div class="img-slide video-slide"><span class="slide-label">▶ 影片</span><iframe src="${embedUrl}" data-embed-url="${embedUrl}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen webkitallowfullscreen mozallowfullscreen loading="lazy"></iframe><button class="video-expand-btn" type="button" aria-label="放大檢視" onclick="openVideoFullscreen('${embedUrl}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m11-5v3a2 2 0 0 1-2 2h-3"/></svg></button></div>`;
     }
   }).join('');
   const dotsHtml=allSlides.map((_,i)=>`<div class="slider-dot ${i===0?'active':''}" onclick="goSlide(${i})"></div>`).join('');
@@ -815,17 +845,22 @@ function initSliderTouch(){
   });
 }
 
-function handleSliderFullscreenChange(){
-  const track=document.getElementById('sliderTrack');
-  const slider=document.getElementById('imgSlider');
-  if(!track)return;
-  const fsEl=document.fullscreenElement||document.webkitFullscreenElement;
-  const inFs=!!fsEl&&track.contains(fsEl);
-  track.classList.toggle('fs-active',inFs);
-  slider?.classList.toggle('fs-active',inFs);
+function openVideoFullscreen(embedUrl){
+  const overlay=document.getElementById('videoFsOverlay');
+  const frame=document.getElementById('videoFsFrame');
+  if(!overlay||!frame)return;
+  frame.innerHTML=`<iframe src="${embedUrl}" allow="autoplay; encrypted-media; picture-in-picture" loading="lazy"></iframe>`;
+  overlay.classList.add('show');
+  document.body.style.overflow='hidden';
 }
-document.addEventListener('fullscreenchange',handleSliderFullscreenChange);
-document.addEventListener('webkitfullscreenchange',handleSliderFullscreenChange);
+function closeVideoFullscreen(){
+  const overlay=document.getElementById('videoFsOverlay');
+  const frame=document.getElementById('videoFsFrame');
+  if(!overlay)return;
+  overlay.classList.remove('show');
+  if(frame)frame.innerHTML='';
+  document.body.style.overflow='';
+}
 
 function closeModal(e){
   if(!e||e.target===document.getElementById('modal')){
