@@ -60,6 +60,10 @@ nav a:hover{color:var(--text)}
 .hero-sub{font-size:13px;letter-spacing:2px;color:var(--muted)}
 
 .filter-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:1.5rem 1rem;border-bottom:1px solid var(--border)}
+.search-bar{padding:.6rem 1rem;border-bottom:1px solid var(--border);background:var(--bg2)}
+.search-bar input{width:100%;max-width:480px;display:block;margin:0 auto;padding:8px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s}
+.search-bar input:focus{border-color:#5a5078}
+.search-bar input::placeholder{color:var(--muted)}
 .filter-btn{font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:6px 16px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s}
 .filter-btn:hover,.filter-btn.active{border-color:#5a5078;color:var(--accent);background:#13101e}
 
@@ -249,6 +253,10 @@ footer a:hover{color:var(--text)}
   <button class="filter-btn" onclick="setFilter('成品',this)" data-i18n="filter_finished">成品</button>
 </div>
 
+<div class="search-bar">
+  <input type="search" id="searchInput" placeholder="🔍 搜尋商品名稱、描述、標籤…" oninput="onSearch()" autocomplete="off">
+</div>
+
 <div class="tag-bar" id="tagBar">
   <button class="tag-btn active" onclick="setTag('all',this)" data-i18n="tag_all">全部</button>
   <button class="tag-btn" onclick="setTag('instock',this)" data-i18n="tag_instock">🟢 有庫存</button>
@@ -432,7 +440,8 @@ function applyLang(){
 
 let currentFilter = 'all';
 let currentTag = 'all';
-let currentSubcat = 'all'; // 成品子分類：all/戒指/項鍊/耳環/手環/其他
+let currentSubcat = 'all';
+let currentSearch = '';
 let currentProduct = null;
 let cachedProducts = []; 
 
@@ -511,6 +520,11 @@ function setFilter(f, btn){
   render();
 }
 
+function onSearch(){
+  currentSearch=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
+  render();
+}
+
 function setSubcat(s, btn){
   currentSubcat=s;
   document.querySelectorAll('#tagBar .tag-btn').forEach(b=>b.classList.remove('active'));
@@ -556,6 +570,14 @@ async function render(){
     }
   }
   
+  // 關鍵字搜尋過濾
+  if(currentSearch){
+    list=list.filter(p=>{
+      const hay=[p.name,p.desc,p.description,(p.tags||[]).join(' ')].join(' ').toLowerCase();
+      return hay.includes(currentSearch);
+    });
+  }
+
   // 排序
   const sort=document.getElementById('sortSelect')?.value||'newest';
   if(sort==='price-low') list.sort((a,b)=>(a.price||0)-(b.price||0));
@@ -568,6 +590,14 @@ async function render(){
       return 0;
     });
   }
+
+  // 已售出/已預定永遠置底（覆蓋在所有排序之後）
+  const SOLD_STATUS=['已售出','已預定'];
+  list.sort((a,b)=>{
+    const aSold=SOLD_STATUS.includes(a.status)?1:0;
+    const bSold=SOLD_STATUS.includes(b.status)?1:0;
+    return aSold-bSold;
+  });
   
   cachedProducts = list; 
   
