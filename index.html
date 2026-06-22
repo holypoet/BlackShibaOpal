@@ -285,7 +285,7 @@ footer a:hover{color:var(--text)}
 const FORMSPREE_ID = 'meewnjol';
 const LINE_ID = '684yeqho'; // 你的 LINE ID
 const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
-const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
+const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨','成品·戒指':'💍','成品·項鍊':'📿','成品·耳環':'✨','成品·手環':'⭕','成品·其他':'✨'};
 function addLineFriend(){
   // 加好友：帶 @，用 %40 編碼
   window.open('https://line.me/R/ti/p/%40'+LINE_ID,'_blank');
@@ -432,6 +432,7 @@ function applyLang(){
 
 let currentFilter = 'all';
 let currentTag = 'all';
+let currentSubcat = 'all'; // 成品子分類：all/戒指/項鍊/耳環/手環/其他
 let currentProduct = null;
 let cachedProducts = []; 
 
@@ -475,9 +476,44 @@ async function decreaseStock(id){
   });
 }
 
+const FINISHED_SUBCATS = ['戒指','項鍊','耳環','手環','其他'];
+
+function renderTagBar(){
+  const tagBar = document.getElementById('tagBar');
+  const sortHtml = `<select class="sort-select" id="sortSelect" onchange="render()">
+    <option value="newest" data-i18n="sort_newest">排序：最新</option>
+    <option value="price-low" data-i18n="sort_price_low">價格：低→高</option>
+    <option value="price-high" data-i18n="sort_price_high">價格：高→低</option>
+  </select>`;
+  if(currentFilter==='成品'){
+    tagBar.innerHTML = FINISHED_SUBCATS.map(s=>
+      `<button class="tag-btn${currentSubcat===s?' active':''}" onclick="setSubcat('${s}',this)">${s}</button>`
+    ).join('')+
+    `<button class="tag-btn${currentSubcat==='all'?' active':''}" onclick="setSubcat('all',this)">全部成品</button>`+
+    sortHtml;
+  } else {
+    tagBar.innerHTML =
+      `<button class="tag-btn${currentTag==='all'?' active':''}" onclick="setTag('all',this)" data-i18n="tag_all">全部</button>`+
+      `<button class="tag-btn${currentTag==='instock'?' active':''}" onclick="setTag('instock',this)" data-i18n="tag_instock">🟢 有庫存</button>`+
+      `<button class="tag-btn${currentTag==='hot'?' active':''}" onclick="setTag('hot',this)" data-i18n="tag_hot">🔥 熱門推薦</button>`+
+      `<button class="tag-btn${currentTag==='new'?' active':''}" onclick="setTag('new',this)" data-i18n="tag_new">🆕 新上架</button>`+
+      sortHtml;
+  }
+}
+
 function setFilter(f, btn){
   currentFilter=f;
+  currentTag='all';
+  currentSubcat='all';
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTagBar();
+  render();
+}
+
+function setSubcat(s, btn){
+  currentSubcat=s;
+  document.querySelectorAll('#tagBar .tag-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   render();
 }
@@ -492,15 +528,29 @@ function setTag(t, btn){
 async function render(){
   document.getElementById('gridTitle').textContent='載入中...';
   document.getElementById('productGrid').innerHTML='';
-  const filter=currentFilter==='all'?'':'category=eq.'+encodeURIComponent(currentFilter);
+  // 成品：抓所有 category 開頭是「成品」的商品
+  const filter=currentFilter==='all'?'':
+    currentFilter==='成品'?'category=like.成品%':
+    'category=eq.'+encodeURIComponent(currentFilter);
   let list=await getProducts(filter)||[];
-  
-  // 標籤篩選
-  if(currentTag==='instock') list=list.filter(p=>p.stock>0&&p.status!=='已售出'&&p.status!=='已預定');
-  else if(currentTag==='hot') list=list.filter(p=>p.status==='熱門');
-  else if(currentTag==='new'){
-    const weekAgo=new Date(Date.now()-7*24*60*60*1000).toISOString();
-    list=list.filter(p=>p.created_at>=weekAgo);
+
+  // 成品子分類前端過濾
+  if(currentFilter==='成品' && currentSubcat!=='all'){
+    list=list.filter(p=>{
+      const cat=p.category||'';
+      // 支援「成品·戒指」或只是「成品」+tags含子分類 兩種寫法
+      return cat===`成品·${currentSubcat}` || cat===currentSubcat;
+    });
+  }
+
+  // 標籤篩選（非成品模式才套用）
+  if(currentFilter!=='成品'){
+    if(currentTag==='instock') list=list.filter(p=>p.stock>0&&p.status!=='已售出'&&p.status!=='已預定');
+    else if(currentTag==='hot') list=list.filter(p=>p.status==='熱門');
+    else if(currentTag==='new'){
+      const weekAgo=new Date(Date.now()-7*24*60*60*1000).toISOString();
+      list=list.filter(p=>p.created_at>=weekAgo);
+    }
   }
   
   // 排序

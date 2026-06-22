@@ -232,7 +232,13 @@ select option{background:var(--bg2)}
             <label>商品分類 *</label>
             <select id="f-category">
               <option value="">選擇分類</option>
-              <option>原礦</option><option>裸石</option><option>半成品</option><option>成品</option>
+              <option>原礦</option><option>裸石</option><option>半成品</option>
+              <option disabled>──成品──</option>
+              <option value="成品·戒指">成品·戒指</option>
+              <option value="成品·項鍊">成品·項鍊</option>
+              <option value="成品·耳環">成品·耳環</option>
+              <option value="成品·手環">成品·手環</option>
+              <option value="成品·其他">成品·其他</option>
             </select>
           </div>
         </div>
@@ -508,7 +514,13 @@ select option{background:var(--bg2)}
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
         <select id="listFilter" onchange="renderList()" style="font-size:13px;padding:6px 10px">
           <option value="all">全部分類</option>
-          <option>原礦</option><option>裸石</option><option>半成品</option><option>成品</option>
+          <option>原礦</option><option>裸石</option><option>半成品</option>
+          <option disabled>──成品──</option>
+          <option value="成品·戒指">成品·戒指</option>
+          <option value="成品·項鍊">成品·項鍊</option>
+          <option value="成品·耳環">成品·耳環</option>
+          <option value="成品·手環">成品·手環</option>
+          <option value="成品·其他">成品·其他</option>
         </select>
         <select id="statusFilter" onchange="renderList()" style="font-size:13px;padding:6px 10px">
           <option value="all">全部狀態</option>
@@ -561,7 +573,7 @@ select option{background:var(--bg2)}
 
 <script>
 // Supabase Auth（無明碼密碼）
-const EMOJI={'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨'};
+const EMOJI={'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨','成品·戒指':'💍','成品·項鍊':'📿','成品·耳環':'✨','成品·手環':'⭕','成品·其他':'✨'};
 const GOOGLE_CLIENT_ID='73001971116-5rirhfs1p2qn5ojgieflo0el05chdefl.apps.googleusercontent.com';
 const GOOGLE_API_KEY='AIzaSyBeTF2DqTw19I67zzcz4amxXoi3KcmN4K8';
 const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.readonly';
