@@ -528,17 +528,20 @@ function setTag(t, btn){
 async function render(){
   document.getElementById('gridTitle').textContent='載入中...';
   document.getElementById('productGrid').innerHTML='';
-  // 成品：抓所有 category 開頭是「成品」的商品
-  const filter=currentFilter==='all'?'':
-    currentFilter==='成品'?'category=like.成品%':
+  // 成品：抓全部商品再前端過濾（避免 like.成品% 的 % URL encoding 問題）
+  const filter=currentFilter==='all'||currentFilter==='成品'?'':
     'category=eq.'+encodeURIComponent(currentFilter);
   let list=await getProducts(filter)||[];
+
+  // 成品主分類過濾（startsWith 確保抓到「成品」「成品·戒指」等所有子類）
+  if(currentFilter==='成品'){
+    list=list.filter(p=>(p.category||'').startsWith('成品'));
+  }
 
   // 成品子分類前端過濾
   if(currentFilter==='成品' && currentSubcat!=='all'){
     list=list.filter(p=>{
       const cat=p.category||'';
-      // 支援「成品·戒指」或只是「成品」+tags含子分類 兩種寫法
       return cat===`成品·${currentSubcat}` || cat===currentSubcat;
     });
   }
