@@ -573,13 +573,14 @@ async function render(){
   // 關鍵字搜尋過濾
   if(currentSearch){
     list=list.filter(p=>{
+      const tagsStr=Array.isArray(p.tags)?p.tags.join(' '):(p.tags||'');
       const hay=[
         p.name, p.desc, p.description,
         p.country, p.origin, p.claim,
         p.variety, p.body_tone, p.play_of_colour,
         p.absorbency, p.diaphaneity, p.treatment,
         p.size, p.weight, p.gaa_source,
-        (p.tags||[]).join(' ')
+        tagsStr
       ].filter(Boolean).join(' ').toLowerCase();
       return hay.includes(currentSearch);
     });
