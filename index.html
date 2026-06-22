@@ -101,7 +101,7 @@ nav a:hover{color:var(--text)}
 .detail-panel{display:none}.detail-panel.active{display:block}
 
 /* 圖片輪播 */
-.img-slider{width:100%;background:#050508;border-bottom:1px solid var(--border);position:relative;overflow:hidden;touch-action:pan-y}
+.img-slider{width:100%;background:#050508;border-top:1px solid var(--border);position:relative;overflow:hidden;touch-action:pan-y}
 .img-slider-track{display:flex;transition:transform .35s ease;width:100%;touch-action:pan-y}
 .img-slide{flex:0 0 100%;width:100%;max-width:100%;height:50vw;max-height:420px;min-height:260px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;touch-action:pan-y}
 .img-slide img{width:100%;height:100%;object-fit:contain;padding:1rem;box-sizing:border-box;pointer-events:none}
@@ -627,7 +627,6 @@ function openModal(idx){
   `;
 
   document.getElementById('modalContent').innerHTML=`
-    ${sliderHtml}
     <div class="modal-body">
       <div class="modal-category">${p.category||''}</div>
       <div class="modal-name">${p.name}</div>
@@ -694,7 +693,8 @@ function openModal(idx){
           <p>${t('order_success')}</p>
         </div>
       </div>
-    </div>`;
+    </div>
+    ${sliderHtml}`;
   sliderIdx=0;
   document.getElementById('modalContent').dataset.idx=idx;
   document.getElementById('modal').classList.add('show');
