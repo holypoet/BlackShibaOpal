@@ -640,7 +640,9 @@ function openModal(idx){
       <div class="detail-panel active" id="dtab0">${tab1}</div>
       <div class="detail-panel" id="dtab1" style="margin-bottom:1rem">${tab2}</div>
       <div class="detail-panel" id="dtab2">${tab3}</div>
-
+    </div>
+    ${sliderHtml}
+    <div class="modal-body">
       ${isSold
         ?`<button class="modal-cta sold-out" disabled style="margin-top:1rem">${p.status==='已預定'?t('btn_reserved'):t('btn_sold')}</button>`
         :`<div>
@@ -693,8 +695,7 @@ function openModal(idx){
           <p>${t('order_success')}</p>
         </div>
       </div>
-    </div>
-    ${sliderHtml}`;
+    </div>`;
   sliderIdx=0;
   document.getElementById('modalContent').dataset.idx=idx;
   document.getElementById('modal').classList.add('show');
