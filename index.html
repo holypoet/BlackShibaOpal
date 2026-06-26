@@ -667,13 +667,17 @@ function openModal(idx){
       }
       const isDrive = s.url.includes('drive.google.com');
       if(isDrive){
-        // Google Drive iframe 手機不支援，改成點擊開啟
+        // Google Drive iframe 手機不支援，改成縮圖+點擊開啟
         const driveId = s.url.match(/\/d\/([\w-]+)/);
         const driveLink = driveId ? 'https://drive.google.com/file/d/'+driveId[1]+'/view' : s.url;
-        return `<div class="img-slide video-slide" style="flex-direction:column;gap:12px;background:#050508;cursor:pointer" onclick="window.open('${driveLink}','_blank')">
-          <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:28px">▶</div>
-          <div style="color:#ccc;font-size:13px;letter-spacing:1px">點擊觀看影片</div>
-          <div style="color:#666;font-size:11px">開啟 Google Drive</div>
+        const thumbUrl = driveId ? 'https://drive.google.com/thumbnail?id='+driveId[1]+'&sz=w800' : '';
+        const bgStyle = thumbUrl ? `background:url('${thumbUrl}') center/cover no-repeat;` : 'background:#050508;';
+        return `<div class="img-slide video-slide" style="${bgStyle}cursor:pointer;position:relative" onclick="window.open('${driveLink}','_blank')">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div>
+          <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div style="width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:28px">▶</div>
+            <div style="color:#fff;font-size:13px;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,.8)">點擊觀看影片</div>
+          </div>
         </div>`;
       }
       return `<div class="img-slide video-slide"><span class="slide-label">▶ 影片</span><iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" loading="lazy"></iframe></div>`;
