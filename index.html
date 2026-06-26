@@ -665,28 +665,31 @@ function openModal(idx){
         const did=s.url.match(/\/d\/([\w-]+)/);
         if(did)embedUrl='https://drive.google.com/file/d/'+did[1]+'/preview';
       }
-      // 取得縮圖 URL 和開啟連結
-      let thumbUrl = '', openUrl = s.url;
+      // YouTube：iframe 內嵌直接播放（Shorts 也轉成 embed 格式）
       if(s.url.includes('youtube.com') || s.url.includes('youtu.be')){
         const vid = s.url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]+)/);
         if(vid){
-          thumbUrl = 'https://img.youtube.com/vi/'+vid[1]+'/hqdefault.jpg';
-          openUrl = 'https://www.youtube.com/watch?v='+vid[1];
-        }
-      } else if(s.url.includes('drive.google.com')){
-        const did = s.url.match(/\/d\/([\w-]+)/);
-        if(did){
-          thumbUrl = 'https://drive.google.com/thumbnail?id='+did[1]+'&sz=w800';
-          openUrl = 'https://drive.google.com/file/d/'+did[1]+'/view';
+          const embedUrl2 = 'https://www.youtube.com/embed/'+vid[1]+'?rel=0';
+          return `<div class="img-slide video-slide"><span class="slide-label">▶ 影片</span><iframe src="${embedUrl2}" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" loading="lazy"></iframe></div>`;
         }
       }
-      const bgStyle = thumbUrl ? `background:url('${thumbUrl}') center/cover no-repeat;` : 'background:#050508;';
-      return `<div class="img-slide video-slide" style="${bgStyle}cursor:pointer;position:relative" onclick="window.open('${openUrl}','_blank')">
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,.3)"></div>
-        <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:10px">
-          <div style="width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:28px;padding-left:4px">▶</div>
-          <div style="color:#fff;font-size:12px;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,.9)">點擊觀看影片</div>
-        </div>
+      // Google Drive：縮圖+點擊跳出
+      if(s.url.includes('drive.google.com')){
+        const did = s.url.match(/\/d\/([\w-]+)/);
+        const driveLink = did ? 'https://drive.google.com/file/d/'+did[1]+'/view' : s.url;
+        const thumbUrl = did ? 'https://drive.google.com/thumbnail?id='+did[1]+'&sz=w800' : '';
+        const bgStyle = thumbUrl ? `background:url('${thumbUrl}') center/cover no-repeat;` : 'background:#050508;';
+        return `<div class="img-slide video-slide" style="${bgStyle}cursor:pointer;position:relative" onclick="window.open('${driveLink}','_blank')">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,.3)"></div>
+          <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div style="width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:28px;padding-left:4px">▶</div>
+            <div style="color:#fff;font-size:12px;letter-spacing:1px;text-shadow:0 1px 4px rgba(0,0,0,.9)">點擊觀看影片</div>
+          </div>
+        </div>`;
+      }
+      // 其他連結
+      return `<div class="img-slide video-slide" style="background:#050508;cursor:pointer" onclick="window.open('${s.url}','_blank')">
+        <div style="color:#ccc;font-size:13px;letter-spacing:1px">▶ 點擊觀看影片</div>
       </div>`;
     }
   }).join('');
