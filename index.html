@@ -211,15 +211,72 @@ footer a{color:var(--muted);transition:color .2s}
 footer a:hover{color:var(--text)}
 
 @media(max-width:600px){
-  header{padding:1rem}
+  /* Header */
+  header{padding:.75rem 1rem}
   nav .hide-mobile{display:none}
-  .hero{padding:3rem 1rem 2rem}
-  .modal{max-height:100vh;height:100%;border:none}
-  .modal-overlay{padding:0}
-  .img-slide{height:60vw;max-height:60vh}
-  .slider-btn{width:40px;height:40px;font-size:20px}
+
+  /* Hero */
+  .hero{padding:2rem 1rem 1.5rem}
+  .hero-title{font-size:2rem}
+
+  /* Filter bar — 橫向捲動，不換行 */
+  .filter-bar{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:.75rem 1rem;gap:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .filter-bar::-webkit-scrollbar{display:none}
+  .filter-btn{white-space:nowrap;flex-shrink:0;padding:7px 14px;font-size:12px}
+
+  /* Tag bar 同樣橫捲 */
+  .tag-bar{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:.5rem 1rem;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tag-bar::-webkit-scrollbar{display:none}
+  .tag-btn{white-space:nowrap;flex-shrink:0}
+
+  /* 商品格 — 手機兩欄，比例更正常 */
+  .grid-wrap{padding:1rem}
+  .product-grid{grid-template-columns:repeat(2,1fr)}
+  .card-img{aspect-ratio:1/1}
+  .card-name{font-size:12px}
+  .card-price{font-size:11px}
+
+  /* Modal — 全螢幕，從底部滑出 */
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal{
+    max-height:93vh;height:93vh;border:none;width:100%;
+    border-radius:16px 16px 0 0;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+  }
+  /* 頂部拖曳指示條 */
+  .modal::before{
+    content:'';display:block;width:40px;height:4px;
+    background:rgba(255,255,255,.2);border-radius:2px;
+    margin:12px auto 4px;
+  }
+  .modal-close{top:.75rem;right:.75rem;font-size:18px;
+    background:rgba(255,255,255,.08);border-radius:50%;
+    width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+
+  /* 圖片輪播 — 更高，方形感 */
+  .img-slide{height:80vw;max-height:80vw;min-height:unset}
+  .slider-btn{width:36px;height:36px;font-size:18px}
   .slider-btn.prev{left:6px}
   .slider-btn.next{right:6px}
+
+  /* Modal body padding 縮小 */
+  .modal-body{padding:1rem}
+  .modal-name{font-size:18px}
+  .modal-price{font-size:16px;margin-bottom:1rem}
+
+  /* Tabs — 字大一點好點 */
+  .detail-tab{font-size:12px;padding:.7rem .25rem;letter-spacing:0}
+
+  /* 規格表 — 手機單欄 */
+  .spec-grid{grid-template-columns:1fr}
+  .spec-item.full{grid-column:1}
+
+  /* 按鈕區間距 */
+  .modal-cta{padding:14px;font-size:13px;margin-top:.75rem}
+  .line-btn{padding:13px}
+  .line-add-btn{padding:11px}
+  .share-row{gap:6px}
+  .share-btn{padding:10px 6px;font-size:11px}
 }
 </style>
 <link rel="sitemap" type="application/xml" href="/BlackShibaOpal/sitemap.xml">
