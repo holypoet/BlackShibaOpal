@@ -726,8 +726,8 @@ function openModal(idx){
       if(s.url.includes('youtube.com') || s.url.includes('youtu.be')){
         const vid = s.url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]+)/);
         if(vid){
-          const embedUrl2 = 'https://www.youtube.com/embed/'+vid[1]+'?rel=0';
-          return `<div class="img-slide video-slide"><span class="slide-label">▶ 影片</span><iframe src="${embedUrl2}" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" loading="lazy"></iframe></div>`;
+          const embedUrl2 = 'https://www.youtube.com/embed/'+vid[1]+'?rel=0&modestbranding=1&playsinline=1';
+          return `<div class="img-slide video-slide"><span class="slide-label">▶ 影片</span><iframe src="${embedUrl2}" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture; web-share" loading="lazy"></iframe></div>`;
         }
       }
       // Google Drive：縮圖+點擊跳出
