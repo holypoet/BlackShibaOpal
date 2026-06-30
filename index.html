@@ -92,6 +92,15 @@ nav a:hover{color:var(--text)}
 .card-status.reserved{color:#e0c050;border-color:#4a4010}
 .card-status.hot{color:#9b85d8;border-color:#3a2848}
 
+/* 圖片 placeholder 淡入 */
+.card-img img{transition:opacity .3s}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.card-img:has(img[data-src]){
+  background:linear-gradient(90deg,var(--bg3) 25%,#1c1b28 50%,var(--bg3) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+}
+
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:200;padding:1rem}
 .modal-overlay.show{display:flex}
@@ -329,6 +338,7 @@ footer a:hover{color:var(--text)}
 <div class="grid-wrap">
   <div class="grid-title" id="gridTitle">載入商品中...</div>
   <div class="product-grid" id="productGrid"></div>
+  <div id="scrollSentinel" style="height:1px;margin-top:1rem;display:flex;justify-content:center;align-items:center;padding:1rem"></div>
   <div id="emptyMsg"></div>
 </div>
 
@@ -500,7 +510,15 @@ let currentTag = 'all';
 let currentSubcat = 'all';
 let currentSearch = '';
 let currentProduct = null;
-let cachedProducts = []; 
+let cachedProducts = [];
+
+// 分頁設定
+const PAGE_SIZE = 16;
+let currentPage = 0;
+let allFilteredList = [];
+let isLoadingMore = false;
+let infiniteObserver = null;
+let imgObserver = null;
 
 // Supabase 設定 
 const SB_URL = 'https://obujbaevimyquefwgnxm.supabase.co';
@@ -596,93 +614,44 @@ function setTag(t, btn){
   render();
 }
 
-async function render(){
-  document.getElementById('gridTitle').textContent='載入中...';
-  document.getElementById('productGrid').innerHTML='';
-  // 成品：抓全部商品再前端過濾（避免 like.成品% 的 % URL encoding 問題）
-  const filter=currentFilter==='all'||currentFilter==='成品'?'':
-    'category=eq.'+encodeURIComponent(currentFilter);
-  let list=await getProducts(filter)||[];
-
-  // 成品主分類過濾（startsWith 確保抓到「成品」「成品·戒指」等所有子類）
-  if(currentFilter==='成品'){
-    list=list.filter(p=>(p.category||'').startsWith('成品'));
-  }
-
-  // 成品子分類前端過濾
-  if(currentFilter==='成品' && currentSubcat!=='all'){
-    list=list.filter(p=>{
-      const cat=p.category||'';
-      return cat===`成品·${currentSubcat}` || cat===currentSubcat;
+// 圖片懶載入：IntersectionObserver 精準控制
+function setupImgObserver(){
+  if(imgObserver) imgObserver.disconnect();
+  imgObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      const img = entry.target;
+      const src = img.dataset.src;
+      if(src){
+        img.src = src;
+        img.removeAttribute('data-src');
+        imgObserver.unobserve(img);
+      }
     });
-  }
+  },{rootMargin:'200px'});
+}
 
-  // 標籤篩選（非成品模式才套用）
-  if(currentFilter!=='成品'){
-    if(currentTag==='instock') list=list.filter(p=>p.stock>0&&p.status!=='已售出'&&p.status!=='已預定');
-    else if(currentTag==='hot') list=list.filter(p=>p.status==='熱門');
-    else if(currentTag==='new'){
-      const weekAgo=new Date(Date.now()-7*24*60*60*1000).toISOString();
-      list=list.filter(p=>p.created_at>=weekAgo);
-    }
-  }
-  
-  // 關鍵字搜尋過濾
-  if(currentSearch){
-    list=list.filter(p=>{
-      const tagsStr=Array.isArray(p.tags)?p.tags.join(' '):(p.tags||'');
-      const hay=[
-        p.name, p.desc, p.description,
-        p.country, p.origin, p.claim,
-        p.variety, p.body_tone, p.play_of_colour,
-        p.absorbency, p.diaphaneity, p.treatment,
-        p.size, p.weight, p.gaa_source,
-        tagsStr
-      ].filter(Boolean).join(' ').toLowerCase();
-      return hay.includes(currentSearch);
-    });
-  }
+// 渲染一批卡片（第 page 頁）
+function renderCards(list, page){
+  const grid = document.getElementById('productGrid');
+  const start = page * PAGE_SIZE;
+  const slice = list.slice(start, start + PAGE_SIZE);
+  if(!slice.length) return false;
 
-  // 排序
-  const sort=document.getElementById('sortSelect')?.value||'newest';
-  if(sort==='price-low') list.sort((a,b)=>(a.price||0)-(b.price||0));
-  else if(sort==='price-high') list.sort((a,b)=>(b.price||0)-(a.price||0));
-  else{
-    // 熱門優先，再按時間
-    list.sort((a,b)=>{
-      if(a.status==='熱門'&&b.status!=='熱門') return -1;
-      if(b.status==='熱門'&&a.status!=='熱門') return 1;
-      return 0;
-    });
-  }
-
-  // 已售出/已預定永遠置底（覆蓋在所有排序之後）
-  const SOLD_STATUS=['已售出','已預定'];
-  list.sort((a,b)=>{
-    const aSold=SOLD_STATUS.includes(a.status)?1:0;
-    const bSold=SOLD_STATUS.includes(b.status)?1:0;
-    return aSold-bSold;
-  });
-  
-  cachedProducts = list; 
-  
-  const grid=document.getElementById('productGrid');
-  const title=document.getElementById('gridTitle');
-  const empty=document.getElementById('emptyMsg');
-  title.textContent=t('product_count',{n:list.length});
-  if(list.length===0){
-    grid.innerHTML='';
-    empty.innerHTML=`<div class="empty"><span class="empty-icon">💎</span><p>${t('no_product')}</p></div>`;
-    return;
-  }
-  empty.innerHTML='';
-  grid.innerHTML=list.map((p,i)=>{
-    const imgHtml=p.image
-      ?`<img src="${p.image}" alt="${seoAlt(p)}" loading="lazy"><span class="placeholder" style="display:none">${EMOJI[p.category]||'💎'}</span>`
-      :`<span class="placeholder">${EMOJI[p.category]||'💎'}</span>`;
-    const statusHtml=p.status==='已售出'?`<span class="card-status sold">${t('status_sold')}</span>`:p.status==='已預定'?`<span class="card-status reserved">${t('status_reserved')}</span>`:p.status==='熱門'?`<span class="card-status hot">${t('status_hot')}</span>`:'';
+  const fragment = slice.map((p, i)=>{
+    const realIdx = start + i;
+    const imgHtml = p.image
+      ? `<img data-src="${p.image}" alt="${seoAlt(p)}" style="opacity:0;transition:opacity .3s"><span class="placeholder">${EMOJI[p.category]||'💎'}</span>`
+      : `<span class="placeholder">${EMOJI[p.category]||'💎'}</span>`;
+    const statusHtml = p.status==='已售出'
+      ? `<span class="card-status sold">${t('status_sold')}</span>`
+      : p.status==='已預定'
+      ? `<span class="card-status reserved">${t('status_reserved')}</span>`
+      : p.status==='熱門'
+      ? `<span class="card-status hot">${t('status_hot')}</span>`
+      : '';
     return `
-      <div class="card" onclick="openModal(${i})">
+      <div class="card" onclick="openModal(${realIdx})">
         <div class="card-img">${imgHtml}${statusHtml}</div>
         <div class="card-body">
           <div class="card-category">${p.category||''}</div>
@@ -691,6 +660,107 @@ async function render(){
         </div>
       </div>`;
   }).join('');
+
+  grid.insertAdjacentHTML('beforeend', fragment);
+
+  // 把新加入的圖片註冊到 observer
+  grid.querySelectorAll('img[data-src]').forEach(img=>{
+    imgObserver.observe(img);
+    img.onload = ()=>{
+      img.style.opacity='1';
+      const ph = img.nextElementSibling;
+      if(ph && ph.classList.contains('placeholder')) ph.style.display='none';
+    };
+  });
+
+  return slice.length === PAGE_SIZE;
+}
+
+// 設定無限捲動 sentinel
+function setupInfiniteScroll(){
+  if(infiniteObserver) infiniteObserver.disconnect();
+  const sentinel = document.getElementById('scrollSentinel');
+  if(!sentinel) return;
+
+  infiniteObserver = new IntersectionObserver(async (entries)=>{
+    if(!entries[0].isIntersecting || isLoadingMore) return;
+    if((currentPage+1) * PAGE_SIZE >= allFilteredList.length) return;
+
+    isLoadingMore = true;
+    sentinel.innerHTML = '<span style="color:var(--muted);font-size:12px;letter-spacing:1px">載入更多...</span>';
+    await new Promise(r=>setTimeout(r,150));
+    currentPage++;
+    const hasMore = renderCards(allFilteredList, currentPage);
+    sentinel.innerHTML = '';
+    if(!hasMore) infiniteObserver.disconnect();
+    isLoadingMore = false;
+  },{rootMargin:'400px'});
+
+  infiniteObserver.observe(sentinel);
+}
+
+async function render(){
+  document.getElementById('gridTitle').textContent='載入中...';
+  document.getElementById('productGrid').innerHTML='';
+  document.getElementById('emptyMsg').innerHTML='';
+  currentPage = 0;
+  isLoadingMore = false;
+  setupImgObserver();
+
+  const filter=currentFilter==='all'||currentFilter==='成品'?'':
+    'category=eq.'+encodeURIComponent(currentFilter);
+  let list=await getProducts(filter)||[];
+
+  if(currentFilter==='成品'){
+    list=list.filter(p=>(p.category||'').startsWith('成品'));
+  }
+  if(currentFilter==='成品' && currentSubcat!=='all'){
+    list=list.filter(p=>{
+      const cat=p.category||'';
+      return cat===`成品·${currentSubcat}` || cat===currentSubcat;
+    });
+  }
+  if(currentFilter!=='成品'){
+    if(currentTag==='instock') list=list.filter(p=>p.stock>0&&p.status!=='已售出'&&p.status!=='已預定');
+    else if(currentTag==='hot') list=list.filter(p=>p.status==='熱門');
+    else if(currentTag==='new'){
+      const weekAgo=new Date(Date.now()-7*24*60*60*1000).toISOString();
+      list=list.filter(p=>p.created_at>=weekAgo);
+    }
+  }
+  if(currentSearch){
+    list=list.filter(p=>{
+      const tagsStr=Array.isArray(p.tags)?p.tags.join(' '):(p.tags||'');
+      const hay=[p.name,p.desc,p.description,p.country,p.origin,p.claim,
+        p.variety,p.body_tone,p.play_of_colour,p.absorbency,p.diaphaneity,
+        p.treatment,p.size,p.weight,p.gaa_source,tagsStr
+      ].filter(Boolean).join(' ').toLowerCase();
+      return hay.includes(currentSearch);
+    });
+  }
+
+  const sort=document.getElementById('sortSelect')?.value||'newest';
+  if(sort==='price-low') list.sort((a,b)=>(a.price||0)-(b.price||0));
+  else if(sort==='price-high') list.sort((a,b)=>(b.price||0)-(a.price||0));
+  else list.sort((a,b)=>(a.status==='熱門'?-1:b.status==='熱門'?1:0));
+
+  const SOLD_STATUS=['已售出','已預定'];
+  list.sort((a,b)=>(SOLD_STATUS.includes(a.status)?1:0)-(SOLD_STATUS.includes(b.status)?1:0));
+
+  allFilteredList = list;
+  cachedProducts = list;
+
+  const title=document.getElementById('gridTitle');
+  const empty=document.getElementById('emptyMsg');
+  title.textContent=t('product_count',{n:list.length});
+
+  if(list.length===0){
+    empty.innerHTML=`<div class="empty"><span class="empty-icon">💎</span><p>${t('no_product')}</p></div>`;
+    return;
+  }
+
+  renderCards(list, 0);
+  setupInfiniteScroll();
 }
 
 function openModal(idx){
