@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>找不到頁面｜黑柴珠寶 BlackShibaOpal</title>
+<meta name="robots" content="noindex">
+<style>
+body{font-family:Georgia,serif;background:#08080d;color:#e0dbd0;margin:0;
+     display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center}
+a{color:#9b85d8}
+</style>
+</head>
+<body>
+<div>
+  <h1>找不到這個頁面</h1>
+  <p><a href="/BlackShibaOpal/">回黑柴珠寶首頁 →</a></p>
+</div>
+<script>
+// P1-2 安全網：剛上架、還沒被預渲染的商品分享連結（/p/<id>.html 尚不存在）
+// 會落到這個 404 頁 → 自動導回主站用 ?p= 開啟該商品，客人完全無感
+(function(){
+  var m = location.pathname.match(/\/p\/([0-9a-fA-F-]{36})\.html$/);
+  if (m) location.replace('/BlackShibaOpal/?p=' + m[1]);
+})();
+</script>
+</body>
+</html>

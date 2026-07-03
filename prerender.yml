@@ -1,0 +1,52 @@
+# ============================================================
+# P1-2 商品靜態頁預渲染 workflow
+# 放置路徑：.github/workflows/prerender.yml
+# 觸發方式：
+#   1) 手動：GitHub repo → Actions → Prerender product pages → Run workflow
+#      （上下架商品後按一次，分享預覽就會更新）
+#   2) 排程：每天台灣時間早上 5 點自動跑一次
+# ============================================================
+name: Prerender product pages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 21 * * *'   # UTC 21:00 = 台灣 05:00
+
+permissions:
+  contents: write           # 允許 workflow 把產生的頁面 commit 回 repo
+
+concurrency:
+  group: prerender
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build product pages + sitemap
+        run: node scripts/build-pages.mjs
+        # 若日後 products 收緊讀取權限，在 repo Settings → Secrets
+        # 新增 SUPABASE_KEY 後，取消下面兩行的註解：
+        # env:
+        #   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add p/ sitemap.xml robots.txt
+          if git diff --cached --quiet; then
+            echo "沒有變更，跳過 commit"
+          else
+            git commit -m "chore: prerender product pages"
+            git push
+          fi
