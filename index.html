@@ -366,8 +366,11 @@ function addLineFriend(){
   window.open('https://line.me/R/ti/p/%40'+LINE_ID,'_blank');
 }
 // 商品分享網址：一律使用穩定的商品 id（不再用陣列索引）
+// P1-2:分享改指向預渲染靜態頁 /p/<id>.html,LINE/FB 才抓得到該商品的預覽圖;
+// 該頁對真人會自動轉跳回主站開啟商品(還沒預渲染到的新商品由 404.html 安全網接手)
 function productUrl(p){
-  return location.origin+location.pathname+'?p='+encodeURIComponent(p.id);
+  const base=location.origin+location.pathname.replace(/index\.html$/,'');
+  return base+'p/'+encodeURIComponent(p.id)+'.html';
 }
 function openLine(){
   const p=currentProduct; if(!p)return;
