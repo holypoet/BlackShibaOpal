@@ -544,6 +544,19 @@ async function getProducts(filter=''){
   }
 }
 
+// P1-1 效能:商品資料只抓一次存快取,篩選/搜尋/排序全部在前端進行;
+// 快取超過 5 分鐘視為過期,下次 render 時自動重抓(避免庫存狀態太舊)
+let allProducts = null;
+let allProductsAt = 0;
+const PRODUCTS_TTL = 5*60*1000;
+
+async function loadAllProducts(){
+  if(allProducts && Date.now()-allProductsAt < PRODUCTS_TTL) return allProducts;
+  allProducts = await getProducts('') || [];
+  allProductsAt = Date.now();
+  return allProducts;
+}
+
 // P0-2 防超賣：下單改為單一原子 RPC（Supabase place_order），
 // 由資料庫端在同一交易內「檢查庫存 → 扣庫存 → 建訂單」，取代舊的 createOrder + decreaseStock 兩段式呼叫
 async function placeOrder(payload){
@@ -591,9 +604,14 @@ function setFilter(f, btn){
   render();
 }
 
+// P1-1:搜尋防抖 250ms,停止輸入後才觸發渲染(且渲染已不打 API)
+let searchTimer=null;
 function onSearch(){
-  currentSearch=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
-  render();
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{
+    currentSearch=(document.getElementById('searchInput')?.value||'').trim().toLowerCase();
+    render();
+  },250);
 }
 
 function setSubcat(s, btn){
@@ -702,9 +720,11 @@ async function render(){
   isLoadingMore = false;
   setupImgObserver();
 
-  const filter=currentFilter==='all'||currentFilter==='成品'?'':
-    'category=eq.'+encodeURIComponent(currentFilter);
-  let list=await getProducts(filter)||[];
+  // P1-1:改用前端快取,分類篩選在本地進行,不再每次打 API
+  let list=(await loadAllProducts()).slice();
+  if(currentFilter!=='all' && currentFilter!=='成品'){
+    list=list.filter(p=>p.category===currentFilter);
+  }
 
   if(currentFilter==='成品'){
     list=list.filter(p=>(p.category||'').startsWith('成品'));
@@ -979,6 +999,7 @@ async function submitOrder(){
         alert('很抱歉，此商品剛被訂走或已無庫存。\nSorry, this item was just sold out.');
         resetBtn();
         closeModal();
+        allProductsAt=0; // 讓快取失效,重抓最新庫存
         render(); // 重新整理列表，讓售出狀態立即反映
       } else if(reason==='rate_limited'){
         alert('操作太頻繁，請一分鐘後再試');
@@ -1012,6 +1033,7 @@ async function submitOrder(){
     }
     document.getElementById('submitBtn').style.display='none';
     document.getElementById('orderSuccess').classList.add('show');
+    allProductsAt=0; // 讓快取失效,重抓最新庫存
     render();
   } catch(e){
     btn.disabled=false;btn.textContent='確認送出訂單';
@@ -1104,6 +1126,15 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     if(rows && rows.length){ p=rows[0]; cachedProducts.push(p); }
   }
   if(p) openModal(p.id);
+});
+
+// P1-1:回到分頁時若快取已過期,重新整理列表(render 內會自動重抓)
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible'
+     && allProductsAt && Date.now()-allProductsAt>=PRODUCTS_TTL
+     && !document.getElementById('modal').classList.contains('show')){
+    render();
+  }
 });
 </script>
 </body>
