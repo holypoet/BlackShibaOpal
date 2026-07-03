@@ -883,8 +883,8 @@ function orderCardHtml(o){
       ${o.status!=='已取消' ? `
         ${['已預定','已付款','已出貨','已完成'].map(s=>`<button class="status-btn ${s==='已預定'?'reserved':s==='已付款'?'paid':s==='已出貨'?'shipped':'done'} ${o.status===s?'active-status':''}" onclick="updateOrderStatus('${o.id}','${s}')">${s}</button>`).join('')}
         <button class="status-btn" style="color:#e0a050" onclick="cancelOrder('${o.id}','${o.product_id||o.productId}')">取消訂單</button>
-        <button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}')">刪除</button>
-      ` : ''}
+        <button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}','${o.status}')">刪除</button>
+      ` : `<button class="status-btn" style="color:#e07070" onclick="deleteOrder('${o.id}','${o.status}')">刪除</button>`}
     </div>
   </div>`;
 }
@@ -900,26 +900,37 @@ async function updateOrderStatus(id,status){
   toast(`狀態已更新為「${status}」`);
   renderOrders();renderDashboard();
 }
+// P0-2b:取消訂單改走原子 RPC(cancel_order),由資料庫同一交易內
+// 「改訂單狀態 + 恢復庫存 + 還原商品狀態」,取代舊的前端兩段式讀寫
 async function cancelOrder(orderId, productId){
   if(!confirm('確定取消此訂單？庫存會自動恢復。'))return;
-  // 更新訂單狀態
-  await updateOrder(orderId, {status:'已取消'});
-  // 恢復庫存 +1
-  if(productId){
-    try{
-      const p=await getProductById(productId);
-      if(p){
-        const newStock=(parseInt(p.stock)||0)+1;
-        await updateProduct(productId,{stock:newStock,status:newStock>0?'販售中':p.status});
-      }
-    }catch(e){console.log('庫存恢復失敗',e);}
-  }
-  toast('訂單已取消，庫存已恢復');
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/rpc/cancel_order`,{
+      method:'POST',
+      headers:sbHeaders,
+      body:JSON.stringify({p_order_id:orderId})
+    });
+    const res=await r.json();
+    if(!r.ok || !res || res.ok!==true){
+      const reason=res&&res.reason;
+      if(reason==='already_cancelled') toast('此訂單已是取消狀態');
+      else if(reason==='fulfilled') toast('已出貨／已完成的訂單無法一鍵取消，請手動調整商品庫存');
+      else toast('取消失敗，請稍後再試');
+      renderOrders();renderDashboard();
+      return;
+    }
+    toast('訂單已取消，庫存已恢復');
+  }catch(e){toast('取消失敗，請稍後再試');}
   renderOrders();renderDashboard();
 }
 
-async function deleteOrder(id){
-  if(!confirm('確定刪除？'))return;
+async function deleteOrder(id, status){
+  // P0-2b:刪除「不會」恢復庫存;有效訂單刪除前先明確警告,引導改用取消
+  const active=['新訂單','已預定','已付款'].includes(status);
+  const msg=active
+    ? '⚠️ 此訂單尚未取消，直接刪除「不會」恢復商品庫存！\n\n建議按「取消訂單」讓庫存自動恢復（取消後仍可刪除）。\n\n確定仍要直接刪除嗎？'
+    : '確定刪除？';
+  if(!confirm(msg))return;
   await deleteOrderById(id);
   toast('訂單已刪除');renderOrders();renderDashboard();
 }
