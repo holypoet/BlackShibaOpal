@@ -345,7 +345,7 @@ footer a:hover{color:var(--text)}
 <div class="modal-overlay" id="modal" onclick="closeModal(event)">
   <div class="modal" id="modalBox">
     <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="modalContent" data-idx=""></div>
+    <div id="modalContent" data-pid=""></div>
   </div>
 </div>
 
@@ -365,26 +365,28 @@ function addLineFriend(){
   // 加好友：帶 @，用 %40 編碼
   window.open('https://line.me/R/ti/p/%40'+LINE_ID,'_blank');
 }
-function openLine(encodedName, price){
-  const productName=decodeURIComponent(encodedName);
-  const idx=document.getElementById('modalContent').dataset.idx||0;
-  const productUrl=location.origin+location.pathname+'?p='+idx;
-  const msg=encodeURIComponent('您好，我想詢問這個商品：'+productName+'（NT$'+Number(price).toLocaleString()+'） '+productUrl);
+// 商品分享網址：一律使用穩定的商品 id（不再用陣列索引）
+function productUrl(p){
+  return location.origin+location.pathname+'?p='+encodeURIComponent(p.id);
+}
+function openLine(){
+  const p=currentProduct; if(!p)return;
+  const msg=encodeURIComponent('您好，我想詢問這個商品：'+p.name+'（NT$'+Number(p.price).toLocaleString()+'） '+productUrl(p));
   // oaMessage 格式：ID 要帶 @
   window.open('https://line.me/R/oaMessage/@'+LINE_ID+'/?'+msg,'_blank');
 }
-function shareProduct(name, idx){
-  const url=`${location.origin}${location.pathname}?p=${idx}`;
+function shareProduct(){
+  const p=currentProduct; if(!p)return;
+  const url=productUrl(p);
   if(navigator.share){
-    navigator.share({title:name,url});
+    navigator.share({title:p.name,url});
   } else {
     navigator.clipboard.writeText(url).then(()=>alert('已複製商品連結'));
   }
 }
-function shareToLine(name, idx){
-  const realIdx=document.getElementById('modalContent').dataset.idx||0;
-  const productUrl=location.origin+location.pathname+'?p='+realIdx;
-  const text=encodeURIComponent('黑柴珠寶 - '+name+' '+productUrl);
+function shareToLine(){
+  const p=currentProduct; if(!p)return;
+  const text=encodeURIComponent('黑柴珠寶 - '+p.name+' '+productUrl(p));
   window.open('https://line.me/R/share?text='+text,'_blank');
 }
 function nl2br(s){return s?s.replace(/\n/g,'<br>'):'';}
@@ -639,7 +641,6 @@ function renderCards(list, page){
   if(!slice.length) return false;
 
   const fragment = slice.map((p, i)=>{
-    const realIdx = start + i;
     const imgHtml = p.image
       ? `<img data-src="${p.image}" alt="${seoAlt(p)}" style="opacity:0;transition:opacity .3s"><span class="placeholder">${EMOJI[p.category]||'💎'}</span>`
       : `<span class="placeholder">${EMOJI[p.category]||'💎'}</span>`;
@@ -651,7 +652,7 @@ function renderCards(list, page){
       ? `<span class="card-status hot">${t('status_hot')}</span>`
       : '';
     return `
-      <div class="card" onclick="openModal(${realIdx})">
+      <div class="card" onclick="openModal('${p.id}')">
         <div class="card-img">${imgHtml}${statusHtml}</div>
         <div class="card-body">
           <div class="card-category">${p.category||''}</div>
@@ -763,8 +764,10 @@ async function render(){
   setupInfiniteScroll();
 }
 
-function openModal(idx){
-  const p=cachedProducts[idx]; 
+function openModal(id){
+  // 以商品 id 查找；若傳入的是舊格式的純數字索引則 fallback（向下相容舊分享連結）
+  let p=cachedProducts.find(x=>String(x.id)===String(id));
+  if(!p && /^\d+$/.test(String(id))) p=cachedProducts[Number(id)];
   if(!p) return;
   currentProduct=p;
   
@@ -890,7 +893,7 @@ function openModal(idx){
         ?`<button class="modal-cta sold-out" disabled style="margin-top:1rem">${p.status==='已預定'?t('btn_reserved'):t('btn_sold')}</button>`
         :`<div>
           <button class="modal-cta" onclick="toggleOrderForm()" style="margin-top:1rem">${t('btn_buy')}</button>
-          <button class="line-btn" onclick="openLine(encodeURIComponent('${p.name}'),${p.price})">
+          <button class="line-btn" onclick="openLine()">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
             ${t("line_chat")}
           </button>
@@ -899,8 +902,8 @@ function openModal(idx){
             ${t("line_add")}
           </button>
           <div class="share-row">
-            <button class="share-btn" onclick="shareToLine('${p.name.replace(/'/g,"\'")}',document.getElementById('modalContent').dataset.idx||0)">${t("share_line")}</button>
-            <button class="share-btn" onclick="shareProduct('${p.name.replace(/'/g,"\'")}',${document.getElementById('modalContent').dataset.idx||0})">${t("share_copy")}</button>
+            <button class="share-btn" onclick="shareToLine()">${t("share_line")}</button>
+            <button class="share-btn" onclick="shareProduct()">${t("share_copy")}</button>
           </div>
         </div>`
       }
@@ -940,7 +943,7 @@ function openModal(idx){
       </div>
     </div>`;
   sliderIdx=0;
-  document.getElementById('modalContent').dataset.idx=idx;
+  document.getElementById('modalContent').dataset.pid=p.id;
   document.getElementById('modal').classList.add('show');
   initSliderTouch();
 }
@@ -1065,19 +1068,28 @@ function closeModal(e){
 }
 
 document.addEventListener('DOMContentLoaded', async ()=>{
-  // URL 參數：?p=idx 直接開商品
-  const urlParams=new URLSearchParams(location.search);
-  const pIdx=urlParams.get('p');
-  if(pIdx!==null){
-    await render();
-    const idx=parseInt(pIdx);
-    if(!isNaN(idx)&&cachedProducts[idx])openModal(idx);
-    return;
-  }
   const lb=document.getElementById('langBtn');
   if(lb)lb.textContent=currentLang==='zh'?'EN':'中';
   applyLang();
-  render();
+
+  // URL 參數：?p=<商品id> 直接開商品（穩定連結；純數字視為舊索引格式向下相容）
+  const urlParams=new URLSearchParams(location.search);
+  const pParam=urlParams.get('p');
+  await render();
+  if(pParam===null) return;
+
+  let p=cachedProducts.find(x=>String(x.id)===pParam);
+  if(!p && /^\d+$/.test(pParam)){
+    // 舊分享連結（陣列索引）：盡力開啟，不保證是原本那件商品
+    if(cachedProducts[Number(pParam)]) openModal(pParam);
+    return;
+  }
+  if(!p){
+    // 商品不在目前列表（可能已售出被排序到後頁或被篩掉）：直接單抓一筆
+    const rows=await getProducts('id=eq.'+encodeURIComponent(pParam));
+    if(rows && rows.length){ p=rows[0]; cachedProducts.push(p); }
+  }
+  if(p) openModal(p.id);
 });
 </script>
 </body>
