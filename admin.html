@@ -489,9 +489,9 @@ select option{background:var(--bg2)}
         </div>
 
         <div id="tab-videos" style="display:none">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">貼上影片網址，或從 Google Drive 選取</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">貼上影片網址（.mp4 直連前台可內嵌播放，體驗最佳），或從 Google Drive 選取</div>
           <div class="video-input-wrap">
-            <input type="text" id="videoUrlInput" placeholder="YouTube / Google Drive / 其他影片網址">
+            <input type="text" id="videoUrlInput" placeholder="mp4 直連 / YouTube / Google Drive 網址">
             <button class="video-add-btn" onclick="addVideoUrl()">新增</button>
             <button class="drive-btn" onclick="openDrivePicker()">📁 Drive</button>
           </div>
@@ -577,7 +577,9 @@ select option{background:var(--bg2)}
 const EMOJI={'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨','成品·戒指':'💍','成品·項鍊':'📿','成品·耳環':'✨','成品·手環':'⭕','成品·其他':'✨'};
 const GOOGLE_CLIENT_ID='73001971116-5rirhfs1p2qn5ojgieflo0el05chdefl.apps.googleusercontent.com';
 const GOOGLE_API_KEY='AIzaSyBeTF2DqTw19I67zzcz4amxXoi3KcmN4K8';
-const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.readonly';
+// drive.file:只授權「透過選取器選過的檔案」,比 readonly 範圍更窄,
+// 且允許對選過的檔案設定共用權限(自動開啟「知道連結可檢視」)
+const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.file';
 
 // Supabase 設定 
 const SB_URL='https://obujbaevimyquefwgnxm.supabase.co';
@@ -808,7 +810,8 @@ function addVideoUrl(){
 
 function addVideo(url){
   let type='其他',icon='🎬';
-  if(url.includes('youtube.com')||url.includes('youtu.be')){type='YouTube';icon='▶️';}
+  if(/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(url)){type='影片檔（內嵌播放）';icon='🎞️';}
+  else if(url.includes('youtube.com')||url.includes('youtu.be')){type='YouTube';icon='▶️';}
   else if(url.includes('drive.google.com')){type='Google Drive';icon='📁';}
   currentVideos.push({url,type,icon});
   renderVideoList();
@@ -855,7 +858,7 @@ function openDrivePicker(){
   body.innerHTML=`
     <p>點下方按鈕用 Google 帳號授權，即可直接從 Drive 選取影片。</p>
     <br>
-    <p style="color:#6a6470;font-size:12px">⚠️ 選取的影片需設為「知道連結的人可以查看」，前台才能播放。</p>`;
+    <p style="color:#6a6470;font-size:12px">✅ 選取後會自動將該影片設為「知道連結的人可以檢視」，前台即可播放。</p>`;
   actions.innerHTML=`
     <button class="btn btn-primary" onclick="requestDriveAccess()">🔑 Google 授權登入</button>
     <button class="btn btn-ghost" onclick="closeDriveModal()">取消</button>`;
@@ -880,12 +883,23 @@ function loadAndOpenPicker(){
   });
 }
 
-function pickerCallback(data){
+async function pickerCallback(data){
   if(data.action===google.picker.Action.PICKED){
     const file=data.docs[0];
     const driveUrl=`https://drive.google.com/file/d/${file.id}/preview`;
+    // 自動把選取的影片設為「知道連結的人可以檢視」,前台才能播放
+    let shared=false;
+    try{
+      const r=await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}/permissions`,{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},
+        body:JSON.stringify({role:'reader',type:'anyone'})
+      });
+      shared=r.ok;
+    }catch(e){}
     addVideo(driveUrl);
-    toast(`已新增影片：${file.name}`);
+    if(shared) toast(`已新增影片並自動開啟共用：${file.name}`);
+    else toast(`已新增影片：${file.name}（自動共用失敗，請手動確認該檔為「知道連結可檢視」）`,true);
   }
 }
 
