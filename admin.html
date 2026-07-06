@@ -518,6 +518,7 @@ select option{background:var(--bg2)}
     <div class="page" id="page-list">
       <div class="page-title">商品列表</div>
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
+        <button class="icon-btn" onclick="localStorage.getItem('gh_pat')==='skip'&&localStorage.removeItem('gh_pat');triggerPrerender(false)">🔄 更新分享頁</button>
         <select id="listFilter" onchange="renderList()" style="font-size:13px;padding:6px 10px">
           <option value="all">全部分類</option>
           <option>原礦</option><option>裸石</option><option>半成品</option>
@@ -1180,6 +1181,7 @@ function saveProduct(){
         toast('商品已新增 ✓');
       }
       clearForm();
+      triggerPrerender(true); // 自動更新分享頁(未設定 token 時只會問一次)
       
       // 成功後自動跳轉到「商品列表」頁面 (這是第4個 nav-item)
       showPage('list', document.querySelectorAll('.nav-item')[3]);
@@ -1247,6 +1249,45 @@ async function deleteById(id){
   if(!confirm('確定要刪除？'))return;
   await deleteProductById(id);
   toast('商品已刪除');clearForm();renderList();
+  triggerPrerender(true); // 商品目錄變了,自動更新分享頁
+}
+
+// ===== 自動觸發分享頁更新(GitHub Actions prerender workflow)=====
+// Token 存在瀏覽器本機(localStorage),不進入程式碼。
+// 申請方式:GitHub → Settings → Developer settings → Fine-grained tokens
+//   → Generate new token → Repository access 選「Only select repositories」勾 BlackShibaOpal
+//   → Permissions → Actions 設為 Read and write → 產生後複製貼入
+async function triggerPrerender(auto){
+  let tk=localStorage.getItem('gh_pat')||'';
+  if(auto && tk==='skip')return; // 使用者先前選擇不啟用,自動模式不打擾
+  if(!tk || tk==='skip'){
+    const want=confirm('要啟用「儲存商品後自動更新分享頁」嗎？\n需要一把 GitHub Token（按確定後貼上；取消 = 之後用「🔄 更新分享頁」按鈕再設定）');
+    if(!want){localStorage.setItem('gh_pat','skip');return;}
+    tk=(prompt('請貼上 GitHub Fine-grained Token\n（Settings → Developer settings → Fine-grained tokens，權限只需此 repo 的 Actions: Read and write）')||'').trim();
+    if(!tk){localStorage.setItem('gh_pat','skip');return;}
+    localStorage.setItem('gh_pat',tk);
+  }
+  try{
+    const r=await fetch('https://api.github.com/repos/holypoet/BlackShibaOpal/actions/workflows/prerender.yml/dispatches',{
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+tk,
+        'Accept':'application/vnd.github+json',
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({ref:'main'})
+    });
+    if(r.status===204){
+      toast('已觸發分享頁更新，約 1-2 分鐘生效 🔄');
+    }else if(r.status===401||r.status===403){
+      localStorage.removeItem('gh_pat');
+      toast('GitHub Token 無效或過期，已清除，請點「🔄 更新分享頁」重新設定',true);
+    }else{
+      toast('觸發更新失敗（HTTP '+r.status+'），可到 GitHub Actions 手動執行',true);
+    }
+  }catch(e){
+    toast('觸發更新失敗，可到 GitHub Actions 手動執行',true);
+  }
 }
 
 async function renderList(){
