@@ -494,11 +494,12 @@ select option{background:var(--bg2)}
         </div>
 
         <div id="tab-videos" style="display:none">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">貼上影片網址（.mp4 直連前台可內嵌播放，體驗最佳），或從 Google Drive 選取</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">「⬆️ 上傳影片」直接把檔案傳進網站（前台內嵌播放，體驗最佳）；也可貼網址或從 Drive 選取</div>
           <div class="video-input-wrap">
             <input type="text" id="videoUrlInput" placeholder="mp4 直連 / YouTube / Google Drive 網址">
             <button class="video-add-btn" onclick="addVideoUrl()">新增</button>
             <button class="drive-btn" onclick="openDrivePicker()">📁 Drive</button>
+            <label class="video-add-btn" style="background:#1e4a3a;color:#a0e0c0;border-color:#2e6a50;cursor:pointer;display:inline-flex;align-items:center">⬆️ 上傳影片<input type="file" accept="video/mp4,video/webm,video/quicktime" style="display:none" onchange="handleVideoFile(this)"></label>
           </div>
           <div class="video-list" id="videoList"></div>
           <div style="font-size:12px;color:var(--muted);margin-top:.75rem;line-height:1.8">
@@ -875,6 +876,61 @@ function addVideo(url){
   else if(url.includes('drive.google.com')){type='Google Drive';icon='📁';}
   currentVideos.push({url,type,icon});
   renderVideoList();
+}
+
+// ===== 影片直傳網站(GitHub Contents API,與「自動更新分享頁」共用同一把 Token)=====
+// 注意:Token 需要多開一個權限:Contents → Read and write(只有 Actions 權限會回 403)
+async function handleVideoFile(input){
+  const f=input.files[0];
+  input.value='';
+  if(!f)return;
+  if(!/\.(mp4|webm|mov|m4v)$/i.test(f.name)){toast('請選擇 mp4 / webm / mov 影片檔',true);return;}
+  if(f.size>40*1024*1024){toast('影片超過 40MB，請先壓縮（LINE 傳給自己再存下來最快）',true);return;}
+  if(f.size>20*1024*1024&&!confirm(`這支影片有 ${Math.round(f.size/1048576)}MB，客人手機載入會較慢。\n建議壓到 720p（約 10-15MB）。仍要直接上傳嗎？`))return;
+
+  let tk=localStorage.getItem('gh_pat')||'';
+  if(!tk||tk==='skip'){
+    tk=(prompt('請貼上 GitHub Token\n（與「自動更新分享頁」同一把，需含 Contents: Read and write 權限）')||'').trim();
+    if(!tk)return;
+    localStorage.setItem('gh_pat',tk);
+  }
+
+  // 自動產生安全檔名:v日期-亂碼.副檔名(全英數,不會撞名、不怕中文編碼)
+  const ext=(f.name.match(/\.(\w+)$/)||[,'mp4'])[1].toLowerCase();
+  const d=new Date();
+  const name=`v${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.random().toString(36).slice(2,7)}.${ext}`;
+
+  toast(`影片上傳中（${Math.round(f.size/1048576)}MB），請勿關閉頁面...`);
+  const b64=await new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.onerror=rej;
+    r.readAsDataURL(f);
+  });
+  try{
+    const r=await fetch(`https://api.github.com/repos/holypoet/BlackShibaOpal/contents/videos/${name}`,{
+      method:'PUT',
+      headers:{
+        'Authorization':'Bearer '+tk,
+        'Accept':'application/vnd.github+json',
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({message:'upload product video '+name,content:b64,branch:'main'})
+    });
+    if(r.status===201){
+      addVideo(`https://holypoet.github.io/BlackShibaOpal/videos/${name}`);
+      toast('影片已上傳 ✓ 網站部署約 1-2 分鐘後即可播放');
+    }else if(r.status===401){
+      localStorage.removeItem('gh_pat');
+      toast('Token 無效或過期，已清除，請重新上傳並輸入新 Token',true);
+    }else if(r.status===403||r.status===404){
+      toast('Token 權限不足：請到 GitHub 編輯該 Token，把 Contents 權限設為 Read and write',true);
+    }else{
+      toast('上傳失敗（HTTP '+r.status+'），可改用 GitHub 網頁拖曳上傳',true);
+    }
+  }catch(e){
+    toast('上傳失敗，請檢查網路後重試',true);
+  }
 }
 
 function removeVideo(i){currentVideos.splice(i,1);renderVideoList();}
