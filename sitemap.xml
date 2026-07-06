@@ -3,7 +3,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://holypoet.github.io/BlackShibaOpal/</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="zh-TW" href="https://holypoet.github.io/BlackShibaOpal/"/>
@@ -20,6 +20,12 @@
     <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://holypoet.github.io/BlackShibaOpal/p/c3880cc6-46df-4f87-af02-ee021eb1ab9d.html</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://holypoet.github.io/BlackShibaOpal/p/c760fbb6-c0cc-4dbd-985d-4f23919ab8bf.html</loc>
