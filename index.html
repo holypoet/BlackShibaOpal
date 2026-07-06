@@ -392,7 +392,24 @@ function shareToLine(){
   const text=encodeURIComponent('黑柴珠寶 - '+p.name+' '+productUrl(p));
   window.open('https://line.me/R/share?text='+text,'_blank');
 }
-function nl2br(s){return s?s.replace(/\n/g,'<br>'):'';}
+// P2-1:下單成功後的訂單編號回饋(編號格式與後台一致:id 末 6 碼大寫)
+let lastOrder=null;
+function copyOrderId(btn){
+  if(!lastOrder)return;
+  navigator.clipboard.writeText(lastOrder.code).then(()=>{
+    btn.textContent='已複製 ✓';
+    setTimeout(()=>{btn.textContent=t('copy_order_id');},1500);
+  });
+}
+function lineAfterOrder(){
+  if(!lastOrder)return;
+  const msg=encodeURIComponent('您好，我剛下單了「'+lastOrder.name+'」，訂單編號 #'+lastOrder.code+'，想與您確認後續付款方式。');
+  window.open('https://line.me/R/oaMessage/@'+LINE_ID+'/?'+msg,'_blank');
+}
+// P1-3 XSS 防護:所有來自資料庫/使用者輸入的內容,插入 innerHTML 前一律先 esc()
+const esc = s => String(s ?? '').replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function nl2br(s){return s?esc(s).replace(/\n/g,'<br>'):'';}
 function getVideoEmbed(url){
   if(!url)return'';
   // YouTube
@@ -436,6 +453,10 @@ const i18n = {
     payment_body: '下單後我們會在 24 小時內與您聯繫確認訂單<br>付款方式：銀行匯款 或 LINE Pay<br>確認付款後安排出貨或面交',
     btn_submit: '確認送出訂單', btn_submitting: '送出中...',
     order_success: '訂單已送出！<br>我們會在 24 小時內透過您提供的聯絡方式與您確認。<br><br>感謝您選購黑柴珠寶 🪨',
+    order_id_label: '您的訂單編號',
+    copy_order_id: '複製編號',
+    line_notify_seller: 'LINE 通知賣家',
+    order_id_hint: '用 LINE 與我們聯繫時，請附上此編號以加速核對',
     no_product: '目前這個分類沒有商品<br>請稍後再來或私訊詢問',
     footer: '黑柴珠寶 BLACKSHIBAOPAL Jewelry · 天然蛋白石 · 澳洲直採',
     spec_origin: '產地', spec_weight: '重量 CT', spec_size: '尺寸 MM', spec_stock: '庫存',
@@ -470,6 +491,10 @@ const i18n = {
     payment_body: 'We will contact you within 24 hours to confirm.<br>Payment: Bank transfer or LINE Pay<br>Shipping after payment confirmed.',
     btn_submit: 'Place Order', btn_submitting: 'Submitting...',
     order_success: 'Order placed!<br>We will contact you within 24 hours.<br><br>Thank you for choosing BLACKSHIBAOPAL 🪨',
+    order_id_label: 'Your order ID',
+    copy_order_id: 'Copy ID',
+    line_notify_seller: 'Notify us on LINE',
+    order_id_hint: 'Please include this ID when contacting us on LINE',
     no_product: 'No products in this category.<br>Check back later or DM us.',
     footer: 'BLACKSHIBAOPAL Jewelry · Natural Opal · Direct from Australia',
     spec_origin: 'Origin', spec_weight: 'Weight (ct)', spec_size: 'Size (mm)', spec_stock: 'Stock',
@@ -657,7 +682,7 @@ function renderCards(list, page){
 
   const fragment = slice.map((p, i)=>{
     const imgHtml = p.image
-      ? `<img data-src="${p.image}" alt="${seoAlt(p)}" style="opacity:0;transition:opacity .3s"><span class="placeholder">${EMOJI[p.category]||'💎'}</span>`
+      ? `<img data-src="${esc(p.image)}" alt="${esc(seoAlt(p))}" style="opacity:0;transition:opacity .3s"><span class="placeholder">${EMOJI[p.category]||'💎'}</span>`
       : `<span class="placeholder">${EMOJI[p.category]||'💎'}</span>`;
     const statusHtml = p.status==='已售出'
       ? `<span class="card-status sold">${t('status_sold')}</span>`
@@ -670,8 +695,8 @@ function renderCards(list, page){
       <div class="card" onclick="openModal('${p.id}')">
         <div class="card-img">${imgHtml}${statusHtml}</div>
         <div class="card-body">
-          <div class="card-category">${p.category||''}</div>
-          <div class="card-name">${p.name}</div>
+          <div class="card-category">${esc(p.category||'')}</div>
+          <div class="card-name">${esc(p.name)}</div>
           <div class="card-price">NT$ ${Number(p.price).toLocaleString()}</div>
         </div>
       </div>`;
@@ -800,7 +825,7 @@ function openModal(id){
   const totalSlides=allSlides.length;
   const slidesHtml=allSlides.map((s,i)=>{
     if(s.type==='image'){
-      return `<div class="img-slide"><img src="${s.src}" alt="${seoAlt(p)}" loading="lazy" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span class=\\'ph\\'>${EMOJI[p.category]||'💎'}</span>')"></div>`;
+      return `<div class="img-slide"><img src="${esc(s.src)}" alt="${esc(seoAlt(p))}" loading="lazy" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span class=\\'ph\\'>${EMOJI[p.category]||'💎'}</span>')"></div>`;
     } else {
       // 解析影片 embed URL
       let embedUrl=s.url;
@@ -826,7 +851,7 @@ function openModal(id){
         const driveLink = did ? 'https://drive.google.com/file/d/'+did[1]+'/view' : s.url;
         const thumbUrl = did ? 'https://drive.google.com/thumbnail?id='+did[1]+'&sz=w800' : '';
         const bgStyle = thumbUrl ? `background:url('${thumbUrl}') center/cover no-repeat;` : 'background:#050508;';
-        return `<div class="img-slide video-slide" style="${bgStyle}cursor:pointer;position:relative" onclick="window.open('${driveLink}','_blank')">
+        return `<div class="img-slide video-slide" style="${bgStyle}cursor:pointer;position:relative" onclick="window.open(decodeURIComponent('${encodeURIComponent(driveLink)}'),'_blank')">
           <div style="position:absolute;inset:0;background:rgba(0,0,0,.3)"></div>
           <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:10px">
             <div style="width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:28px;padding-left:4px">▶</div>
@@ -835,7 +860,7 @@ function openModal(id){
         </div>`;
       }
       // 其他連結
-      return `<div class="img-slide video-slide" style="background:#050508;cursor:pointer" onclick="window.open('${s.url}','_blank')">
+      return `<div class="img-slide video-slide" style="background:#050508;cursor:pointer" onclick="window.open(decodeURIComponent('${encodeURIComponent(s.url)}'),'_blank')">
         <div style="color:#ccc;font-size:13px;letter-spacing:1px">▶ 點擊觀看影片</div>
       </div>`;
     }
@@ -855,7 +880,7 @@ function openModal(id){
   :`<div class="img-slider"><div class="img-slide"><span class="ph">${EMOJI[p.category]||'💎'}</span></div></div>`;
 
   // Tab 1: 基本資訊
-  const si=(label,value,full=false)=>value?`<div class="spec-item${full?' full':''}"><span class="spec-label">${label}</span><span class="spec-value">${value}</span></div>`:'';
+  const si=(label,value,full=false)=>value?`<div class="spec-item${full?' full':''}"><span class="spec-label">${label}</span><span class="spec-value">${esc(value)}</span></div>`:'';
   const originStr=[p.country,p.origin,p.claim].filter(Boolean).join(' · ');
   const tab1=`<div class="spec-grid">
     ${si(t('spec_origin'),originStr,true)}
@@ -882,7 +907,7 @@ function openModal(id){
 
   // Tab 3: 商品說明
   const tags=(p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
-  const tagsHtml=tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
+  const tagsHtml=tags.map(t=>`<span class="modal-tag">${esc(t)}</span>`).join('');
   const tab3=`
     ${p.description?`<div class="modal-desc" style="margin-bottom:1rem">${nl2br(p.description)}</div>`:''}
     ${tagsHtml?`<div class="modal-tags">${tagsHtml}</div>`:''}
@@ -891,8 +916,8 @@ function openModal(id){
 
   document.getElementById('modalContent').innerHTML=`
     <div class="modal-body">
-      <div class="modal-category">${p.category||''}</div>
-      <div class="modal-name">${p.name}</div>
+      <div class="modal-category">${esc(p.category||'')}</div>
+      <div class="modal-name">${esc(p.name)}</div>
       <div class="modal-price">NT$ ${Number(p.price).toLocaleString()}</div>
       
       <div class="detail-tabs">
@@ -1034,8 +1059,24 @@ async function submitOrder(){
         })
       }).catch(()=>{});
     }
+    // P2-1:顯示訂單編號(與後台一致:id 末 6 碼大寫)+ 複製 + LINE 通知賣家
+    const code=(res.order_id||'').toString().slice(-6).toUpperCase();
+    lastOrder=code?{code, name:p.name}:null;
+    const box=document.getElementById('orderSuccess');
+    box.innerHTML=`
+      <div class="order-success-icon">✅</div>
+      <p>${t('order_success')}</p>
+      ${code?`
+        <p style="margin-top:.75rem;font-size:15px">${t('order_id_label')} <b style="letter-spacing:2px;color:var(--accent)">#${code}</b></p>
+        <div style="margin-top:.6rem;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button type="button" onclick="copyOrderId(this)" style="padding:6px 14px;font-size:12px;background:none;border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-family:inherit">${t('copy_order_id')}</button>
+          <button type="button" onclick="lineAfterOrder()" style="padding:6px 14px;font-size:12px;background:#06c755;border:none;color:#fff;border-radius:4px;cursor:pointer;font-family:inherit">${t('line_notify_seller')}</button>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:.6rem">${t('order_id_hint')}</p>
+      `:''}
+    `;
     document.getElementById('submitBtn').style.display='none';
-    document.getElementById('orderSuccess').classList.add('show');
+    box.classList.add('show');
     allProductsAt=0; // 讓快取失效,重抓最新庫存
     render();
   } catch(e){

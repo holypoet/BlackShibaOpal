@@ -29,6 +29,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-item{padding:.6rem .75rem;font-size:13px;color:var(--muted);cursor:pointer;border-radius:4px;transition:all .2s;border:none;background:transparent;text-align:left;width:100%;font-family:inherit}
 .nav-item:hover{background:var(--bg3);color:var(--text)}
 .nav-item.active{background:var(--bg3);color:var(--accent);border-left:2px solid var(--accent);border-radius:0 4px 4px 0}
+.nav-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;margin-left:4px;background:#e05050;color:#fff;border-radius:9px;font-size:11px;font-weight:bold;vertical-align:middle}
 .sidebar-sep{height:1px;background:var(--border);margin:.5rem 0}
 .sidebar-link{padding:.6rem .75rem;font-size:12px;color:var(--muted);text-decoration:none;display:block;transition:color .2s}
 .sidebar-link:hover{color:var(--text)}
@@ -179,7 +180,7 @@ select option{background:var(--bg2)}
   <aside class="sidebar">
     <div class="sidebar-logo">黑柴珠寶 BLACKSHIBAOPAL<span>後台管理</span></div>
     <button class="nav-item active" onclick="showPage('dashboard',this)">📊 總覽</button>
-    <button class="nav-item" onclick="showPage('orders',this)">🛒 訂單管理</button>
+    <button class="nav-item" onclick="showPage('orders',this)">🛒 訂單管理 <span id="unseenBadge" class="nav-badge" style="display:none"></span></button>
     <button class="nav-item" onclick="showPage('add',this)">➕ 新增商品</button>
     <button class="nav-item" onclick="showPage('list',this)">📦 商品列表</button>
     <div class="sidebar-sep"></div>
@@ -583,6 +584,10 @@ const SB_URL='https://obujbaevimyquefwgnxm.supabase.co';
 const SB_KEY='sb_publishable_jdHW-a9YVioP2VQh4Besuw_Z8J95PWi';
 const sbHeaders={'apikey':SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
 
+// P1-3 XSS 防護:訂單的買家欄位是「不受信任的輸入」,插入 innerHTML 前一律先 esc()
+const esc = s => String(s ?? '').replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
 async function sbGet(table, params=''){
   const r=await fetch(`${SB_URL}/rest/v1/${table}?${params}`,{headers:sbHeaders});
   return r.json();
@@ -671,6 +676,8 @@ function showApp(){
   document.getElementById('appWrap').classList.add('show');
   initGoogleAuth();
   renderDashboard();
+  refreshUnseenBadge();                       // P2-1:登入後立即更新未讀紅點
+  setInterval(refreshUnseenBadge, 60*1000);   // P2-1:之後每分鐘輪詢一次
 }
 
 async function doLogout(){
@@ -697,7 +704,48 @@ async function getOrders(filter=''){return await sbGet('orders',`order=created_a
 async function createOrder(data){return await sbPost('orders',data);}
 async function updateOrder(id,data){return await sbPatch('orders',id,data);}
 async function deleteOrderById(id){return await sbDelete('orders',id);}
-function showPage(name,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');if(btn)btn.classList.add('active');if(name==='dashboard')renderDashboard();if(name==='list')renderList();if(name==='orders')renderOrders();}
+function showPage(name,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');if(btn)btn.classList.add('active');if(name==='dashboard')renderDashboard();if(name==='list')renderList();if(name==='orders'){renderOrders();markOrdersSeen();}}
+
+// P2-1:未讀訂單紅點(seen 欄位)——新訂單 seen=false,開啟訂單頁自動標已讀
+async function refreshUnseenBadge(){
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/orders?select=id&seen=eq.false`,{headers:sbHeaders});
+    if(!r.ok)return;
+    const rows=await r.json();
+    const n=Array.isArray(rows)?rows.length:0;
+    const b=document.getElementById('unseenBadge');
+    if(b){b.textContent=n>9?'9+':n;b.style.display=n?'inline-flex':'none';}
+  }catch(e){}
+}
+async function markOrdersSeen(){
+  try{
+    await fetch(`${SB_URL}/rest/v1/orders?seen=eq.false`,{
+      method:'PATCH',headers:sbHeaders,body:JSON.stringify({seen:true})
+    });
+  }catch(e){}
+  refreshUnseenBadge();
+}
+// P2-1:一鍵複製整筆訂單聯絡資訊(方便貼進 LINE 對話)
+async function copyOrderInfo(id,btn){
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/orders?id=eq.${encodeURIComponent(id)}&select=*`,{headers:sbHeaders});
+    const rows=await r.json();
+    const o=rows&&rows[0];
+    if(!o){toast('找不到訂單');return;}
+    const code='#'+(o.id||'').toString().slice(-6).toUpperCase();
+    const text=[
+      `訂單 ${code}（${o.status||''}）`,
+      `商品：${o.product_name||''} NT$${Number(o.price).toLocaleString()}`,
+      `姓名：${o.buyer_name||''}`,
+      `聯絡：${o.contact||''}`,
+      o.email?`Email：${o.email}`:'',
+      o.address?`地址：${o.address}`:'',
+      o.note?`備註：${o.note}`:''
+    ].filter(Boolean).join('\n');
+    await navigator.clipboard.writeText(text);
+    if(btn){const t0=btn.textContent;btn.textContent='已複製 ✓';setTimeout(()=>{btn.textContent=t0;},1500);}
+  }catch(e){toast('複製失敗');}
+}
 function toast(msg,err=false){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show'+(err?' error':'');setTimeout(()=>el.classList.remove('show'),2800);}
 
 /* ---- MEDIA TABS ---- */
@@ -733,7 +781,7 @@ function renderImgGrid(){
   const grid=document.getElementById('imgGrid');
   const thumbs=currentImages.map((img,i)=>`
     <div class="img-thumb ${i===0?'primary':''}">
-      <img src="${img.src}" alt="">
+      <img src="${esc(img.src)}" alt="">
       <div class="img-actions">
         ${i>0?`<button class="img-action-btn" onclick="setMainImg(${i})">主圖</button>`:''}
         <button class="img-action-btn" onclick="removeImg(${i})" style="color:#e07070">刪除</button>
@@ -776,7 +824,7 @@ function renderVideoList(){
       <div class="video-icon">${v.icon}</div>
       <div class="video-info">
         <div class="video-type">${v.type}</div>
-        <div class="video-url">${v.url}</div>
+        <div class="video-url">${esc(v.url)}</div>
       </div>
       <button class="video-del" onclick="removeVideo(${i})">刪除</button>
     </div>`).join('');
@@ -872,12 +920,12 @@ function orderCardHtml(o){
   const badge=`<span class="badge-status ${STATUS_LABELS[o.status]||'badge-new'}">${o.status}</span>`;
   const time=new Date(o.created_at || o.createdAt).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
   return `<div class="order-card">
-    <div class="order-header"><div><div class="order-id">訂單 #${(o.id||'').toString().slice(-6).toUpperCase()} &nbsp;${badge}</div><div class="order-time">${time}</div></div></div>
-    <div class="order-name">${o.buyer_name || o.buyerName} &nbsp;<span style="color:var(--muted);font-size:13px">${o.contact}</span></div>
-    ${o.email?`<div class="order-contact">📧 ${o.email}</div>`:''}
-    <div class="order-product">商品：${o.product_name || o.productName} &nbsp;NT$${Number(o.price).toLocaleString()}</div>
-    ${o.address?`<div class="order-contact">地址：${o.address}</div>`:''}
-    ${o.note?`<div class="order-note">備註：${o.note}</div>`:''}
+    <div class="order-header"><div><div class="order-id">訂單 #${(o.id||'').toString().slice(-6).toUpperCase()} &nbsp;${badge}</div><div class="order-time">${time}</div></div><button class="icon-btn" onclick="copyOrderInfo('${o.id}',this)">📋 複製資訊</button></div>
+    <div class="order-name">${esc(o.buyer_name || o.buyerName)} &nbsp;<span style="color:var(--muted);font-size:13px">${esc(o.contact)}</span></div>
+    ${o.email?`<div class="order-contact">📧 ${esc(o.email)}</div>`:''}
+    <div class="order-product">商品：${esc(o.product_name || o.productName)} &nbsp;NT$${Number(o.price).toLocaleString()}</div>
+    ${o.address?`<div class="order-contact">地址：${esc(o.address)}</div>`:''}
+    ${o.note?`<div class="order-note">備註：${esc(o.note)}</div>`:''}
     <div class="order-status">
       ${o.status==='已取消'?'<span style="font-size:12px;color:#888;font-style:italic">此訂單已取消</span>':'<span style="font-size:12px;color:var(--muted);align-self:center">更新：</span>'}
       ${o.status!=='已取消' ? `
@@ -1097,8 +1145,8 @@ async function renderList(){
     const img=firstImg(p);
     const badge=p.status==='熱門'?`<span class="badge hot">熱門</span>`:p.status==='已售出'?`<span class="badge sold">已售出</span>`:'';
     return `<div class="product-row">
-      <div class="product-row-img">${img?`<img src="${img}" alt="">`:`<span>${EMOJI[p.category]||'💎'}</span>`}</div>
-      <div class="product-row-info"><div class="product-row-name">${p.name}</div><div class="product-row-meta">${p.category||''} ${badge} ${Array.isArray(p.images)&&p.images.length>1?`<span style="color:var(--accent)">·${p.images.length}張圖</span>`:''} ${Array.isArray(p.videos)&&p.videos.length?`<span style="color:#5ecbd8">·${p.videos.length}部影片</span>`:''}</div></div>
+      <div class="product-row-img">${img?`<img src="${esc(img)}" alt="">`:`<span>${EMOJI[p.category]||'💎'}</span>`}</div>
+      <div class="product-row-info"><div class="product-row-name">${esc(p.name)}</div><div class="product-row-meta">${esc(p.category||'')} ${badge} ${Array.isArray(p.images)&&p.images.length>1?`<span style="color:var(--accent)">·${p.images.length}張圖</span>`:''} ${Array.isArray(p.videos)&&p.videos.length?`<span style="color:#5ecbd8">·${p.videos.length}部影片</span>`:''}</div></div>
       <div class="product-row-price">NT$${Number(p.price).toLocaleString()}</div>
       <div class="product-row-actions"><button class="icon-btn" onclick="editProduct('${p.id}')">編輯</button><button class="icon-btn del" onclick="deleteById('${p.id}')">刪除</button></div>
     </div>`;
