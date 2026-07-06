@@ -1157,10 +1157,11 @@ async function renderList(){
   const firstImg=p=>(p.images&&p.images[0])?p.images[0].src:(p.image||'');
   document.getElementById('productList').innerHTML=list.length?list.map(p=>{
     const img=firstImg(p);
+    const imgCount=Array.isArray(p.images)&&p.images.length?p.images.length:(p.image?1:0);
     const badge=p.status==='熱門'?`<span class="badge hot">熱門</span>`:p.status==='已售出'?`<span class="badge sold">已售出</span>`:'';
     return `<div class="product-row">
       <div class="product-row-img">${img?`<img src="${esc(img)}" alt="">`:`<span>${EMOJI[p.category]||'💎'}</span>`}</div>
-      <div class="product-row-info"><div class="product-row-name">${esc(p.name)}</div><div class="product-row-meta">${esc(p.category||'')} ${badge} ${Array.isArray(p.images)&&p.images.length>1?`<span style="color:var(--accent)">·${p.images.length}張圖</span>`:''} ${Array.isArray(p.videos)&&p.videos.length?`<span style="color:#5ecbd8">·${p.videos.length}部影片</span>`:''}</div></div>
+      <div class="product-row-info"><div class="product-row-name">${esc(p.name)}</div><div class="product-row-meta">${esc(p.category||'')} ${badge} ${imgCount?`<span style="color:var(--accent)">·${imgCount}張圖</span>`:''} ${Array.isArray(p.videos)&&p.videos.length?`<span style="color:#5ecbd8">·${p.videos.length}部影片</span>`:''}</div></div>
       <div class="product-row-price">NT$${Number(p.price).toLocaleString()}</div>
       <div class="product-row-actions"><button class="icon-btn" onclick="editProduct('${p.id}')">編輯</button><button class="icon-btn del" onclick="deleteById('${p.id}')">刪除</button></div>
     </div>`;
