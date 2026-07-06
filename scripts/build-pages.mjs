@@ -181,3 +181,30 @@ Allow: /
 Sitemap: ${SITE}/sitemap.xml
 `);
 console.log('robots.txt 已更新');
+
+// ---- 商品圖鏡像備份（防 imgbb 等外部圖床單點故障）----
+// 只備份 http(s) 外部圖片；已存在的檔案跳過（以網址雜湊命名，天然去重）
+import { createHash } from 'node:crypto';
+import { access } from 'node:fs/promises';
+
+await mkdir('backup/images', { recursive: true });
+let backed = 0, skipped = 0, failed = 0;
+for (const p of products) {
+  const imgs = Array.isArray(p.images) && p.images.length
+    ? p.images.map(i => i && i.src)
+    : (p.image ? [p.image] : []);
+  for (const u of imgs) {
+    if (!u || !/^https?:\/\//.test(u)) continue;
+    const ext = (u.match(/\.(jpe?g|png|webp|gif)(\?|$)/i) || [,'jpg'])[1].toLowerCase();
+    const name = createHash('md5').update(u).digest('hex') + '.' + ext;
+    const path = `backup/images/${name}`;
+    try { await access(path); skipped++; continue; } catch {}
+    try {
+      const r = await fetch(u);
+      if (!r.ok) { failed++; continue; }
+      await writeFile(path, Buffer.from(await r.arrayBuffer()));
+      backed++;
+    } catch { failed++; }
+  }
+}
+console.log(`圖片備份：新增 ${backed}、已存在 ${skipped}、失敗 ${failed}`);
