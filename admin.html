@@ -476,7 +476,7 @@ select option{background:var(--bg2)}
         </div>
 
         <div id="tab-images">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">第一張為主圖。點圖片可設為主圖或刪除。</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:.75rem">選圖後自動壓縮並上傳 imgbb、網址自動填入（首次使用需輸入一次 API Key）。第一張為主圖，點圖片可設為主圖或刪除。</div>
           <div class="img-grid" id="imgGrid">
             <label class="img-upload-btn">
               <input type="file" accept="image/*" multiple onchange="handleImgFiles(this)">
@@ -764,15 +764,69 @@ function switchMediaTab(tab,btn){
 }
 
 /* ---- IMAGES ---- */
-function handleImgFiles(input){
-  const files=Array.from(input.files);
-  files.forEach(file=>{
-    if(file.size>3*1024*1024){toast('圖片過大，請壓縮至 3MB 以下',true);return;}
-    const reader=new FileReader();
-    reader.onload=e=>{currentImages.push({src:e.target.result,type:'base64'});renderImgGrid();};
-    reader.readAsDataURL(file);
+// ===== 圖片直傳 imgbb(自動壓縮,網址自動填入)=====
+// 第一次使用會要求輸入 imgbb API Key(到 api.imgbb.com 免費申請),存在瀏覽器本機,不會進入程式碼
+function getImgbbKey(){
+  let k=localStorage.getItem('imgbb_key')||'';
+  if(!k){
+    k=(prompt('請貼上 imgbb API Key(到 api.imgbb.com 免費申請)\n留空取消 = 改用舊的 base64 方式存圖')||'').trim();
+    if(k)localStorage.setItem('imgbb_key',k);
+  }
+  return k;
+}
+// 壓縮:最長邊 1600px、JPEG 品質 0.85(蛋白石細節足夠,檔案約縮到 1/5)
+function compressImage(file){
+  return new Promise((resolve,reject)=>{
+    const url=URL.createObjectURL(file);
+    const img=new Image();
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const max=1600;
+      let {width:w,height:h}=img;
+      if(Math.max(w,h)>max){const r=max/Math.max(w,h);w=Math.round(w*r);h=Math.round(h*r);}
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(c.toDataURL('image/jpeg',0.85));
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('unsupported'));};
+    img.src=url;
   });
+}
+async function handleImgFiles(input){
+  const files=Array.from(input.files);
   input.value='';
+  if(!files.length)return;
+  const key=getImgbbKey();
+  let i=0;
+  for(const file of files){
+    i++;
+    if(file.size>25*1024*1024){toast(`第 ${i} 張超過 25MB，跳過`,true);continue;}
+    try{
+      const dataUrl=await compressImage(file);
+      if(!key){
+        // 沒有 API Key:退回舊的 base64 模式(仍可用,但資料庫較肥、前台較慢)
+        currentImages.push({src:dataUrl,type:'base64'});renderImgGrid();
+        continue;
+      }
+      toast(`圖片上傳中 ${i}/${files.length}...`);
+      const fd=new FormData();
+      fd.append('image',dataUrl.split(',')[1]); // 去掉 data:image/jpeg;base64, 前綴
+      const r=await fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(key)}`,{method:'POST',body:fd});
+      const res=await r.json();
+      if(res&&res.success&&res.data&&res.data.url){
+        currentImages.push({src:res.data.url,type:'url'});renderImgGrid();
+      }else{
+        if(res&&res.status_code===400&&/key/i.test(JSON.stringify(res.error||''))){
+          localStorage.removeItem('imgbb_key');
+          toast('imgbb API Key 無效，已清除，請重新選圖再輸入一次',true);return;
+        }
+        toast(`第 ${i} 張上傳失敗`,true);
+      }
+    }catch(e){
+      toast(`第 ${i} 張格式無法處理（HEIC 請先轉 JPG，或用手機瀏覽器操作）`,true);
+    }
+  }
+  toast('圖片處理完成 ✓');
 }
 
 function syncUrlImages(){
