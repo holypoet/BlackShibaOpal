@@ -196,6 +196,10 @@ select option{background:var(--bg2)}
       <div class="page-title">總覽<div class="page-sub">黑柴珠寶商品管理後台</div></div>
       <div class="stats" id="statsRow"></div>
       <div class="form-section">
+        <div class="form-section-title">本月熱門商品 Top 5</div>
+        <div id="topProducts"></div>
+      </div>
+      <div class="form-section">
         <div class="form-section-title">最新訂單</div>
         <div id="recentOrders"></div>
       </div>
@@ -204,6 +208,7 @@ select option{background:var(--bg2)}
     <div class="page" id="page-orders">
       <div class="page-title">訂單管理</div>
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
+        <button class="icon-btn" onclick="exportOrdersCsv(this)">⬇️ 匯出 CSV</button>
         <select id="orderFilter" onchange="renderOrders()" style="font-size:13px;padding:6px 10px">
           <option value="all">全部狀態</option>
           <option value="新訂單">新訂單</option>
@@ -908,22 +913,38 @@ function closeDriveModal(){document.getElementById('driveModal').classList.remov
 /* ---- DASHBOARD ---- */
 async function renderDashboard(){
   document.getElementById('statsRow').innerHTML='<div style="color:var(--muted);font-size:13px">載入中...</div>';
-  const [all, orders, pendingOrders, paidOrders, reservedOrders] = await Promise.all([
+  const monthStart=new Date();monthStart.setDate(1);monthStart.setHours(0,0,0,0);
+  const [all, orders, pendingOrders, paidOrders, reservedOrders, monthOrders] = await Promise.all([
   getProducts(),
   getOrders('limit=5'),
   getOrders(`status=eq.${encodeURIComponent('新訂單')}&select=id`),
   getOrders(`status=eq.${encodeURIComponent('已付款')}&select=id`),
-  getOrders(`status=eq.${encodeURIComponent('已預定')}&select=id`)
+  getOrders(`status=eq.${encodeURIComponent('已預定')}&select=id`),
+  getOrders(`created_at=gte.${monthStart.toISOString()}&select=id,price,status,product_name`)
   ]);
   const selling=(all||[]).filter(p=>p.status!=='已售出').length;
+  // P3-2:本月營運數字(成交金額只計已付款/已出貨/已完成)
+  const mo=monthOrders||[];
+  const revenue=mo.filter(o=>['已付款','已出貨','已完成'].includes(o.status))
+                  .reduce((s,o)=>s+(Number(o.price)||0),0);
   const stats=[
     {num:(all||[]).length,label:'全部商品'},
     {num:selling,label:'販售中'},
     {num:(pendingOrders||[]).length,label:'待處理訂單'},
     {num:(paidOrders||[]).length,label:'已付款待出貨'},
-    {num:(reservedOrders||[]).length,label:'已預定'}
+    {num:(reservedOrders||[]).length,label:'已預定'},
+    {num:mo.length,label:'本月訂單'},
+    {num:'NT$'+revenue.toLocaleString(),label:'本月成交金額'}
   ];
   document.getElementById('statsRow').innerHTML=stats.map(s=>`<div class="stat-card"><span class="stat-num">${s.num}</span><div class="stat-label">${s.label}</div></div>`).join('');
+  // P3-2:本月熱門商品 Top 5(依訂單數,取消單不計)
+  const counts={};
+  mo.filter(o=>o.status!=='已取消').forEach(o=>{const k=o.product_name||'(未知)';counts[k]=(counts[k]||0)+1;});
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topEl=document.getElementById('topProducts');
+  if(topEl)topEl.innerHTML=top.length
+    ?top.map(([name,n],i)=>`<div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:13px"><span>${i+1}. ${esc(name)}</span><span style="color:var(--accent)">${n} 單</span></div>`).join('')
+    :'<div style="color:var(--muted);font-size:13px">本月尚無訂單</div>';
   const recent=orders||[];
   document.getElementById('recentOrders').innerHTML=recent.length?recent.map(o=>orderCardHtml(o)).join(''):'<div class="empty-list"><p>還沒有訂單</p></div>';
 }
@@ -950,6 +971,34 @@ function orderCardHtml(o){
     </div>
   </div>`;
 }
+// P3-2:匯出訂單 CSV(依目前狀態篩選;UTF-8 BOM 讓 Excel 正確顯示中文)
+async function exportOrdersCsv(btn){
+  const f=document.getElementById('orderFilter')?.value||'all';
+  const params=f==='all'?'':`status=eq.${encodeURIComponent(f)}`;
+  if(btn){btn.disabled=true;btn.textContent='匯出中...';}
+  try{
+    const list=await getOrders(params)||[];
+    const cell=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+    const rows=[
+      ['訂單編號','完整ID','時間','狀態','商品','價格','姓名','聯絡方式','Email','地址','備註'],
+      ...list.map(o=>[
+        '#'+(o.id||'').toString().slice(-6).toUpperCase(), o.id,
+        o.created_at?new Date(o.created_at).toLocaleString('zh-TW'):'',
+        o.status||'', o.product_name||'', o.price??'',
+        o.buyer_name||'', o.contact||'', o.email||'', o.address||'', o.note||''
+      ])
+    ];
+    const csv='\ufeff'+rows.map(r=>r.map(cell).join(',')).join('\r\n');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    a.download=`黑柴珠寶訂單_${f==='all'?'全部':f}_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast(`已匯出 ${list.length} 筆訂單`);
+  }catch(e){toast('匯出失敗，請稍後再試');}
+  if(btn){btn.disabled=false;btn.textContent='⬇️ 匯出 CSV';}
+}
+
 async function renderOrders(){
   document.getElementById('orderList').innerHTML='<div style="color:var(--muted);font-size:13px;padding:1rem">載入中...</div>';
   const f=document.getElementById('orderFilter')?.value||'all';
