@@ -14,4 +14,4 @@ Allow: /
 User-agent: Googlebot
 Allow: /
 
-Sitemap: https://holypoet.github.io/BlackShibaOpal/sitemap.xml
+Sitemap: https://blackshibaopal.com/sitemap.xml

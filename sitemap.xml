@@ -2,45 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://holypoet.github.io/BlackShibaOpal/</loc>
-    <lastmod>2026-07-06</lastmod>
+    <loc>https://blackshibaopal.com/</loc>
+    <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://holypoet.github.io/BlackShibaOpal/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://holypoet.github.io/BlackShibaOpal/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://blackshibaopal.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://blackshibaopal.com/?lang=en"/>
   </url>
   <url>
-    <loc>https://holypoet.github.io/BlackShibaOpal/guide.html</loc>
+    <loc>https://blackshibaopal.com/guide.html</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://holypoet.github.io/BlackShibaOpal/guide-type123.html</loc>
+    <loc>https://blackshibaopal.com/guide-type123.html</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://holypoet.github.io/BlackShibaOpal/p/c3880cc6-46df-4f87-af02-ee021eb1ab9d.html</loc>
+    <loc>https://blackshibaopal.com/p/c3880cc6-46df-4f87-af02-ee021eb1ab9d.html</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://holypoet.github.io/BlackShibaOpal/p/c760fbb6-c0cc-4dbd-985d-4f23919ab8bf.html</loc>
+    <loc>https://blackshibaopal.com/p/c760fbb6-c0cc-4dbd-985d-4f23919ab8bf.html</loc>
     <lastmod>2026-06-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://holypoet.github.io/BlackShibaOpal/p/f483d1cd-6eff-413f-ad75-4c0ea56a4469.html</loc>
+    <loc>https://blackshibaopal.com/p/f483d1cd-6eff-413f-ad75-4c0ea56a4469.html</loc>
     <lastmod>2026-06-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://holypoet.github.io/BlackShibaOpal/p/30abf434-797f-4a5f-b2fd-c9e4bd7c0906.html</loc>
+    <loc>https://blackshibaopal.com/p/30abf434-797f-4a5f-b2fd-c9e4bd7c0906.html</loc>
     <lastmod>2026-07-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
