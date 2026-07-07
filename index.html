@@ -399,10 +399,13 @@ function openLine(){
 function shareProduct(){
   const p=currentProduct; if(!p)return;
   const url=productUrl(p);
-  if(navigator.share){
-    navigator.share({title:p.name,url});
+  // 桌機的系統分享面板(Windows)常故障:僅行動裝置用原生分享,桌機一律直接複製連結
+  const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const copy=()=>navigator.clipboard.writeText(url).then(()=>alert('已複製商品連結'));
+  if(isMobile && navigator.share){
+    navigator.share({title:p.name,url}).catch(()=>{}); // 使用者取消分享屬正常,靜默即可
   } else {
-    navigator.clipboard.writeText(url).then(()=>alert('已複製商品連結'));
+    copy();
   }
 }
 function shareToLine(){
