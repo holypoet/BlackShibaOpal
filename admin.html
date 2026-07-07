@@ -918,7 +918,7 @@ async function handleVideoFile(input){
       body:JSON.stringify({message:'upload product video '+name,content:b64,branch:'main'})
     });
     if(r.status===201){
-      addVideo(`https://holypoet.github.io/BlackShibaOpal/videos/${name}`);
+      addVideo(`https://blackshibaopal.com/videos/${name}`);
       toast('影片已上傳 ✓ 網站部署約 1-2 分鐘後即可播放');
     }else if(r.status===401){
       localStorage.removeItem('gh_pat');
