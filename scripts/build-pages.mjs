@@ -15,7 +15,7 @@ const SB_URL = 'https://obujbaevimyquefwgnxm.supabase.co';
 // 若日後收緊讀取權限，在 GitHub Secrets 設 SUPABASE_KEY 即可覆蓋。
 const SB_KEY = process.env.SUPABASE_KEY || 'sb_publishable_jdHW-a9YVioP2VQh4Besuw_Z8J95PWi';
 
-const SITE = 'https://holypoet.github.io/BlackShibaOpal';
+const SITE = 'https://blackshibaopal.com';
 const LOGO = `${SITE}/logo.jpg`;
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g,
