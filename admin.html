@@ -687,6 +687,12 @@ function showApp(){
   renderDashboard();
   refreshUnseenBadge();                       // P2-1:登入後立即更新未讀紅點
   setInterval(refreshUnseenBadge, 60*1000);   // P2-1:之後每分鐘輪詢一次
+  // JWT 效期一小時:每 45 分鐘自動用 refresh token 續期,
+  // 後台分頁開一整天也不會再出現「JWT expired」儲存失敗
+  setInterval(async()=>{
+    const ok=await checkSession();
+    if(!ok) toast('登入已過期，請重新整理頁面登入（未儲存的編輯請先複製備份）',true);
+  }, 45*60*1000);
 }
 
 async function doLogout(){
