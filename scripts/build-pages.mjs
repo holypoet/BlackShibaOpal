@@ -156,6 +156,12 @@ const staticUrls = `  <url>
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+       <loc>${SITE}/opal-tool.html</loc>
+       <lastmod>${today}</lastmod>
+       <changefreq>monthly</changefreq>
+       <priority>0.8</priority>
   </url>`;
 const productUrls = products.map(p => `  <url>
     <loc>${SITE}/p/${p.id}.html</loc>
