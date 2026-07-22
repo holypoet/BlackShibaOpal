@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>蛋白石估價工具｜5 步驟線上推算售價行情 - 黑柴珠寶 OPAL LUMEN</title>
+<meta name="description" content="蛋白石估價、售價行情怎麼算？免費線上估價工具：選擇產地種類、N值色調、亮度、圖紋與主色，5 步驟推算你的蛋白石大致價格區間，即時預覽游彩變化。黑柴珠寶蛋白石估價工房。">
+<meta name="keywords" content="蛋白石估價,蛋白石售價,蛋白石價格,蛋白石行情,蛋白石多少錢,蛋白石一克拉,歐泊估價,歐泊價格,澳寶價格,黑蛋白石價格,opal價格,蛋白石估價工具,蛋白石鑑價">
+<link rel="canonical" href="https://blackshibaopal.com/opal-tool.html">
+<meta property="og:title" content="蛋白石估價工具｜5 步驟線上推算售價行情">
+<meta property="og:description" content="選產地、色調、亮度、圖紋與主色，5 步驟推算蛋白石價格區間，即時預覽游彩變化。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blackshibaopal.com/opal-tool.html">
+<meta property="og:image" content="https://blackshibaopal.com/logo.jpg">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="蛋白石估價工具｜5 步驟線上推算售價行情">
+<meta name="twitter:image" content="https://blackshibaopal.com/logo.jpg">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"OPAL LUMEN 蛋白石估價工具",
+  "url":"https://blackshibaopal.com/opal-tool.html",
+  "applicationCategory":"UtilityApplication",
+  "operatingSystem":"Web",
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"TWD"},
+  "description":"免費線上蛋白石估價工具：依產地種類、N值色調、亮度、圖紋、主色與克拉重量，5 步驟推算售價行情區間。",
+  "publisher":{"@type":"Organization","name":"黑柴珠寶 BLACKSHIBAOPAL Jewelry"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"FAQPage",
+  "mainEntity":[
+    {
+      "@type":"Question",
+      "name":"蛋白石估價是怎麼算的？",
+      "acceptedAnswer":{"@type":"Answer","text":"蛋白石的價值以「每克拉基準價 × 各項倍率」推算：產地種類決定基準行情（澳洲黑蛋白石最高、衣索比亞最平價），再依加工型態（Solid 整石／二層石／原礦）、N值體色、游彩亮度、圖紋稀有度、主色（紅色最貴）與處理方式逐項加乘，最後乘上克拉重量。本工具即依此邏輯提供教育性估算。"}
+    },
+    {
+      "@type":"Question",
+      "name":"蛋白石售價一克拉大概多少錢？",
+      "acceptedAnswer":{"@type":"Answer","text":"價差極大（以澳幣計）：普通白蛋白石或衣索比亞蛋白石每克拉從數澳幣起，一般澳洲礫背與水晶蛋白石常見每克拉數十至數百澳幣，頂級澳洲黑蛋白石每克拉可達數千甚至上萬澳幣。此為澳洲市場行情參考（非台灣市場行情），蛋白石論質不論重，等級組合決定一切。"}
+    },
+    {
+      "@type":"Question",
+      "name":"線上估價和實際售價會一樣嗎？",
+      "acceptedAnswer":{"@type":"Answer","text":"不會完全一樣。線上估價僅依主要分級因素推算大致區間，實際售價還受切工比例、瑕疵位置、游彩覆蓋率與市場供需影響，且拼合石（二層石、三層石）有嚴格的市場價格天花板。估值僅供教育參考，實際行情以實物鑑賞為準。"}
+    },
+    {
+      "@type":"Question",
+      "name":"賣家售價和回收收購價差多少？",
+      "acceptedAnswer":{"@type":"Answer","text":"零售售價與業者收購價之間通常有明顯落差（涵蓋鑑定、庫存與通路成本）。若以收藏保值為目的，建議優先選擇天然未處理、附完整規格與影片紀錄的 Solid 整石，並保留購買憑證與鑑定資訊。"}
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10121a; --surface:#191c27; --surface-2:#20232f;
+    --line:#31364a; --line-soft:#262b3c; --text:#eef0f6;
+    --muted:#8d93a8; --muted-2:#666c82; --teal:#2fd9c4;
+    --violet:#a67cf2; --coral:#ff7a85; --amber:#ffc24b; --azure:#4fa3ff;
+    --radius:16px; --radius-sm:10px; font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(1200px 600px at 15% -10%, #1c2e33 0%, transparent 60%), radial-gradient(900px 500px at 110% 10%, #2a1f3a 0%, transparent 55%), var(--ink);
+    color:var(--text); font-family:'Manrope', sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  header.top{padding:28px 0 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line-soft);}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{width:38px;height:38px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px #0d0f16, 0 0 18px rgba(160,140,255,.35);flex-shrink:0;background:#fff;}
+  .brand-text .name{font-family:'Fraunces', serif;font-weight:600;font-size:1.25rem;letter-spacing:.02em;}
+  .brand-text .sub{font-size:.72rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
+  nav.top-nav{display:flex;gap:26px;font-size:.9rem;color:var(--muted);}
+  nav.top-nav a{text-decoration:none;transition:color .15s;}
+  nav.top-nav a:hover{color:var(--text);}
+  .hero{padding:52px 0 8px;}
+  .hero h1{font-family:'Fraunces', serif;font-weight:600;font-size:clamp(1.9rem, 3.6vw, 2.9rem);line-height:1.15;margin:0 0 14px;max-width:760px;}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--teal),var(--azure),var(--violet),var(--coral));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{color:var(--muted);max-width:560px;line-height:1.7;font-size:.98rem;}
+  .shell{display:grid;grid-template-columns:250px 1fr;gap:28px;margin:36px 0 60px;align-items:start;}
+  @media (max-width:860px){.shell{grid-template-columns:1fr;}}
+  .stepper{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:22px 20px;position:sticky;top:20px;}
+  @media (max-width:860px){.stepper{position:static;}}
+  .steps{list-style:none;margin:0 0 22px;padding:0;position:relative;}
+  .steps li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;position:relative;opacity:.45;transition:opacity .2s;}
+  .steps li.active,.steps li.done{opacity:1;}
+  .steps li::before{content:"";position:absolute;left:13px;top:34px;bottom:-10px;width:1px;background:var(--line);}
+  .steps li:last-child::before{display:none;}
+  .step-num{width:27px;height:27px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:.78rem;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);z-index:1;}
+  .steps li.active .step-num{background:linear-gradient(135deg,var(--teal),var(--azure));color:#0d0f16;border-color:transparent;font-weight:700;}
+  .steps li.done .step-num{background:var(--surface-2);border-color:var(--teal);color:var(--teal);}
+  .step-label .t{font-size:.88rem;font-weight:600;}
+  .step-label .d{font-size:.72rem;color:var(--muted-2);}
+  .swatch-box{border-top:1px solid var(--line-soft);padding-top:18px;text-align:center;}
+  .swatch-stage{width:120px;height:120px;margin:0 auto 10px;position:relative;border-radius:50%;box-shadow:0 10px 30px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06);}
+  .swatch-body,.swatch-fire,.swatch-pattern,.swatch-glare{position:absolute;inset:0;border-radius:50%;}
+  .swatch-body{background:hsl(220 8% 20%);transition:background .25s;}
+  .swatch-fire{mix-blend-mode:screen;opacity:.6;filter:saturate(1) blur(1px);transition:opacity .25s, filter .25s;}
+  .swatch-pattern{mix-blend-mode:overlay;opacity:.55;}
+  .swatch-glare{background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.55), transparent 45%);}
+  .swatch-caption{font-size:.7rem;color:var(--muted-2);letter-spacing:.05em;}
+  .panel{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:34px 36px;min-height:480px;display:flex;flex-direction:column;}
+  @media (max-width:600px){.panel{padding:24px 18px;}}
+  .panel-head .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:700;}
+  .panel-head h2{font-family:'Fraunces', serif;font-weight:600;font-size:1.55rem;margin:6px 0 6px;}
+  .panel-head p.hint{color:var(--muted);font-size:.9rem;margin:0 0 24px;max-width:640px;line-height:1.6;}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:8px;}
+  .opt-card{border:1px solid var(--line);background:var(--surface-2);border-radius:var(--radius-sm);padding:14px 15px;cursor:pointer;transition:border-color .15s, background .15s, transform .1s;text-align:left;}
+  .opt-card:hover{border-color:var(--muted-2);transform:translateY(-1px);}
+  .opt-card.selected{border-color:var(--teal);background:#1b2b2c;box-shadow:0 0 0 1px var(--teal) inset;}
+  .opt-card .row1{display:flex;align-items:center;gap:10px;margin-bottom:5px;}
+  .opt-chip{width:16px;height:16px;border-radius:50%;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);}
+  .opt-card .name{font-weight:700;font-size:.94rem;}
+  .opt-card .desc{font-size:.78rem;color:var(--muted);line-height:1.5;}
+  .opt-card .price{margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--amber);}
+  .field-block{margin-bottom:26px;}
+  .field-block > .label-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .field-block .fname{font-weight:700;font-size:.92rem;}
+  .field-block .fnow{font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--teal);}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;background:linear-gradient(90deg,#0b0c10,#e9e6da);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);border:3px solid var(--teal);cursor:pointer;margin-top:-6px;}
+  input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--text);border:3px solid var(--teal);cursor:pointer;}
+  input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:linear-gradient(90deg,#0b0c10,#e9e6da);}
+  .scale-labels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted-2);margin-top:8px;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:10px;}
+  .color-chip{width:46px;height:46px;border-radius:50%;cursor:pointer;position:relative;border:2px solid transparent;transition:transform .12s, border-color .12s;}
+  .color-chip:hover{transform:translateY(-2px);}
+  .color-chip.selected{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.15);}
+  .chip-label{font-size:.68rem;text-align:center;margin-top:5px;color:var(--muted);}
+  .chip-wrap{display:flex;flex-direction:column;align-items:center;width:64px;}
+  .carat-input-wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .carat-input-wrap input[type=number]{width:120px;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--ink);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:1.05rem;}
+  .btn{font-family:'Manrope',sans-serif;font-weight:700;font-size:.85rem;border-radius:9px;padding:10px 16px;cursor:pointer;border:1px solid transparent;transition:transform .1s, opacity .15s;}
+  .btn:active{transform:scale(.97);}
+  .btn-ghost{background:transparent;border-color:var(--line);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--muted-2);}
+  .btn-solid{background:linear-gradient(135deg,var(--teal),var(--azure));color:#0b0c10;}
+  .btn-solid:disabled{opacity:.35;cursor:not-allowed;}
+  .panel-nav{margin-top:auto;padding-top:26px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center;}
+  .value-hero{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:28px 26px;text-align:center;margin-bottom:22px;}
+  .value-hero .lbl{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .value-hero .amt{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(1.8rem,4vw,2.6rem);background:linear-gradient(90deg,var(--teal),var(--azure),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .value-hero .range{font-size:.82rem;color:var(--muted);margin-top:6px;}
+  .breakdown{width:100%;border-collapse:collapse;font-size:.85rem;margin-bottom:8px;}
+  .breakdown th{text-align:left;color:var(--muted-2);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;padding-bottom:8px;border-bottom:1px solid var(--line-soft);}
+  .breakdown td{padding:9px 0;border-bottom:1px solid var(--line-soft);}
+  .breakdown td.mult{font-family:'IBM Plex Mono',monospace;text-align:right;color:var(--teal);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./" style="text-decoration:none">
+      <img class="brand-mark" src="logo.jpg" alt="黑柴珠寶">
+      <div class="brand-text">
+        <div class="name">OPAL LUMEN</div>
+        <div class="sub">黑柴珠寶 · 蛋白石估價工房</div>
+      </div>
+    </a>
+    <nav class="top-nav">
+      <a href="#wizard-top">開始估價</a>
+      <a href="guide.html">蛋白石小學堂</a>
+    </nav>
+  </header>
+
+  <section class="hero" id="wizard-top">
+    <h1>蛋白石估價怎麼算？<br>從<em>產地、種類到色彩</em>，五個步驟推算售價行情</h1>
+    <p>依照最新的市場行情法則調整，將色調、亮度(B1-B5)、圖紋與主色的加成做指數收斂。輸入您手上蛋白石的特徵，右側預覽會即時呈現對應的「遊彩」變化。估值以澳幣（AU$）計價，為澳洲市場行情估算參考（非台灣市場行情）。</p>
+  </section>
+
+  <div class="shell">
+    <aside class="stepper">
+      <ul class="steps" id="stepsList">
+        <li data-step="1"><div class="step-num">1</div><div class="step-label"><div class="t">產地 Origin</div><div class="d">蛋白石的出產地</div></div></li>
+        <li data-step="2"><div class="step-num">2</div><div class="step-label"><div class="t">種類 Type</div><div class="d">單體 / 二三層石 / 礫背</div></div></li>
+        <li data-step="3"><div class="step-num">3</div><div class="step-label"><div class="t">屬性 Attributes</div><div class="d">色調・亮度・圖紋・主色</div></div></li>
+        <li data-step="4"><div class="step-num">4</div><div class="step-label"><div class="t">估量 Estimate</div><div class="d">克拉重量與處理方式</div></div></li>
+        <li data-step="5"><div class="step-num">5</div><div class="step-label"><div class="t">結果 Value</div><div class="d">估計行情與鑑定諮詢</div></div></li>
+      </ul>
+      <div class="swatch-box">
+        <div class="swatch-stage">
+          <div class="swatch-body" id="swatchBody"></div>
+          <div class="swatch-fire" id="swatchFire"></div>
+          <div class="swatch-pattern" id="swatchPattern"></div>
+          <div class="swatch-glare"></div>
+        </div>
+        <div class="swatch-caption">即時遊彩預覽</div>
+      </div>
+    </aside>
+
+    <section class="panel" id="panel"></section>
+  </div>
+</div>
+
+<script>
+(function(){
+  // 修正後的基礎價格 (Base Price)：讓最高倍率乘上去後，符合市場頂端天花板
+  const ORIGINS = [
+    {id:'black-au', name:'澳洲黑蛋白石 Black Opal', desc:'N1-N4 深色母體,遊彩對比最強烈的品種。', base:3000, range:[500,20000], hue:210, toneRange:[1,4]},
+    {id:'dark-au', name:'澳洲深色蛋白石 Dark Opal', desc:'N5-N6 灰色母體，介於黑白之間的色調。', base:800, range:[100,5000], hue:220, toneRange:[5,6]},
+    {id:'boulder-au', name:'澳洲礫背蛋白石 Boulder Opal', desc:'附著在鐵礦母岩上的薄層蛋白石。', base:350, range:[30,4000], hue:200, toneRange:[1,6]},
+    {id:'crystal-au', name:'澳洲水晶蛋白石 Crystal Opal', desc:'N1-N9 具透明至半透明特徵，深色者稱為黑水晶蛋白石。', base:400, range:[30,3500], hue:190, toneRange:[1,9]},
+    {id:'white-au', name:'澳洲白蛋白石 White Opal', desc:'N7-N9 底色呈白色或淺色，遊彩較為柔和。', base:100, range:[10,500], hue:180, toneRange:[7,9]},
+    {id:'ethiopian', name:'衣索比亞蛋白石 Ethiopian Opal', desc:'具吸水性(水蛋白)，多為淺色底，市場普及率高。', base:50, range:[5,300], hue:40, toneRange:[5,9]}
+  ];
+
+  const TYPES = [
+    {id:'solid', name:'天然單體蛋白石 Solid Natural', desc:'包含黑蛋白石、白蛋白石、礫岩蛋白石。[100% 基準價值]', mult:1.0},
+    {id:'carved', name:'雕刻 / 自由造型', desc:'依原礦形狀雕琢,較少標準切工損耗。', mult:0.9},
+    {id:'boulder', name:'礫背型(含母岩)', desc:'蛋白石層較薄,重量含母岩,每克拉均價較低。', mult:0.75},
+    {id:'rough', name:'原礦未拋光 Rough', desc:'尚未加工，因出礦率普遍極低（約10%）且具高度賭石不確定性。[×0.10]', mult:0.10},
+    {id:'doublet', name:'二層石 Doublets', desc:'表面薄層蛋白石黏合深色背襯。[受限於市場天花板]', mult:0.25, isAssembled: true, minPrice: 10, maxPrice: 200},
+    {id:'triplet', name:'三層石 Triplets', desc:'頂部加蓋透明石英或玻璃。[商業裝飾用，價值極低]', mult:0.01, isAssembled: true, minPrice: 5, maxPrice: 80},
+  ];
+
+  const TONE_LABELS = ['N1 極黑','N2 深黑灰','N3 深灰','N4 中深灰','N5 中灰','N6 中淺灰','N7 淺灰','N8 極淺/水晶','N9 白'];
+
+  // 修正後的亮度倍率：平緩指數跳躍
+  const BRIGHTNESS = [
+    {id:'b1', name:'B1 黯淡 Dull', mult:0.3, opacity:.32, blur:2.2, sat:.55},
+    {id:'b2', name:'B2 柔和 Subdued', mult:0.6, opacity:.5, blur:1.3, sat:.8},
+    {id:'b3', name:'B3 明亮 Bright', mult:1.0, opacity:.7, blur:.6, sat:1.1},
+    {id:'b4', name:'B4 燦爛 Brilliant', mult:1.5, opacity:.86, blur:.1, sat:1.35},
+    {id:'b5', name:'B5 極致 Vivid (Gem)', mult:2.2, opacity:1, blur:0, sat:1.65},
+  ];
+
+  // 修正後的圖紋倍率：合理反映稀有度
+  const PATTERNS = [
+    {id:'straw', name:'無方向性 / 草紋', mult:0.8, css:'radial-gradient(circle at 40% 30%, rgba(255,255,255,.3), transparent 60%)'},
+    {id:'pinfire', name:'針火 Pinfire', mult:0.9, css:'repeating-radial-gradient(circle, rgba(255,255,255,.4) 0 2px, transparent 3px 15px)'},
+    {id:'flash', name:'閃光 Flash', mult:1.1, css:'repeating-linear-gradient(45deg, rgba(255,255,255,.32) 0 6px, transparent 6px 20px)'},
+    {id:'rolling', name:'滾動閃光 Rolling', mult:1.3, css:'repeating-linear-gradient(120deg, rgba(255,255,255,.36) 0 10px, transparent 10px 26px)'},
+    {id:'harlequin', name:'丑角紋 Harlequin', mult:2.0, css:'linear-gradient(45deg, rgba(255,255,255,.35) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.35) 75%), linear-gradient(-45deg, rgba(255,255,255,.35) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.35) 75%)', size:'22px 22px'},
+  ];
+
+  // 修正後的主色倍率：紅色與藍綠的合理價差
+  const COLORS = [
+    {id:'blue', name:'藍 / 紫', hue:210, mult:0.8},
+    {id:'green', name:'綠', hue:140, mult:1.0},
+    {id:'gold', name:'金黃', hue:45, mult:1.1},
+    {id:'orange', name:'橙', hue:25, mult:1.3},
+    {id:'red', name:'紅', hue:355, mult:1.8},
+    {id:'rainbow', name:'彩虹 (多色)', hue:0, mult:2.0},
+  ];
+
+  const TREATMENTS = [
+    {id:'natural', name:'天然未處理 Natural', mult:1.0},
+    {id:'smoke', name:'煙燻 / 糖處理 Smoke', mult:0.45},
+    {id:'dyed', name:'染色 Dyed', mult:0.35},
+    {id:'stabilized', name:'穩定化 / 浸膠', mult:0.7},
+  ];
+
+  const state = {
+    step:1,
+    origin:null, type:null,
+    tone:5, brightness:null, pattern:null, color:null,
+    carat:null, treatment:null, certified:false,
+  };
+
+  const panel = document.getElementById('panel');
+  const stepsListEl = document.getElementById('stepsList');
+  const swatchBody = document.getElementById('swatchBody');
+  const swatchFire = document.getElementById('swatchFire');
+  const swatchPattern = document.getElementById('swatchPattern');
+
+  function toneToLight(n){ return 6 + (n-1)/8*82; }
+  function toneFactor(n){ return 0.6 + (9-n)/8*0.8; }
+
+  function updateSwatch(){
+    const light = toneToLight(state.tone);
+    swatchBody.style.background = `hsl(220 8% ${light}%)`;
+
+    const b = BRIGHTNESS.find(x=>x.id===state.brightness) || BRIGHTNESS[2];
+    
+    if (state.color === 'rainbow') {
+      swatchFire.style.background = `conic-gradient(from 0deg at 50% 50%, #ff4d4d, #ff9d4d, #ffe14d, #7dff4d, #4dfff0, #4d8bff, #a34dff, #ff4dd8, #ff4d4d)`;
+    } else {
+      const hue = state.color ? COLORS.find(c=>c.id===state.color).hue : (state.origin ? ORIGINS.find(o=>o.id===state.origin).hue : 210);
+      swatchFire.style.background = `conic-gradient(from ${-hue}deg at 50% 50%, #ff4d4d, #ff9d4d, #ffe14d, #7dff4d, #4dfff0, #4d8bff, #a34dff, #ff4dd8, #ff4d4d)`;
+    }
+    
+    swatchFire.style.opacity = b.opacity;
+    swatchFire.style.filter = `saturate(${b.sat}) blur(${b.blur}px)`;
+
+    const p = PATTERNS.find(x=>x.id===state.pattern) || PATTERNS[0];
+    swatchPattern.style.backgroundImage = p.css;
+    swatchPattern.style.backgroundSize = p.size || 'auto';
+  }
+
+  function renderSteps(){
+    [...stepsListEl.children].forEach(li=>{
+      const n = +li.dataset.step;
+      li.classList.toggle('active', n===state.step);
+      li.classList.toggle('done', n<state.step);
+    });
+  }
+
+  // 依目前步驟顯示對應面板。原檔缺少這個函式，會在初始化時
+  // 直接拋出 ReferenceError，導致整個估價工具無法使用。
+  function renderPanel(){
+    switch(state.step){
+      case 1: renderOrigin(); break;
+      case 2: renderType(); break;
+      case 3: renderAttributes(); break;
+      case 4: renderEstimate(); break;
+      case 5: renderValue(); break;
+      default:
+        state.step = 1;
+        renderOrigin();
+    }
+    updateSwatch();
+  }
+
+  function fmt$(n){ return 'AU$' + Math.round(n).toLocaleString('en-US'); }
+
+  function goTo(step){
+    state.step = step;
+    renderSteps();
+    renderPanel();
+    window.scrollTo({top: document.getElementById('wizard-top').offsetTop - 10, behavior:'smooth'});
+  }
+
+  function panelNav(backFn, nextFn, nextLabel, nextDisabled){
+    return `
+    <div class="panel-nav">
+      <button class="btn btn-ghost" id="btnBack" ${backFn?'':'style="visibility:hidden"'}>← 上一步</button>
+      <button class="btn btn-solid" id="btnNext" ${nextDisabled?'disabled':''}>${nextLabel||'下一步 →'}</button>
+    </div>`;
+  }
+
+  function renderOrigin(){
+    panel.innerHTML = `
+      <div class="panel-head">
+        <div class="eyebrow">STEP 1 / 5</div>
+        <h2>這顆蛋白石的分類是?</h2>
+        <p class="hint">產地與底色定義了基準行情。例如：黑蛋白石必定屬於 N1-N4，白蛋白石落在 N7-N9。</p>
+      </div>
+      <div class="card-grid">
+        ${ORIGINS.map(o=>`
+          <button class="opt-card ${state.origin===o.id?'selected':''}" data-id="${o.id}">
+            <div class="row1"><span class="opt-chip" style="background:hsl(${o.hue} 70% 55%)"></span><span class="name">${o.name}</span></div>
+            <div class="desc">${o.desc}</div>
+            <div class="price">參考每克拉 ${fmt$(o.range[0])} – ${fmt$(o.range[1])}${o.range[1] >= 15000 ? '+' : ''}</div>
+          </button>`).join('')}
+      </div>
+      ${panelNav(false,true,'下一步 →', !state.origin)}
+    `;
+    panel.querySelectorAll('.opt-card').forEach(el=>{
+      el.addEventListener('click', ()=>{ 
+        state.origin = el.dataset.id; 
+        const selectedOrigin = ORIGINS.find(x => x.id === state.origin);
+        if(state.tone < selectedOrigin.toneRange[0] || state.tone > selectedOrigin.toneRange[1]) {
+            state.tone = Math.floor((selectedOrigin.toneRange[0] + selectedOrigin.toneRange[1]) / 2);
+        }
+        renderOrigin(); 
+        updateSwatch(); 
+      });
+    });
+    document.getElementById('btnNext').addEventListener('click', ()=> state.origin && goTo(2));
+  }
+
+  function renderType(){
+    panel.innerHTML = `
+      <div class="panel-head">
+        <div class="eyebrow">STEP 2 / 5</div>
+        <h2>屬於哪一種加工型態?</h2>
+        <p class="hint">單體天然蛋白石保留完整價值;二層/三層石雖然更耐用平價,但每顆價值有嚴格的市場天花板。</p>
+      </div>
+      <div class="card-grid">
+        ${TYPES.map(t=>`
+          <button class="opt-card ${state.type===t.id?'selected':''}" data-id="${t.id}">
+            <div class="row1"><span class="name">${t.name}</span></div>
+            <div class="desc">${t.desc}</div>
+            <div class="price">${t.isAssembled ? '最高市場單價限制: ' + fmt$(t.maxPrice) : '價值倍率 ×' + t.mult}</div>
+          </button>`).join('')}
+      </div>
+      ${panelNav(true,true,'下一步 →', !state.type)}
+    `;
+    panel.querySelectorAll('.opt-card').forEach(el=>{
+      el.addEventListener('click', ()=>{ state.type = el.dataset.id; renderType(); });
+    });
+    document.getElementById('btnBack').addEventListener('click', ()=>goTo(1));
+    document.getElementById('btnNext').addEventListener('click', ()=> state.type && goTo(3));
+  }
+
+  function renderAttributes(){
+    const originDef = ORIGINS.find(o => o.id === state.origin);
+    const minTone = originDef ? originDef.toneRange[0] : 1;
+    const maxTone = originDef ? originDef.toneRange[1] : 9;
+
+    panel.innerHTML = `
+      <div class="panel-head">
+        <div class="eyebrow">STEP 3 / 5</div>
+        <h2>描述它的色調、亮度、圖紋與主色</h2>
+        <p class="hint">系統已根據您在 STEP 1 選擇的「${originDef ? originDef.name : ''}」自動限制合理的母體色調(Body Tone)區間。</p>
+      </div>
+
+      <div class="field-block">
+        <div class="label-row"><span class="fname">母體色調 Body Tone</span><span class="fnow" id="toneNow">${TONE_LABELS[state.tone-1]}</span></div>
+        <input type="range" min="${minTone}" max="${maxTone}" value="${state.tone}" id="toneSlider">
+        <div class="scale-labels"><span>${TONE_LABELS[minTone-1]}</span><span>${TONE_LABELS[maxTone-1]}</span></div>
+      </div>
+
+      <div class="field-block">
+        <div class="label-row"><span class="fname">亮度 Brightness (B1 - B5)</span></div>
+        <div class="card-grid" id="brightGrid">
+          ${BRIGHTNESS.map(b=>`<button class="opt-card ${state.brightness===b.id?'selected':''}" data-id="${b.id}"><div class="name">${b.name}</div><div class="price">倍率 ×${b.mult}</div></button>`).join('')}
+        </div>
+      </div>
+
+      <div class="field-block">
+        <div class="label-row"><span class="fname">遊彩圖紋 Pattern</span></div>
+        <div class="card-grid" id="patGrid">
+          ${PATTERNS.map(p=>`<button class="opt-card ${state.pattern===p.id?'selected':''}" data-id="${p.id}"><div class="name">${p.name}</div><div class="price">倍率 ×${p.mult}</div></button>`).join('')}
+        </div>
+      </div>
+
+      <div class="field-block">
+        <div class="label-row"><span class="fname">主要遊彩色 Dominant Color</span></div>
+        <div class="chip-row" id="colorRow">
+          ${COLORS.map(c=>`
+            <div class="chip-wrap">
+              <div class="color-chip ${state.color===c.id?'selected':''}" data-id="${c.id}" style="background:${c.id==='rainbow'?'conic-gradient(red, yellow, green, blue, purple, red)':'hsl('+c.hue+' 75% 55%)'}"></div>
+              <div class="chip-label">${c.name}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      ${panelNav(true,true,'下一步 →', !(state.brightness && state.pattern && state.color))}
+    `;
+    
+    document.getElementById('toneSlider').addEventListener('input', e=>{
+      state.tone = +e.target.value;
+      document.getElementById('toneNow').textContent = TONE_LABELS[state.tone-1];
+      updateSwatch();
+    });
+    panel.querySelectorAll('#brightGrid .opt-card').forEach(el=>el.addEventListener('click', ()=>{state.brightness=el.dataset.id; renderAttributes();}));
+    panel.querySelectorAll('#patGrid .opt-card').forEach(el=>el.addEventListener('click', ()=>{state.pattern=el.dataset.id; renderAttributes();}));
+    panel.querySelectorAll('#colorRow .color-chip').forEach(el=>el.addEventListener('click', ()=>{state.color=el.dataset.id; renderAttributes();}));
+    document.getElementById('btnBack').addEventListener('click', ()=>goTo(2));
+    document.getElementById('btnNext').addEventListener('click', ()=> (state.brightness&&state.pattern&&state.color) && goTo(4));
+  }
+
+  function renderEstimate(){
+    panel.innerHTML = `
+      <div class="panel-head">
+        <div class="eyebrow">STEP 4 / 5</div>
+        <h2>克拉重量與處理方式</h2>
+      </div>
+      
+      <div class="field-block">
+        <div class="label-row"><span class="fname">克拉重量 Carat Weight</span></div>
+        <div class="carat-input-wrap">
+          <input type="number" id="caratInput" min="0" step="0.01" placeholder="例如 3.5" value="${state.carat||''}">
+          <span style="color:var(--muted);font-size:.85rem">克拉</span>
+        </div>
+      </div>
+      <div class="field-block">
+        <div class="label-row"><span class="fname">處理方式 Treatment</span></div>
+        <div class="card-grid" id="treatGrid">
+          ${TREATMENTS.map(t=>`<button class="opt-card ${state.treatment===t.id?'selected':''}" data-id="${t.id}"><div class="name">${t.name}</div><div class="price">倍率 ×${t.mult}</div></button>`).join('')}
+        </div>
+      </div>
+      <div class="field-block" style="margin-bottom:0">
+        <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;cursor:pointer;">
+          <input type="checkbox" id="certChk" ${state.certified?'checked':''} style="width:16px;height:16px;">
+          已取得獨立寶石學實驗室鑑定證書(加成 +8%)
+        </label>
+      </div>
+      ${panelNav(true,true,'計算估值 →', !(state.carat>0 && state.treatment))}
+    `;
+    const caratInput = document.getElementById('caratInput');
+    caratInput.addEventListener('input', e=>{ state.carat = parseFloat(e.target.value)||null; syncNext(); });
+    panel.querySelectorAll('#treatGrid .opt-card').forEach(el=>el.addEventListener('click', ()=>{state.treatment=el.dataset.id; renderEstimate();}));
+    document.getElementById('certChk').addEventListener('change', e=>{ state.certified = e.target.checked; });
+    document.getElementById('btnBack').addEventListener('click', ()=>goTo(3));
+    document.getElementById('btnNext').addEventListener('click', ()=> (state.carat>0 && state.treatment) && goTo(5));
+    function syncNext(){ document.getElementById('btnNext').disabled = !(state.carat>0 && state.treatment); }
+  }
+
+  function computeValue(){
+    const o = ORIGINS.find(x=>x.id===state.origin);
+    const t = TYPES.find(x=>x.id===state.type);
+    const b = BRIGHTNESS.find(x=>x.id===state.brightness);
+    const p = PATTERNS.find(x=>x.id===state.pattern);
+    const c = COLORS.find(x=>x.id===state.color);
+    const tr = TREATMENTS.find(x=>x.id===state.treatment);
+    const tone = toneFactor(state.tone);
+    const cert = state.certified ? 1.08 : 1.0;
+    
+    // 大尺寸克拉加成
+    const sizePremium = state.carat>=10 ? 1.2 : (state.carat>=5 ? 1.1 : 1.0);
+
+    // 未受限的每克拉理論單價
+    const perCarat = o.base * t.mult * tone * b.mult * p.mult * c.mult * tr.mult * cert;
+    
+    // 未受限的理論總價 (包含克拉數與尺寸加成)
+    const rawTotal = perCarat * state.carat * sizePremium; 
+    let total = rawTotal;
+
+    // 若為拼合石，強制使用極限硬上限 (Hard Cap) 截斷
+    if (t.isAssembled) {
+      total = Math.max(t.minPrice, Math.min(rawTotal, t.maxPrice));
+    }
+
+    return {o,t,b,p,c,tr,tone,cert,sizePremium,perCarat,rawTotal,total};
+  }
+
+  function renderValue(){
+    const r = computeValue();
+    let low = r.total * 0.75; 
+    let high = r.total * 1.3;
+
+    if (r.t.isAssembled) {
+      // 拼合石的區間也要被強制定型在 minPrice ~ maxPrice 之間
+      low = Math.max(r.t.minPrice, Math.min(low, r.t.maxPrice));
+      high = Math.min(r.t.maxPrice, Math.max(high, r.t.minPrice));
+    }
+
+    const rangeText = r.t.isAssembled 
+      ? `中位估值約 ${fmt$(r.total)} · 已觸發拼合石最高市場價格天花板`
+      : `中位估值約 ${fmt$(r.total)} · 每克拉基準 ${fmt$(r.perCarat)} × ${state.carat} 克拉`;
+
+    // 針對拼合石的震撼教育警語
+    let notesHtml = '';
+    if (r.t.isAssembled && r.rawTotal > r.t.maxPrice) {
+        notesHtml = `<p style="font-size: 0.8rem; color: var(--coral); margin-top: 10px; text-align: center;">* 若此遊彩表現為天然單體 (Solid)，理論總值可達 ${fmt$(r.rawTotal)}</p>`;
+    }
+
+    panel.innerHTML = `
+      <div class="panel-head">
+        <div class="eyebrow">STEP 5 / 5</div>
+        <h2>估計行情區間</h2>
+      </div>
+
+      <div class="value-hero">
+        <div class="lbl">估計零售價值</div>
+        <div class="amt">${fmt$(low)} – ${fmt$(high)}</div>
+        <div class="range">${rangeText}</div>
+        ${notesHtml}
+        <p style="font-size:.72rem;color:var(--muted-2);text-align:center;margin-top:10px">估值以澳幣（AU$）計價・為澳洲市場行情估算參考用（非台灣市場行情）・模型僅供教育參考，非黑柴珠寶之收購或販售報價・實際行情以實物鑑賞為準</p>
+      </div>
+
+      <table class="breakdown">
+        <tr><th>估價因子</th><th>選擇</th><th style="text-align:right">倍率</th></tr>
+        <tr><td>產地/種類</td><td>${r.o.name}</td><td class="mult">${fmt$(r.o.base)}/ct</td></tr>
+        <tr><td>加工型態</td><td>${r.t.name}</td><td class="mult">${r.t.isAssembled ? '鎖定上限' : '×' + r.t.mult}</td></tr>
+        <tr><td>母體色調</td><td>${TONE_LABELS[state.tone-1]}</td><td class="mult">×${r.tone.toFixed(2)}</td></tr>
+        <tr><td>亮度</td><td>${r.b.name}</td><td class="mult">×${r.b.mult}</td></tr>
+        <tr><td>圖紋</td><td>${r.p.name}</td><td class="mult">×${r.p.mult}</td></tr>
+        <tr><td>主色</td><td>${r.c.name}</td><td class="mult">×${r.c.mult}</td></tr>
+        <tr><td>處理方式</td><td>${r.tr.name}</td><td class="mult">×${r.tr.mult}</td></tr>
+        <tr><td>鑑定證書</td><td>${state.certified?'已提供':'未提供'}</td><td class="mult">×${r.cert}</td></tr>
+        <tr><td>尺寸加成</td><td>${state.carat} 克拉</td><td class="mult">×${r.sizePremium}</td></tr>
+      </table>
+
+      <div class="panel-nav">
+        <button class="btn btn-ghost" id="btnBack">← 上一步</button>
+        <button class="btn btn-ghost" id="btnRestart">重新估價一次</button>
+      </div>
+    `;
+    document.getElementById('btnBack').addEventListener('click', ()=>goTo(4));
+    document.getElementById('btnRestart').addEventListener('click', ()=>{
+      Object.assign(state, {step:1, origin:null, type:null, tone:5, brightness:null, pattern:null, color:null, carat:null, treatment:null, certified:false});
+      goTo(1);
+    });
+  }
+
+  // 初始化執行
+  renderSteps();
+  renderPanel();
+})();
+</script>
+  <section class="wrap" id="faq" style="padding-bottom:48px">
+    <h2 style="font-family:'Fraunces',serif;font-weight:600;font-size:1.4rem;margin:0 0 18px">蛋白石估價常見問題</h2>
+    <div style="display:grid;gap:12px">
+      <div style="background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:16px 20px">
+        <div style="font-weight:700;margin-bottom:6px">Q：蛋白石估價是怎麼算的？</div>
+        <div style="color:var(--muted);font-size:.9rem;line-height:1.75">以「每克拉基準價 × 各項倍率」推算：產地種類定基準（澳洲黑蛋白石最高、衣索比亞最平價），再依加工型態、N值體色、亮度、圖紋、主色與處理方式逐項加乘，最後乘上克拉重量。想深入理解每個因素，請看<a href="guide-grading.html" style="color:var(--teal)">蛋白石等級與價格完整指南</a>。</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:16px 20px">
+        <div style="font-weight:700;margin-bottom:6px">Q：蛋白石售價一克拉大概多少錢？</div>
+        <div style="color:var(--muted);font-size:.9rem;line-height:1.75">價差極大（以澳幣計）：白蛋白石與衣索比亞蛋白石每克拉數澳幣起、常見澳洲礫背與水晶蛋白石數十至數百澳幣、頂級澳洲黑蛋白石可達每克拉數千甚至上萬澳幣。此為澳洲市場行情參考，非台灣市場行情。蛋白石論質不論重。</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-sm);padding:16px 20px">
+        <div style="font-weight:700;margin-bottom:6px">Q：線上估價和實際售價會一樣嗎？</div>
+        <div style="color:var(--muted);font-size:.9rem;line-height:1.75">不會完全一樣——實際售價還受切工、瑕疵、游彩覆蓋率與市場供需影響，拼合石另有市場價格天花板。估值僅供教育參考；購買前的防雷重點請看<a href="guide-where-to-buy.html" style="color:var(--teal)">蛋白石哪裡買・防雷指南</a>。</div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid var(--line-soft);padding:26px 0;text-align:center;font-size:.78rem;color:var(--muted-2)">
+    <p style="margin:0 0 8px">
+      <a href="./" style="color:var(--muted)">黑柴珠寶首頁</a> ・
+      <a href="guide-grading.html" style="color:var(--muted)">蛋白石等級與價格</a> ・
+      <a href="guide-where-to-buy.html" style="color:var(--muted)">蛋白石哪裡買</a> ・
+      <a href="guide.html" style="color:var(--muted)">蛋白石小學堂</a>
+    </p>
+    <p style="margin:0">黑柴珠寶 BLACKSHIBAOPAL Jewelry · 天然蛋白石（歐泊 Opal）· 澳洲直購</p>
+  </footer>
+</body>
+</html>
