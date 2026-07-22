@@ -121,7 +121,7 @@
   .opt-card.selected{border-color:var(--teal);background:#1b2b2c;box-shadow:0 0 0 1px var(--teal) inset;}
   .opt-card .row1{display:flex;align-items:center;gap:10px;margin-bottom:5px;}
   .opt-chip{width:16px;height:16px;border-radius:50%;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);}
-  .opt-card .name{font-weight:700;font-size:.94rem;}
+  .opt-card .name{font-weight:700;font-size:.94rem;color:var(--text);}
   .opt-card .desc{font-size:.78rem;color:var(--muted);line-height:1.5;}
   .opt-card .price{margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--amber);}
   .field-block{margin-bottom:26px;}
@@ -208,7 +208,7 @@
 (function(){
   // 修正後的基礎價格 (Base Price)：讓最高倍率乘上去後，符合市場頂端天花板
   const ORIGINS = [
-    {id:'black-au', name:'澳洲黑蛋白石 Black Opal', desc:'N1-N4 深色母體,遊彩對比最強烈的品種。', base:3000, range:[500,20000], hue:210, toneRange:[1,4]},
+    {id:'black-au', name:'澳洲黑蛋白石 Black Opal', desc:'N1-N4 深色母體,遊彩對比最強烈的品種。', base:3000, range:[500,20000], hue:210, toneRange:[1,4],},
     {id:'dark-au', name:'澳洲深色蛋白石 Dark Opal', desc:'N5-N6 灰色母體，介於黑白之間的色調。', base:800, range:[100,5000], hue:220, toneRange:[5,6]},
     {id:'boulder-au', name:'澳洲礫背蛋白石 Boulder Opal', desc:'附著在鐵礦母岩上的薄層蛋白石。', base:350, range:[30,4000], hue:200, toneRange:[1,6]},
     {id:'crystal-au', name:'澳洲水晶蛋白石 Crystal Opal', desc:'N1-N9 具透明至半透明特徵，深色者稱為黑水晶蛋白石。', base:400, range:[30,3500], hue:190, toneRange:[1,9]},
