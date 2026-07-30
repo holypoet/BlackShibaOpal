@@ -158,6 +158,12 @@ const staticUrls = `  <url>
     <priority>0.9</priority>
   </url>
   <url>
+       <loc>${SITE}/guide-care.html</loc>
+       <lastmod>${today}</lastmod>
+       <changefreq>monthly</changefreq>
+       <priority>0.9</priority>
+  </url>
+  <url>
        <loc>${SITE}/opal-tool.html</loc>
        <lastmod>${today}</lastmod>
        <changefreq>monthly</changefreq>
