@@ -162,6 +162,12 @@ const staticUrls = `  <url>
        <lastmod>${today}</lastmod>
        <changefreq>monthly</changefreq>
        <priority>0.8</priority>
+  </url>     
+  <url>
+       <loc>${SITE}/about.html</loc>
+       <lastmod>${today}</lastmod>
+       <changefreq>yearly</changefreq>
+       <priority>0.7</priority>
   </url>`;
 const productUrls = products.map(p => `  <url>
     <loc>${SITE}/p/${p.id}.html</loc>
