@@ -200,6 +200,22 @@ nav a:hover{color:var(--text)}
 }
 .line-add-btn:hover{background:#06C755;color:#fff}
 .line-btn svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
+.contact-stack{display:flex;flex-direction:column}
+.intl-first .intl-block{order:-1;margin-top:10px}
+.intl-block{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.intl-label{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;text-align:center}
+.intl-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.intl-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:10px 6px;background:transparent;border:1px solid var(--border);
+  color:var(--muted);font-size:12px;letter-spacing:.5px;cursor:pointer;
+  font-family:inherit;transition:all .2s;border-radius:3px;
+}
+.intl-btn svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
+.intl-btn.ig:hover{color:#fff;border-color:#E1306C;background:#E1306C}
+.intl-btn.fb:hover{color:#fff;border-color:#0084FF;background:#0084FF}
+.intl-btn.wa:hover{color:#fff;border-color:#25D366;background:#25D366}
+.intl-btn.em:hover{color:var(--text);border-color:#5a5078;background:var(--bg3)}
 .share-row{display:flex;gap:8px;margin-top:8px}
 .share-btn{
   flex:1;padding:8px;background:transparent;border:1px solid var(--border);
@@ -315,6 +331,8 @@ footer a:hover{color:var(--text)}
   .modal-cta{padding:14px;font-size:13px;margin-top:.75rem}
   .line-btn{padding:13px}
   .line-add-btn{padding:11px}
+  .intl-row{gap:6px}
+  .intl-btn{padding:9px 4px;font-size:11px;gap:5px}
   .share-row{gap:6px}
   .share-btn{padding:10px 6px;font-size:11px}
 }
@@ -419,6 +437,13 @@ function track(event, params){
   try{ if(window.gtag) gtag('event', event, params || {}); }catch(e){}
 }
 const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
+
+// ===== 海外客戶聯絡管道（不用 LINE 的客人）=====
+// 留空字串 = 該按鈕不會出現，填了才顯示，可自由開關
+const IG_USERNAME    = 'blackshibaopal'; // Instagram 帳號（不含 @）
+const FB_PAGE        = 'blackshibaopal'; // Facebook 粉專 ID 或自訂網址名稱（設定短網址後可改成 'blackshibaopal'）
+const WHATSAPP_NUMBER= '886920085358';               // 國碼+號碼，不含 + 與空格，例：'886912345678'
+const CONTACT_EMAIL  = 'blackshibawolf@gmail.com'; // 留空則不顯示 Email 按鈕
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨','成品·戒指':'💍','成品·項鍊':'📿','成品·耳環':'✨','成品·手環':'⭕','成品·其他':'✨'};
 function addLineFriend(){
   // 加好友：帶 @，用 %40 編碼
@@ -437,6 +462,57 @@ function openLine(){
   // oaMessage 格式：ID 要帶 @
   window.open('https://line.me/R/oaMessage/@'+LINE_ID+'/?'+msg,'_blank');
 }
+// ===== 海外聯絡管道：訊息內容自動跟隨介面語言 =====
+function inquiryText(){
+  const p=currentProduct; if(!p)return '';
+  const price='NT$'+Number(p.price).toLocaleString();
+  return currentLang==='en'
+    ? 'Hello! I am interested in this item: '+p.name+' ('+price+') '+productUrl(p)
+    : '您好，我想詢問這個商品：'+p.name+'（'+price+'） '+productUrl(p);
+}
+function openInstagram(){
+  const p=currentProduct; if(!p)return;
+  track('contact_instagram',{item_name:p.name});
+  // ig.me 直接開啟該帳號的私訊視窗（訊息無法預帶，故一併複製到剪貼簿方便貼上）
+  try{ navigator.clipboard.writeText(inquiryText()); }catch(e){}
+  window.open('https://ig.me/m/'+IG_USERNAME,'_blank');
+}
+function openMessenger(){
+  const p=currentProduct; if(!p)return;
+  track('contact_messenger',{item_name:p.name});
+  try{ navigator.clipboard.writeText(inquiryText()); }catch(e){}
+  window.open('https://m.me/'+FB_PAGE,'_blank');
+}
+function openWhatsApp(){
+  const p=currentProduct; if(!p)return;
+  track('contact_whatsapp',{item_name:p.name});
+  window.open('https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(inquiryText()),'_blank');
+}
+function openEmail(){
+  const p=currentProduct; if(!p)return;
+  track('contact_email',{item_name:p.name});
+  const subj=currentLang==='en'?'Inquiry: '+p.name:'商品詢問：'+p.name;
+  location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(inquiryText());
+}
+// 依設定產生海外聯絡按鈕列（沒填的管道自動略過）
+function intlContactHtml(){
+  const btns=[];
+  if(IG_USERNAME)     btns.push(`<button class="intl-btn ig" onclick="openInstagram()">${ICON.ig}${t('contact_ig')}</button>`);
+  if(FB_PAGE)         btns.push(`<button class="intl-btn fb" onclick="openMessenger()">${ICON.fb}${t('contact_fb')}</button>`);
+  if(WHATSAPP_NUMBER) btns.push(`<button class="intl-btn wa" onclick="openWhatsApp()">${ICON.wa}${t('contact_wa')}</button>`);
+  if(CONTACT_EMAIL)   btns.push(`<button class="intl-btn em" onclick="openEmail()">${ICON.em}${t('contact_email')}</button>`);
+  if(!btns.length) return '';
+  return `<div class="intl-block">
+      <div class="intl-label">${t('intl_label')}</div>
+      <div class="intl-row">${btns.join('')}</div>
+    </div>`;
+}
+const ICON={
+  ig:'<svg viewBox="0 0 24 24"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.3-1.46.72-2.12 1.38C1.36 2.68.94 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.12.66.66 1.33 1.08 2.12 1.38.76.3 1.64.5 2.91.56 1.28.06 1.69.07 4.95.07s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.3 1.46-.72 2.12-1.38.66-.66 1.08-1.33 1.38-2.12.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.3-.79-.72-1.46-1.38-2.12C21.32 1.36 20.65.94 19.86.63 19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0z"/><path d="M12 5.84A6.16 6.16 0 1 0 18.16 12 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 16 12a4 4 0 0 1-4 4z"/><circle cx="18.41" cy="5.59" r="1.44"/></svg>',
+  fb:'<svg viewBox="0 0 24 24"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.15.26.35.27.57l.05 1.78c.02.57.6.94 1.12.71l1.98-.87c.17-.07.36-.09.53-.04 1 .28 2.06.42 3.16.42 5.64 0 10-4.13 10-9.7C22 6.13 17.64 2 12 2zm6 7.46-2.94 4.66c-.47.74-1.47.92-2.17.4l-2.34-1.75a.6.6 0 0 0-.72 0l-3.16 2.4c-.42.32-.97-.18-.69-.63l2.94-4.66c.47-.74 1.47-.92 2.17-.4l2.34 1.75c.21.16.51.16.72 0l3.16-2.4c.42-.32.97.18.69.63z"/></svg>',
+  wa:'<svg viewBox="0 0 24 24"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.06 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.42-.07-.13-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.36 9.36 0 0 1-1.44-5A9.44 9.44 0 0 1 18.73 5.3a9.35 9.35 0 0 1 2.77 6.65 9.44 9.44 0 0 1-9.45 9.55zM20.15 3.9A11.36 11.36 0 0 0 12.05.55C5.78.55.68 5.64.68 11.9c0 2 .52 3.95 1.52 5.67L.58 23.45l6.02-1.58a11.35 11.35 0 0 0 5.44 1.39h.01c6.27 0 11.37-5.09 11.37-11.35 0-3.03-1.18-5.88-3.32-8.02z"/></svg>',
+  em:'<svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4.24-8 4.76-8-4.76V6l8 4.76L20 6v2.24z"/></svg>'
+};
 function shareProduct(){
   const p=currentProduct; if(!p)return;
   const url=productUrl(p);
@@ -529,8 +605,9 @@ const i18n = {
     spec_source: '資訊來源 SOURCE', video_title: '🎬 商品影片',
     line_chat: 'LINE 私訊詢問', line_add: '加 LINE 好友（首次使用）',
     share_line: '分享到 LINE', share_copy: '複製連結',
-    line_chat: 'LINE 私訊詢問', line_add: '加 LINE 好友（首次使用）',
-    share_line: '分享到 LINE', share_copy: '複製連結'
+    intl_label: '其他聯絡方式 · Other ways to reach us',
+    contact_ig: 'Instagram DM', contact_fb: 'Messenger',
+    contact_wa: 'WhatsApp', contact_email: 'Email 詢問'
   },
   en: {
     nav_products: 'Products',
@@ -568,8 +645,9 @@ const i18n = {
     spec_source: 'Source', video_title: '🎬 Video',
     line_chat: 'LINE Message', line_add: 'Add LINE Friend (First time)',
     share_line: 'Share via LINE', share_copy: 'Copy Link',
-    line_chat: 'LINE Message', line_add: 'Add LINE Friend (First time)',
-    share_line: 'Share via LINE', share_copy: 'Copy Link'
+    intl_label: 'Message us',
+    contact_ig: 'Instagram DM', contact_fb: 'Messenger',
+    contact_wa: 'WhatsApp', contact_email: 'Email Us'
   }
 };
 
@@ -1006,6 +1084,7 @@ function openModal(id){
         ?`<button class="modal-cta sold-out" disabled style="margin-top:1rem">${p.status==='已預定'?t('btn_reserved'):t('btn_sold')}</button>`
         :`<div>
           <button class="modal-cta" onclick="toggleOrderForm()" style="margin-top:1rem">${t('btn_buy')}</button>
+          <div class="contact-stack${currentLang==='en'?' intl-first':''}">
           <button class="line-btn" onclick="openLine()">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
             ${t("line_chat")}
@@ -1014,6 +1093,8 @@ function openModal(id){
             <svg viewBox="0 0 24 24" width="16" height="16" fill="#06C755"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
             ${t("line_add")}
           </button>
+          ${intlContactHtml()}
+          </div>
           <div class="share-row">
             <button class="share-btn" onclick="shareToLine()">${t("share_line")}</button>
             <button class="share-btn" onclick="shareProduct()">${t("share_copy")}</button>
