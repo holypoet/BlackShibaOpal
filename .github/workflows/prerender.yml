@@ -7,31 +7,25 @@
 #   2) 排程：每天台灣時間早上 5 點自動跑一次
 # ============================================================
 name: Prerender product pages
-
 on:
   workflow_dispatch:
   schedule:
     - cron: '0 21 * * *'   # UTC 21:00 = 台灣 05:00
-
 permissions:
   contents: write           # 允許 workflow 把產生的頁面 commit 回 repo
-
 concurrency:
   group: prerender
   cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: 24
-
       - name: Build product pages + sitemap
         run: node scripts/build-pages.mjs
         # 若日後 products 收緊讀取權限，在 repo Settings → Secrets
@@ -39,14 +33,31 @@ jobs:
         # env:
         #   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
+      - name: Verify generated files
+        # 產出檢查：缺檔就讓 workflow 紅燈，不要靜靜地漏掉頁面
+        run: |
+          missing=0
+          for f in products.html c/loose.html c/raw.html c/semi.html c/finished.html sitemap.xml robots.txt; do
+            if [ -f "$f" ]; then
+              echo "✓ $f"
+            else
+              echo "✗ 缺少 $f"; missing=1
+            fi
+          done
+          echo "商品頁數量：$(ls -1 p/*.html 2>/dev/null | wc -l)"
+          exit $missing
+
       - name: Commit and push if changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add p/ sitemap.xml robots.txt backup/
+          # ⚠️ 新增頁面時記得同步加進這一行，否則檔案產生了卻不會被推上去
+          git add p/ c/ products.html sitemap.xml robots.txt backup/
           if git diff --cached --quiet; then
             echo "沒有變更，跳過 commit"
           else
             git commit -m "chore: prerender product pages"
+            # 排程與手動可能撞在一起，先 rebase 再 push 比較安全
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
             git push
           fi
