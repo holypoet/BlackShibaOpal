@@ -401,6 +401,13 @@ footer a:hover{color:var(--text)}
 
 <footer>
   <p style="margin-bottom:.75rem">
+    <a href="products.html" data-i18n="fnav_all">全部商品</a> &nbsp;·&nbsp;
+    <a href="c/loose.html" data-i18n="fnav_loose">裸石</a> &nbsp;·&nbsp;
+    <a href="c/raw.html" data-i18n="fnav_raw">原礦</a> &nbsp;·&nbsp;
+    <a href="c/semi.html" data-i18n="fnav_semi">半成品</a> &nbsp;·&nbsp;
+    <a href="c/finished.html" data-i18n="fnav_finished">成品珠寶</a>
+  </p>
+  <p style="margin-bottom:.75rem">
     <a href="guide-where-to-buy.html">蛋白石哪裡買</a> &nbsp;·&nbsp;
     <a href="opal-tool.html">蛋白石估價</a> &nbsp;·&nbsp;
     <a href="guide-grading.html">蛋白石等級與價格</a> &nbsp;·&nbsp;
@@ -441,8 +448,8 @@ const NOTIFY_EMAIL = 'blackshibawolf@gmail.com';
 // ===== 海外客戶聯絡管道（不用 LINE 的客人）=====
 // 留空字串 = 該按鈕不會出現，填了才顯示，可自由開關
 const IG_USERNAME    = 'blackshibaopal'; // Instagram 帳號（不含 @）
-const FB_PAGE        = 'blackshibaopal'; // Facebook 粉專 ID 或自訂網址名稱（設定短網址後可改成 'blackshibaopal'）
-const WHATSAPP_NUMBER= '886920085358';               // 國碼+號碼，不含 + 與空格，例：'886912345678'
+const FB_PAGE        = '61579329093120'; // Facebook 粉專 ID 或自訂網址名稱（設定短網址後可改成 'blackshibaopal'）
+const WHATSAPP_NUMBER= '';               // 國碼+號碼，不含 + 與空格，例：'886912345678'
 const CONTACT_EMAIL  = 'blackshibawolf@gmail.com'; // 留空則不顯示 Email 按鈕
 const EMOJI = {'原礦':'🪨','裸石':'💎','半成品':'🔧','成品':'✨','成品·戒指':'💍','成品·項鍊':'📿','成品·耳環':'✨','成品·手環':'⭕','成品·其他':'✨'};
 function addLineFriend(){
@@ -599,6 +606,8 @@ const i18n = {
     line_notify_seller: 'LINE 通知賣家',
     order_id_hint: '用 LINE 與我們聯繫時，請附上此編號以加速核對',
     no_product: '目前這個分類沒有商品<br>請稍後再來或私訊詢問',
+    fnav_all: '全部商品', fnav_loose: '裸石', fnav_raw: '原礦',
+    fnav_semi: '半成品', fnav_finished: '成品珠寶',
     footer: '黑柴珠寶 BLACKSHIBAOPAL Jewelry · 天然蛋白石（歐泊 Opal）· 澳洲直採',
     spec_origin: '產地', spec_weight: '重量 CT', spec_size: '尺寸 MM', spec_stock: '庫存',
     spec_variety: '種類 VARIETY', spec_absorbency: '吸水性 ABSORBENCY',
@@ -639,6 +648,8 @@ const i18n = {
     line_notify_seller: 'Notify us on LINE',
     order_id_hint: 'Please include this ID when contacting us on LINE',
     no_product: 'No products in this category.<br>Check back later or DM us.',
+    fnav_all: 'All Products', fnav_loose: 'Loose Stones', fnav_raw: 'Rough',
+    fnav_semi: 'Semi-finished', fnav_finished: 'Finished Jewellery',
     footer: 'BLACKSHIBAOPAL Jewelry · Natural Opal · Direct from Australia',
     spec_origin: 'Origin', spec_weight: 'Weight (ct)', spec_size: 'Size (mm)', spec_stock: 'Stock',
     spec_variety: 'Variety', spec_absorbency: 'Absorbency',
