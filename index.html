@@ -262,6 +262,11 @@ nav a:hover{color:var(--text)}
 .empty-icon{font-size:3rem;margin-bottom:1rem;display:block}
 .empty p{font-size:14px;line-height:1.8}
 
+.noscript-fallback{border:1px solid var(--border);background:var(--bg2);padding:1.5rem;margin-bottom:1.5rem}
+.noscript-fallback h2{font-size:1.1rem;font-weight:400;letter-spacing:1px;margin:0 0 .75rem}
+.noscript-fallback ul{padding-left:1.2rem;margin:1rem 0}
+.noscript-fallback li{margin-bottom:.5rem;font-size:14px}
+.noscript-fallback a{color:var(--accent)}
 footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-size:11px;color:var(--muted);letter-spacing:1px}
 footer a{color:var(--muted);transition:color .2s}
 footer a:hover{color:var(--text)}
@@ -387,6 +392,34 @@ footer a:hover{color:var(--text)}
 
 <div class="grid-wrap">
   <div class="grid-title" id="gridTitle">載入商品中...</div>
+
+  <!-- SEO/AI 備援：不執行 JavaScript 的爬蟲（GPTBot、PerplexityBot 等）看不到
+       下方由 Supabase 動態載入的商品，這裡提供靜態的分類入口與說明文字，
+       讓它們至少讀得到品項結構並能爬到 /c/*.html 與 /products.html。
+       一般訪客不會看到這段內容。 -->
+  <noscript>
+    <div class="noscript-fallback">
+      <h2>黑柴珠寶 商品分類</h2>
+      <p>黑柴珠寶為台灣天然蛋白石（歐泊 Opal）專門店，澳洲直採閃電嶺黑蛋白石（Black Opal）與
+         Boulder Opal 礫背蛋白石。以下為完整商品列表，每件皆標示產地、體色、遊彩表現與處理方式。</p>
+      <ul>
+        <li><a href="products.html"><strong>全部商品</strong></a>：目前上架中的所有天然蛋白石。</li>
+        <li><a href="c/loose.html"><strong>裸石</strong></a>：已切磨完成的蛋白石裸石，可自行鑲嵌或收藏。</li>
+        <li><a href="c/raw.html"><strong>原礦</strong></a>：未經切磨的天然蛋白石原礦。</li>
+        <li><a href="c/semi.html"><strong>半成品</strong></a>：已完成部分加工，可接續製作成珠寶。</li>
+        <li><a href="c/finished.html"><strong>成品珠寶</strong></a>：手工鑲嵌的戒指、項鍊、耳環與手環。</li>
+      </ul>
+      <p>延伸閱讀：
+        <a href="guide-where-to-buy.html">蛋白石哪裡買</a>、
+        <a href="guide-grading.html">蛋白石等級與價格</a>、
+        <a href="guide-type123.html">蛋白石種類</a>、
+        <a href="guide.html">認識遊彩</a>、
+        <a href="guide-care.html">蛋白石保養</a>、
+        <a href="opal-tool.html">蛋白石估價工具</a>。
+      </p>
+    </div>
+  </noscript>
+
   <div class="product-grid" id="productGrid"></div>
   <div id="scrollSentinel" style="height:1px;margin-top:1rem;display:flex;justify-content:center;align-items:center;padding:1rem"></div>
   <div id="emptyMsg"></div>
