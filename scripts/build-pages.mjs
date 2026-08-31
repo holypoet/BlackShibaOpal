@@ -224,13 +224,18 @@ const listJsonld = (name, desc, url, list) => ({
         name: p.name,
         url: `${SITE}/p/${encodeURIComponent(p.id)}.html`,
         image: firstImage(p),
+        description: descOf(p),
+        sku: p.id,
+        brand: { '@type': 'Brand', name: '黑柴珠寶 BlackShibaOpal' },
         offers: {
           '@type': 'Offer',
+          url: `${SITE}/p/${encodeURIComponent(p.id)}.html`,
           priceCurrency: 'TWD',
           price: String(Number(p.price) || 0),
           availability: isSoldOut(p)
             ? 'https://schema.org/SoldOut'
-            : 'https://schema.org/InStock'
+            : 'https://schema.org/InStock',
+          seller: { '@type': 'Organization', name: '黑柴珠寶 BlackShibaOpal' }
         }
       }
     }))
